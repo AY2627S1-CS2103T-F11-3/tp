@@ -7,33 +7,43 @@ We are a team based in the [School of Computing, National University of Singapor
 
 ## Project team
 
-### Zhi Kai
+### Koh Zhi Kai
 
-<img src="images/zhikai-koh.png" width="200px">
+<img src="images/johndoe.png" width="200px">
 
 [[github](https://github.com/zhikai-koh)]
 
-### Xin Yang
+* Role: 
+* Responsibilities:
 
-<img src="images/kong-xin-yang.png" width="200px">
+### Kong Xin Yang
 
 [[github](http://github.com/kong-xin-yang)]
 
-### Xuen Yin
+* Role: 
+* Responsibilities: 
+
+### Quah Xuen Yin
 
 <img src="images/xuenyin.png" width="200px">
 
-[[github](http://github.com/xuenyin)]
+[[github](http://github.com/Xuenyin)]
 
-### Eng Sheng
+* Role: 
+* Responsibilities: 
 
-<img src="images/engsheng.png" width="200px">
+### Ang Eng Sheng
 
 [[github](http://github.com/engsheng)]
 
-### Hai
+* Role: 
+* Responsibilities: 
+
+### Hoang Trung Hai
 
 <img src="images/kubogi.png" width="200px">
 
-[[github](http://github.com/kubogi)]
+[[github](http://github.com/Kubogi)]
 
+* Role: 
+* Responsibilities: 
