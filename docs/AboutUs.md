@@ -5,50 +5,49 @@ title: About Us
 
 We are a team based in the [School of Computing, National University of Singapore](https://www.comp.nus.edu.sg).
 
-You can reach us at the email `seer[at]comp.nus.edu.sg`
-
 ## Project team
 
-### Eng Sheng
-
-<img src="images/engsheng.png" width="200px">
-
-[[github](https://github.com/engsheng)]
-
-* Role: Project Advisor
-
-### Zhi Kai
+### Koh Zhi Kai
 
 <img src="images/zhikai-koh.png" width="200px">
 
-[[github](http://github.com/Zhikai-Koh)]
+[[github](https://github.com/zhikai-koh)]
 
-* Role: Team Lead
-* Responsibilities: UI
+* Role: 
+* Responsibilities:
 
-### Xin Yang
+### Kong Xin Yang
 
 <img src="images/kong-xin-yang.png" width="200px">
 
-[[github](http://github.com/kong-xin-yang)] 
+[[github](http://github.com/kong-xin-yang)]
 
-* Role: Developer
-* Responsibilities: Data
+* Role: 
+* Responsibilities: 
 
-### Xuen Yin
+### Ang Eng Sheng
+
+<img src="images/engsheng.png" width="200px">
+
+[[github](http://github.com/engsheng)]
+
+* Role: 
+* Responsibilities: 
+
+### Quah Xuen Yin
 
 <img src="images/xuenyin.png" width="200px">
 
 [[github](http://github.com/Xuenyin)]
 
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
+* Role: 
+* Responsibilities: 
 
-### Hai
+### Hoang Trung Hai
 
 <img src="images/kubogi.png" width="200px">
 
-[[github](https://github.com/Kubogi)]
+[[github](http://github.com/Kubogi)]
 
-* Role: Developer
-* Responsibilities: UI
+* Role:
+* Responsibilities:
