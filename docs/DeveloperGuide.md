@@ -372,6 +372,34 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
     * 3a1. SquadLink shows an error message.
 
       Use case resumes at step 2.
+
+**Use case: Filter players**
+
+**MSS**
+
+1. Coach requests to filter players using one or more criteria.
+2. SquadLink validates the given filter criteria.
+3. SquadLink shows players that match all the given criteria.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. No filter criterion is provided.
+  * 1a1. SquadLink shows an error message.
+
+    Use case ends.
+
+* 2a. A given filter criterion is invalid.
+  * 2a1. SquadLink shows an error message.
+
+    Use case ends.
+
+* 3a. No players match the given criteria.
+  * 3a1. SquadLink informs the coach that no matching players were found.
+
+    Use case ends.
+
       
 ### Non-Functional Requirements
 
