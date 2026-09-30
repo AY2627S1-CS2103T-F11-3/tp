@@ -9,50 +9,46 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
-### John Doe
+### Eng Sheng
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/engsheng.png" width="200px">
 
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
-[[github](https://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/engsheng)]
 
 * Role: Project Advisor
 
-### Jane Doe
+### Zhi Kai
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/zhikai-koh.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/Zhikai-Koh)]
 
 * Role: Team Lead
 * Responsibilities: UI
 
-### Johnny Doe
+### Xin Yang
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/kong-xin-yang.png" width="200px">
 
-[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
+[[github](http://github.com/kong-xin-yang)] 
 
 * Role: Developer
 * Responsibilities: Data
 
-### Jean Doe
+### Xuen Yin
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/xuenyin.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/Xuenyin)]
 
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
-### Kong Xin Yang
+### Hai
 
-<img src="images/kong-xin-yang.png" width="200px">
+<img src="images/kubogi.png" width="200px">
 
-[[github](https://github.com/kong-xin-yang)]
+[[github](https://github.com/Kubogi)]
 
 * Role: Developer
 * Responsibilities: UI
