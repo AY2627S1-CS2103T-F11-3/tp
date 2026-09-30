@@ -261,71 +261,97 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* is a coach or administrator of a football team or small football club
+* manages a significant number of players, guardians, and other football-related contacts
+* needs to frequently maintain, retrieve, filter, organise, and remove contact information
+* prefers desktop applications and keyboard-driven workflows
+* can type quickly and prefers typing to mouse interactions
+* is reasonably comfortable using CLI-style applications
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Help football coaches quickly organise, retrieve, and maintain player and contact information using CLI-style commands.
 
 
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikely to have) - `*`
 
-*{More to be added}*
+Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikely to have) - `*`
+
+| Priority | As a … | I want to … | So that I can… |
+| --- | --- | --- | --- |
+| `***` | coach | add a player with their name, squad and position | keep track of the players I manage |
+| `***` | coach | record a player's availability | quickly see whether a player is available for selection |
+| `***` | coach | view a list of all registered players | get an overview of the players I manage |
+| `***` | coach | view the full details of a specific player | access more information about that player when needed |
+| `***` | coach | delete a player | remove players who are no longer relevant or were added by mistake |
+| `**` | coach | filter players by squad | quickly find players belonging to a particular squad |
+| `**` | coach | filter players by availability | quickly find players who are available or unavailable |
+| `**` | first-time user | view help for the available commands | learn how to use the application without memorising every command |
+| `*` | coach | edit a player's details | correct or update information without deleting and re-adding the player |
+| `*` | coach | record additional player information such as skill level, injury status, consent status and fee status | keep more comprehensive information about each player |
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `SquadLink` and the **Actor** is the `coach`, unless specified otherwise)
 
-**Use case: Delete a person**
+
+**Use case: Add a player**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1. Coach requests to add a player with their name, squad and position.
+2. SquadLink validates the provided player details.
+3. SquadLink adds the player.
+4. SquadLink confirms that the player has been added.
 
     Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 1a. One or more mandatory fields are missing.
+  * 1a1. SquadLink shows an error message.
 
-  Use case ends.
+    Use case ends.
 
-* 3a. The given index is invalid.
+* 2a. One or more provided values are invalid.
+  * 2a1. SquadLink shows an error message.
 
-    * 3a1. AddressBook shows an error message.
+    Use case ends.
 
-      Use case resumes at step 2.
+* 2b. The player is already registered.
+  * 2b1. SquadLink shows an error message indicating that the player already exists.
 
-*{More to be added}*
+    Use case ends.
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+1. Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
+2. Should be able to hold at least 1000 player, guardian and other football-related contact records without noticeable sluggishness in performance for typical usage.
+3. A user with above-average typing speed for regular English text should be able to accomplish most common contact-management tasks faster using commands than using mouse-based interactions.
+4. Commands should be executable primarily using the keyboard without requiring mouse interaction for common operations.
+5. The application should provide sufficiently descriptive error messages for invalid commands or invalid data so that users can correct their input without referring to external documentation.
+6. A first-time user who is reasonably comfortable with CLI applications should be able to discover the available commands using the application's built-in help functionality.
+7. The application should store its data locally and preserve stored player and contact information between application sessions.
+8. The application should be responsive enough that common operations such as adding, editing, listing, searching and filtering records appear to complete without noticeable delay under typical usage.
+9. The application should clearly distinguish between players, guardians and other football-related contacts when displaying information.
+10. Operations that modify stored information should not leave the application's data in a partially updated state if the operation fails.
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Coach**: The primary user of SquadLink who manages player information.
+* **Player**: A football player whose information is stored and managed in SquadLink.
+* **Player profile**: A stored record containing a player's name, squad, position and availability.
+* **Squad**: A named football team or group that a player belongs to.
+* **Position**: The playing role assigned to a player. In the MVP, the supported positions are Goalkeeper, Defender, Midfielder and Striker.
+* **Availability**: Whether a player is currently available for selection, represented as either `true` or `false`.
+* **Player index**: A temporary number assigned to a player based on their current position in the displayed player list. It is not a permanent identifier.
+* **Filter**: To display only players that match one or more specified criteria, such as squad or availability.
+* **CLI**: Command-Line Interface; an interface where users primarily interact with the application by typing commands.
+* **Command**: A text instruction entered by the user to perform an operation in SquadLink, such as `add`, `list`, `view` or `delete`.
+* **Parameter prefix**: A keyword beginning with `/` that identifies a command parameter, such as `/squad`, `/position` or `/available`.
 
 --------------------------------------------------------------------------------------------------------------------
 
