@@ -18,8 +18,6 @@ We are a team based in the [School of Computing, National University of Singapor
 
 ### Kong Xin Yang
 
-<img src="images/johndoe.png" width="200px">
-
 [[github](http://github.com/kong-xin-yang)]
 
 * Role: 
@@ -36,8 +34,6 @@ We are a team based in the [School of Computing, National University of Singapor
 
 ### Ang Eng Sheng
 
-<img src="images/johndoe.png" width="200px">
-
 [[github](http://github.com/engsheng)]
 
 * Role: 
@@ -45,7 +41,7 @@ We are a team based in the [School of Computing, National University of Singapor
 
 ### Hoang Trung Hai
 
-<img src="images/kong-xin-yang.png" width="200px">
+<img src="images/kubogi.png" width="200px">
 
 [[github](http://github.com/Kubogi)]
 
