@@ -273,10 +273,6 @@ _{Explain here how the data archiving feature will be implemented}_
 
 ### User stories
 
-Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
-
-Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikely to have) - `*`
-
 Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikely to have) - `*`
 
 | Priority | As a … | I want to … | So that I can… |
@@ -329,19 +325,20 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 **MSS**
 
-1.  Coach requests to list players.
-2.  SquadLink shows the list of registered players.
-3.  Coach requests to delete a specific player in the list.
-4.  SquadLink deletes the player.
-5.  SquadLink confirms that the player has been deleted.
+1. Coach requests to list players.
+2. SquadLink shows the list of registered players.
+3. Coach requests to delete a specific player in the list.
+4. SquadLink deletes the player and saves the updated player data.
+5. SquadLink confirms that the player has been deleted.
 
     Use case ends.
 
 **Extensions**
 
 * 2a. The list is empty.
+  * 2a1. SquadLink informs the Coach that there are no registered players.
 
-  Use case ends.
+    Use case ends.
 
 * 3a. The given index is invalid.
   * 3a1. SquadLink shows an error message.
@@ -350,14 +347,14 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 * 4a. SquadLink is unable to save the updated player data.
   * 4a1. SquadLink shows an error message.
-  * 4a2. No player is deleted.
+  * 4a2. SquadLink rolls back the deletion, and the player remains registered.
 
     Use case ends.
       
 ### Non-Functional Requirements
 
 1. Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2. Should be able to hold at least 1000 player, guardian and other football-related contact records without noticeable sluggishness in performance for typical usage.
+2. Should be able to hold at least 1,000 player, guardian, and other football-related contact records without noticeable sluggishness in performance for typical usage.
 3. A user with above-average typing speed for regular English text should be able to accomplish most common contact-management tasks faster using commands than using mouse-based interactions.
 4. Commands should be executable primarily using the keyboard without requiring mouse interaction for common operations.
 5. The application should provide sufficiently descriptive error messages for invalid commands or invalid data so that users can correct their input without referring to external documentation.
