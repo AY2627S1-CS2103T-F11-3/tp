@@ -287,16 +287,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `SquadLink` and the **Actor** is the `Coach`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: Delete a player**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  Coach requests to list players.
+2.  SquadLink shows the list of registered players.
+3.  Coach requests to delete a specific player in the list.
+4.  SquadLink deletes the player.
+5.  SquadLink confirms that the player has been deleted.
 
     Use case ends.
 
@@ -308,9 +309,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. The given index is invalid.
 
-    * 3a1. AddressBook shows an error message.
+    * 3a1. SquadLink shows an error message.
 
       Use case resumes at step 2.
+
+* 4a. SquadLink is unable to save the updated player data.
+
+    * 4a1. SquadLink shows an error message.
+
+    * 4a2. No player is deleted.
+
+      Use case ends.
 
 *{More to be added}*
 
