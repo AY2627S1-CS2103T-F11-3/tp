@@ -9,7 +9,7 @@ We are a team based in the [School of Computing, National University of Singapor
 
 ### Koh Zhi Kai
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/kubogi.png" width="200px">
 
 [[github](https://github.com/zhikai-koh)]
 
