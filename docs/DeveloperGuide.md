@@ -294,7 +294,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 ### Use cases
 
-(For all use cases below, the **System** is `SquadLink` and the **Actor** is the `coach`, unless specified otherwise)
+(For all use cases below, the **System** is `SquadLink` and the **Actor** is the `Coach`, unless specified otherwise)
 
 
 **Use case: Add a player**
@@ -325,6 +325,35 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
     Use case ends.
 
+**Use case: Delete a player**
+
+**MSS**
+
+1.  Coach requests to list players.
+2.  SquadLink shows the list of registered players.
+3.  Coach requests to delete a specific player in the list.
+4.  SquadLink deletes the player.
+5.  SquadLink confirms that the player has been deleted.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The list is empty.
+
+  Use case ends.
+
+* 3a. The given index is invalid.
+  * 3a1. SquadLink shows an error message.
+
+    Use case resumes at step 2.
+
+* 4a. SquadLink is unable to save the updated player data.
+  * 4a1. SquadLink shows an error message.
+  * 4a2. No player is deleted.
+
+    Use case ends.
+      
 ### Non-Functional Requirements
 
 1. Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
