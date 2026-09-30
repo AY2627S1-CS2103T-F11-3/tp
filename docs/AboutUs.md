@@ -45,7 +45,7 @@ We are a team based in the [School of Computing, National University of Singapor
 
 ### Hoang Trung Hai
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/kong-xin-yang.png" width="200px">
 
 [[github](http://github.com/Kubogi)]
 
