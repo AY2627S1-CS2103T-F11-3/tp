@@ -321,6 +321,33 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
     Use case ends.
 
+**Use case: List all players**
+
+**MSS**
+
+1. Coach requests to list players.
+2. SquadLink retrieves the registered players in the order they were added.
+3. SquadLink displays the list of players showing their index, name, squad, position, and availability.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Coach provides extra arguments (e.g., `list abc`).
+    * 1a1. SquadLink shows an error message indicating that additional arguments are not accepted.
+
+      Use case ends.
+
+* 2a. There are no registered players in SquadLink.
+    * 2a1. SquadLink informs the Coach that no players are registered.
+
+      Use case ends.
+
+* 2b. SquadLink is unable to load player data from storage.
+    * 2b1. SquadLink shows an error message indicating data loading failure.
+
+      Use case ends.
+
 **Use case: Delete a player**
 
 **MSS**
