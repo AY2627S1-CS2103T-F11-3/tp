@@ -4,85 +4,47 @@
 
 ![SquadLink user interface](docs/images/Ui.png)
 
-SquadLink is a desktop application for coaches of small youth football clubs who manage multiple squads and their players' guardians.
+**SquadLink** is a desktop application for coaches of small youth football clubs who manage players across multiple squads.
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Scope](#scope)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Acknowledgements](#acknowledgements)
-
-## Overview
-
-Managing multiple squads through old chats and scattered notes makes it difficult to know who is available and who to contact. SquadLink keeps player details, squad information and guardian contacts in one place, helping coaches select a matchday squad and reach the right people quickly.
+SquadLink helps coaches keep player information organised in one place, making it easier to find players and check their availability for selection.
 
 ## Features
 
-### Player management
+SquadLink allows coaches to:
 
-- Add players with their squad, position and level.
-- Edit player details, including their squad and position.
-- Track availability, injury status and consent status.
-- Add one short note for each player.
-- Mark fees as paid or unpaid.
-- Remove or archive players who have left the club.
-
-### Guardian and club contacts
-
-- Link players to their guardians' contact details.
-- Record each guardian's preferred contact method.
-- Find a guardian using the associated player's name.
-- Store other club contacts, such as opposition coaches, referees and venues.
-
-### Search and filtering
-
+- Add players with their name, squad and position.
+- Edit existing player details.
+- Mark players as available or unavailable.
+- Remove players who are no longer in the club.
+- Search for players by name.
 - Filter players by squad and availability.
-- Search across player names, squads, positions and levels.
-
-## Scope
-
-SquadLink is designed for player, guardian and club-contact management. It does not include:
-
-- Training plans or drills
-- Match results or statistics
-- Medical records beyond an injury flag
-- Fee amounts or balances
-- Messaging, fixture scheduling or venue booking
-- Sharing with assistants, parents or club administrators
-- Contact importing
-- Photos or documents
 
 ## Getting Started
 
 ### Prerequisites
 
-- Java 17 or later
-- A Git client
+- Java 25 or later
 
 ### Running SquadLink
 
-Clone the repository and run the application with Gradle:
+1. Download the latest SquadLink `.jar` file from the Releases page.
+2. Copy the `.jar` file to the folder where you want to store SquadLink data.
+3. Open a terminal in that folder.
+4. Run:
 
 ```bash
-git clone https://github.com/AY2627S1-CS2103T-F11-3/tp.git
-cd tp
-./gradlew run
+java -jar squadlink.jar
 ```
 
-On Windows, use `gradlew.bat run` instead of `./gradlew run`.
-
-### Running the tests
-
-```bash
-./gradlew test
-```
+The SquadLink application should open shortly after.
 
 ## Documentation
 
-For the full user and developer documentation, visit the [SquadLink product website](https://nus-cs2103-ay2627-s1.github.io/tp/).
+For more information about using and developing SquadLink, refer to:
+
+- [User Guide](https://nus-cs2103-ay2627-s1.github.io/tp/UserGuide.html)
+- [Developer Guide](https://nus-cs2103-ay2627-s1.github.io/tp/DeveloperGuide.html)
+- [About Us](https://nus-cs2103-ay2627-s1.github.io/tp/AboutUs.html)
 
 ## Acknowledgements
 
