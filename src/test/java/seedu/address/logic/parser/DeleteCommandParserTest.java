@@ -6,6 +6,8 @@ import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
+import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_MISSING_NAME;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 
@@ -103,5 +105,54 @@ public class DeleteCommandParserTest {
     public void parse_integerOverflow_throwsParseException() {
         assertParseFailure(parser, "2147483648", MESSAGE_INDEX_TOO_LARGE);
         assertParseFailure(parser, "999999999999999999999999999999", MESSAGE_INDEX_TOO_LARGE);
+    }
+
+    @Test
+    public void parse_singleName_returnsDeleteCommand() {
+        assertParseSuccess(parser, "/name John Doe", DeleteCommand.forNames(List.of("John Doe")));
+    }
+
+    @Test
+    public void parse_multipleNames_returnsDeleteCommand() {
+        assertParseSuccess(parser, " /NAME\t John Doe ,  Amy Tan  ",
+                DeleteCommand.forNames(List.of("John Doe", "Amy Tan")));
+    }
+
+    @Test
+    public void parse_nameWithSymbols_preservesName() {
+        assertParseSuccess(parser, "/name Arun s/o Kumar, Anne-Marie O'Neill",
+                DeleteCommand.forNames(List.of("Arun s/o Kumar", "Anne-Marie O'Neill")));
+        assertParseSuccess(parser, "/name Player /name Example",
+                DeleteCommand.forNames(List.of("Player /name Example")));
+    }
+
+    @Test
+    public void parse_numericName_returnsNameSelector() {
+        assertParseSuccess(parser, "/name 17", DeleteCommand.forNames(List.of("17")));
+    }
+
+    @Test
+    public void parse_missingName_throwsParseException() {
+        assertParseFailure(parser, "/name", MESSAGE_MISSING_NAME);
+        assertParseFailure(parser, "/name \t ", MESSAGE_MISSING_NAME);
+    }
+
+    @Test
+    public void parse_emptyNameEntry_throwsParseException() {
+        assertParseFailure(parser, "/name ,John Doe", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "/name John Doe,", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "/name John Doe, ,Amy Tan", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "/name ,", MESSAGE_EMPTY_NAME);
+    }
+
+    @Test
+    public void parse_mixedIndicesAndNamePrefix_throwsParseException() {
+        assertParseFailure(parser, "1 /name John Doe", MESSAGE_NON_NUMERIC_INDEX);
+    }
+
+    @Test
+    public void parse_namePrefixWithoutBoundary_throwsParseException() {
+        assertParseFailure(parser, "/names John Doe", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "/nameJohn Doe", MESSAGE_NON_NUMERIC_INDEX);
     }
 }

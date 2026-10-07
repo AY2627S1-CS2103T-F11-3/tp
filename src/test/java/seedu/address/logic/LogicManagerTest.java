@@ -8,6 +8,7 @@ import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
+import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.AMY;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -88,6 +89,44 @@ public class LogicManagerTest {
 
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_deleteMultipleNames_savesRemainingPlayers() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        Person first = originalPersons.get(0);
+        Person third = originalPersons.get(2);
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(first);
+        expectedModel.deletePerson(third);
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
+                first.getName().fullName + ", " + third.getName().fullName);
+
+        assertCommandSuccess("delete /name " + first.getName().fullName + ", " + third.getName().fullName,
+                expectedMessage, expectedModel);
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_deleteWithMissingOrEmptyName_preservesModelAndSavedData() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        savedStorage.saveAddressBook(model.getAddressBook());
+        String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
+
+        assertCommandException("delete /name " + validName + ", Missing Player",
+                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player"));
+        assertParseException("delete /name " + validName + ",",
+                MESSAGE_EMPTY_NAME);
+
+        assertEquals(expectedModel, model);
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
     }
 

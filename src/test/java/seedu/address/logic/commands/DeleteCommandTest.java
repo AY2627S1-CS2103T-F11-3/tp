@@ -23,6 +23,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
+import seedu.address.testutil.PersonBuilder;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for
@@ -177,6 +178,129 @@ public class DeleteCommandTest {
     }
 
     @Test
+    public void execute_multipleNames_deletesRequestedPlayers() {
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        Person first = originalPersons.get(0);
+        Person third = originalPersons.get(2);
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(first);
+        expectedModel.deletePerson(third);
+        DeleteCommand command = DeleteCommand.forNames(List.of(first.getName().fullName, third.getName().fullName));
+
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
+                first.getName().fullName + ", " + third.getName().fullName);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_nameWithDifferentCaseAndWhitespace_matchesFullName() {
+        Person player = new PersonBuilder().withName("John  Doe").build();
+        model.addPerson(player);
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(player);
+
+        DeleteCommand command = DeleteCommand.forNames(List.of("  JOHN\tDOE  "));
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(player));
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_repeatedNames_deletesOnce() {
+        Person player = new PersonBuilder().withName("John Doe").build();
+        model.addPerson(player);
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(player);
+
+        DeleteCommand command = DeleteCommand.forNames(List.of("John Doe", "john doe", "John  Doe"));
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(player));
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_validThenMissingName_deletesNobody() {
+        String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
+        DeleteCommand command = DeleteCommand.forNames(List.of(validName, "Missing Player"));
+        assertCommandFailure(command, model, String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player"));
+    }
+
+    @Test
+    public void execute_partialName_deletesNobody() {
+        model.addPerson(new PersonBuilder().withName("John Doe").build());
+        assertCommandFailure(DeleteCommand.forNames(List.of("John")), model,
+                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "John"));
+    }
+
+    @Test
+    public void execute_ambiguousNameAfterValidName_deletesNobody() {
+        String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
+        model.addPerson(new PersonBuilder().withName("John Doe").build());
+        model.addPerson(new PersonBuilder().withName("john doe").build());
+        DeleteCommand command = DeleteCommand.forNames(List.of(validName, "John Doe"));
+
+        assertCommandFailure(command, model, String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "John Doe"));
+    }
+
+    @Test
+    public void execute_namesDifferOnlyInWhitespace_reportsAmbiguity() {
+        model.addPerson(new PersonBuilder().withName("John Doe").build());
+        model.addPerson(new PersonBuilder().withName("John  Doe").build());
+        assertCommandFailure(DeleteCommand.forNames(List.of("John Doe")), model,
+                String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "John Doe"));
+    }
+
+    @Test
+    public void execute_ambiguousNameWithHiddenMatch_deletesNobody() {
+        Person visiblePlayer = new PersonBuilder().withName("John Doe").build();
+        model.addPerson(visiblePlayer);
+        model.addPerson(new PersonBuilder().withName("john doe").build());
+        model.updateFilteredPersonList(person -> person.equals(visiblePlayer));
+
+        assertCommandFailure(DeleteCommand.forNames(List.of("John Doe")), model,
+                String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "John Doe"));
+    }
+
+    @Test
+    public void execute_nameOutsideFilteredList_deletesRegisteredPlayer() throws Exception {
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        Person hiddenPlayer = originalPersons.get(1);
+
+        DeleteCommand.forNames(List.of(hiddenPlayer.getName().fullName)).execute(model);
+
+        List<Person> expectedPersons = new ArrayList<>(originalPersons);
+        expectedPersons.remove(hiddenPlayer);
+        assertEquals(expectedPersons, model.getAddressBook().getPersonList());
+        assertEquals(List.of(originalPersons.getFirst()), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_numericName_deletesNamedPlayer() throws Exception {
+        Person player = new PersonBuilder().withName("17").build();
+        model.addPerson(player);
+        List<Person> expectedPersons = new ArrayList<>(model.getAddressBook().getPersonList());
+        expectedPersons.remove(player);
+
+        DeleteCommand.forNames(List.of("17")).execute(model);
+
+        assertEquals(expectedPersons, model.getAddressBook().getPersonList());
+    }
+
+    @Test
+    public void forNames_invalidNames_rejectsInput() {
+        assertThrows(IllegalArgumentException.class, () -> DeleteCommand.forNames(List.of()));
+        assertThrows(IllegalArgumentException.class, () -> DeleteCommand.forNames(List.of(" ")));
+        assertThrows(NullPointerException.class, () -> DeleteCommand.forNames(null));
+    }
+
+    @Test
+    public void forNames_mutatedInput_preservesTargets() {
+        List<String> names = new ArrayList<>(List.of("John Doe"));
+        DeleteCommand command = DeleteCommand.forNames(names);
+        names.add("Amy Tan");
+        assertEquals(DeleteCommand.forNames(List.of("John Doe")), command);
+    }
+
+    @Test
     public void equals() {
         DeleteCommand deleteFirstCommand = new DeleteCommand(INDEX_FIRST_PERSON);
         DeleteCommand deleteSecondCommand = new DeleteCommand(INDEX_SECOND_PERSON);
@@ -200,13 +324,17 @@ public class DeleteCommandTest {
         assertEquals(new DeleteCommand(List.of(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON)),
                 new DeleteCommand(List.of(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON)));
         assertFalse(deleteFirstCommand.equals(new DeleteCommand(List.of(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON))));
+        assertEquals(DeleteCommand.forNames(List.of("John Doe")), DeleteCommand.forNames(List.of("John Doe")));
+        assertFalse(DeleteCommand.forNames(List.of("John Doe")).equals(DeleteCommand.forNames(List.of("Amy Tan"))));
+        assertFalse(deleteFirstCommand.equals(DeleteCommand.forNames(List.of("1"))));
     }
 
     @Test
     public void toStringMethod() {
         Index targetIndex = Index.fromOneBased(1);
         DeleteCommand deleteCommand = new DeleteCommand(targetIndex);
-        String expected = DeleteCommand.class.getCanonicalName() + "{targetIndices=" + List.of(targetIndex) + "}";
+        String expected = DeleteCommand.class.getCanonicalName()
+                + "{targetIndices=" + List.of(targetIndex) + ", targetNames=[]}";
         assertEquals(expected, deleteCommand.toString());
     }
 

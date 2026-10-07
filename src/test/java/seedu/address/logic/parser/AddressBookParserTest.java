@@ -65,6 +65,12 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_deleteNames_returnsDeleteCommand() throws Exception {
+        assertEquals(DeleteCommand.forNames(List.of("Arun s/o Kumar", "Amy Tan")),
+                parser.parseCommand("delete /name Arun s/o Kumar, Amy Tan"));
+    }
+
+    @Test
     public void parseCommand_deleteWithWhitespaceAndLeadingZeroes_returnsDeleteCommand() throws Exception {
         assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), parser.parseCommand("  delete \t 01  "));
     }

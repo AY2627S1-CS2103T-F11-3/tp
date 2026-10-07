@@ -16,21 +16,25 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
 /**
- * Deletes players identified using their displayed indices from the address book.
+ * Deletes players identified by displayed indices or full names from the address book.
  */
 public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Deletes players identified by their indices in the displayed player list.\n"
-            + "Parameters: INDEX [INDEX]... (each must be a positive integer)\n"
-            + "Example: " + COMMAND_WORD + " 1 3";
+            + ": Deletes players by displayed indices or full names.\n"
+            + "Parameters: INDEX [INDEX]... or /name NAME[, NAME]...\n"
+            + "Examples: " + COMMAND_WORD + " 1 3; " + COMMAND_WORD + " /name John Doe, Amy Tan";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
     public static final String MESSAGE_DELETE_PERSONS_SUCCESS = "Deleted %1$d players: %2$s";
+    public static final String MESSAGE_NAME_NOT_FOUND = "No player found with the full name: %1$s";
+    public static final String MESSAGE_AMBIGUOUS_NAME =
+            "Multiple players match the name: %1$s. Use list and delete by index instead.";
 
     private final List<Index> targetIndices;
+    private final List<String> targetNames;
 
     /**
      * Creates a command to delete the player at {@code targetIndex}.
@@ -43,15 +47,31 @@ public class DeleteCommand extends Command {
      * Creates a command to delete players at the supplied indices. Repeated indices delete a player only once.
      */
     public DeleteCommand(List<Index> targetIndices) {
+        this(targetIndices, List.of());
+    }
+
+    private DeleteCommand(List<Index> targetIndices, List<String> targetNames) {
         requireNonNull(targetIndices);
-        checkArgument(!targetIndices.isEmpty(), "At least one index must be supplied.");
+        requireNonNull(targetNames);
+        checkArgument(targetIndices.isEmpty() != targetNames.isEmpty(), "Supply either indices or names.");
+        checkArgument(targetNames.stream().allMatch(name -> !name.isBlank()), "Names must not be blank.");
         this.targetIndices = List.copyOf(targetIndices);
+        this.targetNames = List.copyOf(targetNames);
+    }
+
+    /**
+     * Creates a command to delete players by full name. Names are resolved against all registered players.
+     */
+    public static DeleteCommand forNames(List<String> names) {
+        return new DeleteCommand(List.of(), names);
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> personsToDelete = resolveTargets(model.getFilteredPersonList());
+        List<Person> personsToDelete = targetNames.isEmpty()
+                ? resolveIndices(model.getFilteredPersonList())
+                : resolveNames(model.getAddressBook().getPersonList());
         personsToDelete.forEach(model::deletePerson);
         return new CommandResult(formatSuccess(personsToDelete));
     }
@@ -59,7 +79,7 @@ public class DeleteCommand extends Command {
     /**
      * Resolves every index before any deletion can change the displayed list.
      */
-    private List<Person> resolveTargets(List<Person> displayedPersons) throws CommandException {
+    private List<Person> resolveIndices(List<Person> displayedPersons) throws CommandException {
         Set<Person> personsToDelete = new LinkedHashSet<>();
         for (Index index : targetIndices) {
             if (index.getZeroBased() >= displayedPersons.size()) {
@@ -68,6 +88,33 @@ public class DeleteCommand extends Command {
             personsToDelete.add(displayedPersons.get(index.getZeroBased()));
         }
         return List.copyOf(personsToDelete);
+    }
+
+    private List<Person> resolveNames(List<Person> registeredPersons) throws CommandException {
+        Set<Person> personsToDelete = new LinkedHashSet<>();
+        for (String name : targetNames) {
+            personsToDelete.add(findUniquePlayer(name, registeredPersons));
+        }
+        return List.copyOf(personsToDelete);
+    }
+
+    private Person findUniquePlayer(String name, List<Person> registeredPersons) throws CommandException {
+        String normalizedName = normalizeName(name);
+        List<Person> matches = registeredPersons.stream()
+                .filter(person -> normalizeName(person.getName().fullName).equalsIgnoreCase(normalizedName))
+                .limit(2)
+                .toList();
+        if (matches.isEmpty()) {
+            throw new CommandException(String.format(MESSAGE_NAME_NOT_FOUND, name));
+        }
+        if (matches.size() > 1) {
+            throw new CommandException(String.format(MESSAGE_AMBIGUOUS_NAME, name));
+        }
+        return matches.getFirst();
+    }
+
+    private String normalizeName(String name) {
+        return name.strip().replaceAll("\\s+", " ");
     }
 
     private String formatSuccess(List<Person> deletedPersons) {
@@ -90,13 +137,15 @@ public class DeleteCommand extends Command {
             return false;
         }
 
-        return targetIndices.equals(otherDeleteCommand.targetIndices);
+        return targetIndices.equals(otherDeleteCommand.targetIndices)
+                && targetNames.equals(otherDeleteCommand.targetNames);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("targetIndices", targetIndices)
+                .add("targetNames", targetNames)
                 .toString();
     }
 }
