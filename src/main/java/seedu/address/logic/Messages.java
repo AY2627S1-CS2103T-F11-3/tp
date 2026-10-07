@@ -15,6 +15,11 @@ public class Messages {
     public static final String MESSAGE_UNKNOWN_COMMAND = "Unknown command.";
     public static final String MESSAGE_INVALID_COMMAND_FORMAT = "Invalid command format!\n%1$s";
     public static final String MESSAGE_INVALID_PERSON_DISPLAYED_INDEX = "The person index provided is invalid.";
+    public static final String MESSAGE_MISSING_INDEX = "Error! Index must be specified!";
+    public static final String MESSAGE_NON_NUMERIC_INDEX =
+            "Invalid index entered! Index should only contain numerical characters!";
+    public static final String MESSAGE_INDEX_BELOW_ONE = "Invalid index entered! Index should be at least 1!";
+    public static final String MESSAGE_INDEX_TOO_LARGE = "Invalid index entered! Index is too large!";
     public static final String MESSAGE_PERSONS_LISTED_OVERVIEW = "%1$d person(s) listed!";
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";
@@ -46,6 +51,15 @@ public class Messages {
                 .append("; Tags: ");
         person.getTags().forEach(builder::append);
         return builder.toString();
+    }
+
+    /**
+     * Formats contact and player details to help distinguish players with similar names.
+     */
+    public static String formatPlayerDetails(Person person) {
+        return String.format("%s; Squad: %s; Position: %s; Guardian: %s; Contact: %s; Availability: %s; Remark: %s",
+                format(person), person.getSquadName(), person.getPosition(), person.getGuardianName(),
+                person.getGuardianNumber(), person.getAvailability(), person.getRemark());
     }
 
 }

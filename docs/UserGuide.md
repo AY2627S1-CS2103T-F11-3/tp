@@ -126,19 +126,51 @@ Examples:
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
-### Deleting a person: `delete`
+### Deleting players: `delete`
 
-Deletes the specified person from the address book.
+Deletes one or more players from the address book.
 
-Format: `delete INDEX`
+Formats:
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* By displayed index: `delete INDEX [INDEX]...`
+* By full name: `delete /name NAME[, NAME]...`
+
+**Deleting by index**
+
+* Separate indices with spaces or tabs. Each index refers to the currently displayed player list.
+* All indices refer to the list before the command runs. Deleting one player does not shift the other requested targets.
+* Repeated indices delete the same player only once. For example, `delete 2 02` deletes only player 2.
+* If any argument is invalid or any index is outside the displayed list, no players are deleted.
+* Remaining players keep their relative order and are renumbered.
 * The index **must be a positive integer** 1, 2, 3, …​
 
+**Deleting by name**
+
+* Use `/name` once, followed by full names separated by commas. `/NAME` is also accepted.
+* Name matching searches all registered players, including players hidden by a filter.
+* Matching ignores capitalization and surrounding whitespace, and treats repeated whitespace as a single space.
+* Partial names do not match. If a name is missing or matches multiple players, nobody is deleted.
+* If a name matches multiple players, the message shows every matching player's details with a number.
+  The displayed list switches to those matches, including any previously hidden by a filter.
+  Use `delete 1` to delete the first match, or `delete 1 2` to delete both of the first two matches.
+  These numbers refer to the matching list; if you change the displayed list, use its new indices.
+* If a batch contains an ambiguous name, none of the requested players are deleted. Only matches for the first
+  ambiguous name are shown; submit any other intended deletions again after resolving that name.
+* Repeating a name deletes that player only once.
+* Do not mix index selectors with name selectors. After `/name`, numbers are names, not indices.
+* Empty entries, such as `John Doe,,Amy Tan` or a trailing comma, are rejected.
+* Commas always separate names; quotation marks do not escape them.
+* Player names currently support only letters, digits, and spaces when adding players. Creating players with punctuation
+  in their names is not yet supported.
+
 Examples:
+
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
+* `list` followed by `delete 2 4` deletes the players originally shown at indices 2 and 4.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `delete 1 abc` reports a non-numeric index and deletes nobody.
+* `delete /name John Doe, Amy Tan` deletes both players if each name identifies exactly one registered player.
+* `delete /name 17` selects a player whose full name is `17`.
 
 ### Clearing all entries: `clear`
 
@@ -191,7 +223,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`

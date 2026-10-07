@@ -2,17 +2,22 @@ package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
+import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.AMY;
+import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +25,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -68,6 +74,105 @@ public class LogicManagerTest {
     public void execute_validCommand_success() throws Exception {
         String listCommand = ListCommand.COMMAND_WORD;
         assertCommandSuccess(listCommand, ListCommand.MESSAGE_SUCCESS, model);
+    }
+
+    @Test
+    public void execute_deleteMultipleIndices_savesRemainingPlayers() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(originalPersons.get(0));
+        expectedModel.deletePerson(originalPersons.get(2));
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
+                originalPersons.get(0).getName().fullName + ", " + originalPersons.get(2).getName().fullName);
+
+        assertCommandSuccess("delete 1 3", expectedMessage, expectedModel);
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_deleteMultipleNames_savesRemainingPlayers() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        Person first = originalPersons.get(0);
+        Person third = originalPersons.get(2);
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(first);
+        expectedModel.deletePerson(third);
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
+                first.getName().fullName + ", " + third.getName().fullName);
+
+        assertCommandSuccess("delete /name " + first.getName().fullName + ", " + third.getName().fullName,
+                expectedMessage, expectedModel);
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_deleteWithMissingOrEmptyName_preservesModelAndSavedData() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        savedStorage.saveAddressBook(model.getAddressBook());
+        String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
+
+        assertCommandException("delete /name " + validName + ", Missing Player",
+                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player"));
+        assertParseException("delete /name " + validName + ",",
+                MESSAGE_EMPTY_NAME);
+
+        assertEquals(expectedModel, model);
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_ambiguousNameThenIndex_showsMatchesAndSavesOnlySelectedDeletion() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        Person firstMatch = new PersonBuilder().withName("John Doe").withSquadName("Squad A").build();
+        Person secondMatch = new PersonBuilder().withName("john doe").withSquadName("Squad B").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        model.updateFilteredPersonList(person -> person.equals(firstMatch));
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        String validName = originalPersons.getFirst().getName().fullName;
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        savedStorage.saveAddressBook(model.getAddressBook());
+
+        assertThrows(CommandException.class, () -> logic.execute("delete /name " + validName + ", John Doe"));
+
+        assertEquals(originalPersons, model.getAddressBook().getPersonList());
+        assertEquals(originalPersons, savedStorage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(List.of(firstMatch, secondMatch), model.getFilteredPersonList());
+
+        logic.execute("delete 2");
+
+        List<Person> expectedPersons = new ArrayList<>(originalPersons);
+        expectedPersons.remove(secondMatch);
+        assertEquals(expectedPersons, model.getAddressBook().getPersonList());
+        assertEquals(expectedPersons, savedStorage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(List.of(firstMatch), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_deleteWithInvalidArgument_preservesModelAndSavedData() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        savedStorage.saveAddressBook(model.getAddressBook());
+
+        assertCommandException("delete 1 999", MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertParseException("delete 1 abc", MESSAGE_NON_NUMERIC_INDEX);
+
+        assertEquals(expectedModel, model);
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
