@@ -3,6 +3,8 @@ package seedu.address.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -53,6 +55,21 @@ public class AddressBookParserTest {
         DeleteCommand command = (DeleteCommand) parser.parseCommand(
                 DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
         assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_deleteWithWhitespaceAndLeadingZeroes_returnsDeleteCommand() throws Exception {
+        assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), parser.parseCommand("  delete \t 01  "));
+    }
+
+    @Test
+    public void parseCommand_deleteWithoutIndex_throwsParseException() {
+        assertThrows(ParseException.class, MESSAGE_MISSING_INDEX, () -> parser.parseCommand("delete"));
+    }
+
+    @Test
+    public void parseCommand_deleteWithExtraArguments_throwsParseException() {
+        assertThrows(ParseException.class, MESSAGE_NON_NUMERIC_INDEX, () -> parser.parseCommand("delete 1 abc"));
     }
 
     @Test
