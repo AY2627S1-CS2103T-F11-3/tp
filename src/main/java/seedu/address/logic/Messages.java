@@ -19,6 +19,7 @@ public class Messages {
     public static final String MESSAGE_NON_NUMERIC_INDEX =
             "Invalid index entered! Index should only contain numerical characters!";
     public static final String MESSAGE_INDEX_BELOW_ONE = "Invalid index entered! Index should be at least 1!";
+    public static final String MESSAGE_INDEX_TOO_LARGE = "Invalid index entered! Index is too large!";
     public static final String MESSAGE_PERSONS_LISTED_OVERVIEW = "%1$d person(s) listed!";
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";

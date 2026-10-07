@@ -1,9 +1,7 @@
 package seedu.address.logic.parser;
 
-import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
-import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
-import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
+import java.util.ArrayList;
+import java.util.List;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.DeleteCommand;
@@ -22,24 +20,11 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
      */
     @Override
     public DeleteCommand parse(String args) throws ParseException {
-        String trimmedArgs = args.trim();
-        if (trimmedArgs.isEmpty()) {
-            throw new ParseException(MESSAGE_MISSING_INDEX);
+        List<Index> indices = new ArrayList<>();
+        for (String argument : args.trim().split("\\s+")) {
+            indices.add(ParserUtil.parsePlayerIndex(argument));
         }
-        if (!trimmedArgs.matches("[0-9]+")) {
-            throw new ParseException(MESSAGE_NON_NUMERIC_INDEX);
-        }
-        if (trimmedArgs.matches("0+")) {
-            throw new ParseException(MESSAGE_INDEX_BELOW_ONE);
-        }
-
-        try {
-            Index index = ParserUtil.parseIndex(trimmedArgs);
-            return new DeleteCommand(index);
-        } catch (ParseException pe) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE), pe);
-        }
+        return new DeleteCommand(indices);
     }
 
 }

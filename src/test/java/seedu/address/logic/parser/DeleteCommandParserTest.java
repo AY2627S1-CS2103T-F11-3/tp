@@ -1,12 +1,15 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
-import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_INDEX_TOO_LARGE;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -70,21 +73,35 @@ public class DeleteCommandParserTest {
     @Test
     public void parse_extraArguments_throwsParseException() {
         assertParseFailure(parser, "1 abc", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1 2", MESSAGE_NON_NUMERIC_INDEX);
         assertParseFailure(parser, "1 /squad Team", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "0 abc", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "1,2", MESSAGE_NON_NUMERIC_INDEX);
     }
 
     @Test
-    public void parse_internalWhitespace_throwsParseException() {
-        assertParseFailure(parser, "1\t2", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1\n2", MESSAGE_NON_NUMERIC_INDEX);
+    public void parse_multipleIndices_returnsDeleteCommand() {
+        DeleteCommand expectedCommand = new DeleteCommand(List.of(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON));
+        assertParseSuccess(parser, "1 2", expectedCommand);
+        assertParseSuccess(parser, " 01   02 ", expectedCommand);
+        assertParseSuccess(parser, "1\t2", expectedCommand);
+        assertParseSuccess(parser, "1\n2", expectedCommand);
+    }
+
+    @Test
+    public void parse_repeatedIndices_returnsDeleteCommand() {
+        assertParseSuccess(parser, "1 01", new DeleteCommand(List.of(INDEX_FIRST_PERSON, INDEX_FIRST_PERSON)));
+    }
+
+    @Test
+    public void parse_multipleInvalidIndices_reportsFirstError() {
+        assertParseFailure(parser, "0 abc", MESSAGE_INDEX_BELOW_ONE);
+        assertParseFailure(parser, "abc 0", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "1 0 abc", MESSAGE_INDEX_BELOW_ONE);
+        assertParseFailure(parser, "1 2147483648 abc", MESSAGE_INDEX_TOO_LARGE);
     }
 
     @Test
     public void parse_integerOverflow_throwsParseException() {
-        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, "2147483648", expectedMessage);
-        assertParseFailure(parser, "999999999999999999999999999999", expectedMessage);
+        assertParseFailure(parser, "2147483648", MESSAGE_INDEX_TOO_LARGE);
+        assertParseFailure(parser, "999999999999999999999999999999", MESSAGE_INDEX_TOO_LARGE);
     }
 }

@@ -126,19 +126,25 @@ Examples:
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
-### Deleting a person: `delete`
+### Deleting players: `delete`
 
-Deletes the specified person from the address book.
+Deletes one or more players from the address book.
 
-Format: `delete INDEX`
+Format: `delete INDEX [INDEX]...`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* Separate indices with spaces or tabs. Each index refers to the currently displayed player list.
+* All indices refer to the list before the command runs. Deleting one player does not shift the other requested targets.
+* Repeated indices delete the same player only once. For example, `delete 2 02` deletes only player 2.
+* If any argument is invalid or any index is outside the displayed list, no players are deleted.
+* Remaining players keep their relative order and are renumbered.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
+
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
+* `list` followed by `delete 2 4` deletes the players originally shown at indices 2 and 4.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `delete 1 abc` reports a non-numeric index and deletes nobody.
 
 ### Clearing all entries: `clear`
 
@@ -191,7 +197,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete** | `delete INDEX [INDEX]...`<br> e.g., `delete 1 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
