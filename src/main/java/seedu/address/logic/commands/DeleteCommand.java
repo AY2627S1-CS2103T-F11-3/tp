@@ -30,6 +30,10 @@ public class DeleteCommand extends Command {
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
     public static final String MESSAGE_DELETE_PERSONS_SUCCESS = "Deleted %1$d players: %2$s";
+    public static final String MESSAGE_NO_DISPLAYED_PLAYERS =
+            "No players are currently displayed. Use list to show all players before deleting by index.";
+    public static final String MESSAGE_INDEX_OUT_OF_RANGE =
+            "Index %1$d is outside the displayed list. Choose an index from 1 to %2$d.";
     public static final String MESSAGE_NAME_NOT_FOUND = "No player found with the full name: %1$s";
     public static final String MESSAGE_AMBIGUOUS_NAME =
             "Multiple players match the name: %1$s\n\n%2$s\n\n"
@@ -83,10 +87,15 @@ public class DeleteCommand extends Command {
      * Resolves every index before any deletion can change the displayed list.
      */
     private List<Person> resolveIndices(List<Person> displayedPersons) throws CommandException {
+        if (displayedPersons.isEmpty()) {
+            throw new CommandException(MESSAGE_NO_DISPLAYED_PLAYERS);
+        }
+
         Set<Person> personsToDelete = new LinkedHashSet<>();
         for (Index index : targetIndices) {
             if (index.getZeroBased() >= displayedPersons.size()) {
-                throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+                throw new CommandException(String.format(MESSAGE_INDEX_OUT_OF_RANGE,
+                        index.getOneBased(), displayedPersons.size()));
             }
             personsToDelete.add(displayedPersons.get(index.getZeroBased()));
         }

@@ -54,7 +54,8 @@ public class DeleteCommandTest {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         DeleteCommand deleteCommand = new DeleteCommand(outOfBoundIndex);
 
-        assertCommandFailure(deleteCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandFailure(deleteCommand, model, String.format(DeleteCommand.MESSAGE_INDEX_OUT_OF_RANGE,
+                outOfBoundIndex.getOneBased(), model.getFilteredPersonList().size()));
     }
 
     @Test
@@ -84,7 +85,8 @@ public class DeleteCommandTest {
 
         DeleteCommand deleteCommand = new DeleteCommand(outOfBoundIndex);
 
-        assertCommandFailure(deleteCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandFailure(deleteCommand, model, String.format(DeleteCommand.MESSAGE_INDEX_OUT_OF_RANGE,
+                outOfBoundIndex.getOneBased(), model.getFilteredPersonList().size()));
     }
 
     @Test
@@ -129,7 +131,8 @@ public class DeleteCommandTest {
     public void execute_validThenInvalidIndex_deletesNobody() {
         Index invalidIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         DeleteCommand command = new DeleteCommand(List.of(INDEX_FIRST_PERSON, invalidIndex));
-        assertCommandFailure(command, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandFailure(command, model, String.format(DeleteCommand.MESSAGE_INDEX_OUT_OF_RANGE,
+                invalidIndex.getOneBased(), model.getFilteredPersonList().size()));
     }
 
     @Test
@@ -151,7 +154,8 @@ public class DeleteCommandTest {
     public void execute_multipleIndicesWithInvalidFilteredIndex_deletesNobody() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
         DeleteCommand command = new DeleteCommand(List.of(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON));
-        assertCommandFailure(command, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandFailure(command, model, String.format(DeleteCommand.MESSAGE_INDEX_OUT_OF_RANGE,
+                INDEX_SECOND_PERSON.getOneBased(), model.getFilteredPersonList().size()));
     }
 
     @Test
@@ -163,7 +167,7 @@ public class DeleteCommandTest {
 
         assertTrue(model.getAddressBook().getPersonList().isEmpty());
         assertCommandFailure(new DeleteCommand(INDEX_FIRST_PERSON), model,
-                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+                DeleteCommand.MESSAGE_NO_DISPLAYED_PLAYERS);
     }
 
     @Test

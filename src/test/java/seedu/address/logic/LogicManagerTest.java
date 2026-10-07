@@ -1,7 +1,6 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static seedu.address.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
@@ -61,7 +60,7 @@ public class LogicManagerTest {
     @Test
     public void execute_commandExecutionError_throwsCommandException() {
         String deleteCommand = "delete 9";
-        assertCommandException(deleteCommand, MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandException(deleteCommand, DeleteCommand.MESSAGE_NO_DISPLAYED_PLAYERS);
     }
 
     @Test
@@ -162,7 +161,8 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         savedStorage.saveAddressBook(model.getAddressBook());
 
-        assertCommandException("delete 1 999", MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandException("delete 1 999", String.format(DeleteCommand.MESSAGE_INDEX_OUT_OF_RANGE,
+                999, model.getFilteredPersonList().size()));
         assertParseException("delete 1 abc", MESSAGE_NON_NUMERIC_INDEX);
 
         assertEquals(expectedModel, model);
