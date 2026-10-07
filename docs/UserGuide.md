@@ -150,7 +150,12 @@ Formats:
 * Name matching searches all registered players, including players hidden by a filter.
 * Matching ignores capitalization and surrounding whitespace, and treats repeated whitespace as a single space.
 * Partial names do not match. If a name is missing or matches multiple players, nobody is deleted.
-  Use `list` and delete by index to select a player with an ambiguous name.
+* If a name matches multiple players, the message shows every matching player's details with a number.
+  The displayed list switches to those matches, including any previously hidden by a filter.
+  Use `delete 1` to delete the first match, or `delete 1 2` to delete both of the first two matches.
+  These numbers refer to the matching list; if you change the displayed list, use its new indices.
+* If a batch contains an ambiguous name, none of the requested players are deleted. Only matches for the first
+  ambiguous name are shown; submit any other intended deletions again after resolving that name.
 * Repeating a name deletes that player only once.
 * Do not mix index selectors with name selectors. After `/name`, numbers are names, not indices.
 * Empty entries, such as `John Doe,,Amy Tan` or a trailing comma, are rejected.

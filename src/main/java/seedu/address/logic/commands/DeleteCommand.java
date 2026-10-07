@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
@@ -31,7 +32,9 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_DELETE_PERSONS_SUCCESS = "Deleted %1$d players: %2$s";
     public static final String MESSAGE_NAME_NOT_FOUND = "No player found with the full name: %1$s";
     public static final String MESSAGE_AMBIGUOUS_NAME =
-            "Multiple players match the name: %1$s. Use list and delete by index instead.";
+            "Multiple players match the name: %1$s\n\n%2$s\n\n"
+            + "No players deleted. Matching players are shown in the list.\n"
+            + "Delete using index: delete INDEX [INDEX]... (e.g. delete 1).";
 
     private final List<Index> targetIndices;
     private final List<String> targetNames;
@@ -71,7 +74,7 @@ public class DeleteCommand extends Command {
         requireNonNull(model);
         List<Person> personsToDelete = targetNames.isEmpty()
                 ? resolveIndices(model.getFilteredPersonList())
-                : resolveNames(model.getAddressBook().getPersonList());
+                : resolveNames(model);
         personsToDelete.forEach(model::deletePerson);
         return new CommandResult(formatSuccess(personsToDelete));
     }
@@ -90,27 +93,37 @@ public class DeleteCommand extends Command {
         return List.copyOf(personsToDelete);
     }
 
-    private List<Person> resolveNames(List<Person> registeredPersons) throws CommandException {
+    private List<Person> resolveNames(Model model) throws CommandException {
         Set<Person> personsToDelete = new LinkedHashSet<>();
         for (String name : targetNames) {
-            personsToDelete.add(findUniquePlayer(name, registeredPersons));
+            personsToDelete.add(findUniquePlayer(name, model));
         }
         return List.copyOf(personsToDelete);
     }
 
-    private Person findUniquePlayer(String name, List<Person> registeredPersons) throws CommandException {
+    private Person findUniquePlayer(String name, Model model) throws CommandException {
         String normalizedName = normalizeName(name);
-        List<Person> matches = registeredPersons.stream()
+        List<Person> matches = model.getAddressBook().getPersonList().stream()
                 .filter(person -> normalizeName(person.getName().fullName).equalsIgnoreCase(normalizedName))
-                .limit(2)
                 .toList();
         if (matches.isEmpty()) {
             throw new CommandException(String.format(MESSAGE_NAME_NOT_FOUND, name));
         }
         if (matches.size() > 1) {
-            throw new CommandException(String.format(MESSAGE_AMBIGUOUS_NAME, name));
+            model.updateFilteredPersonList(matches::contains);
+            throw new CommandException(formatAmbiguousName(name, matches));
         }
         return matches.getFirst();
+    }
+
+    /**
+     * Formats matches in displayed order so their numbers can be used directly by the next delete command.
+     */
+    private String formatAmbiguousName(String name, List<Person> matches) {
+        String details = IntStream.range(0, matches.size())
+                .mapToObj(index -> (index + 1) + ". " + Messages.formatPlayerDetails(matches.get(index)))
+                .collect(Collectors.joining("\n"));
+        return String.format(MESSAGE_AMBIGUOUS_NAME, name, details);
     }
 
     private String normalizeName(String name) {

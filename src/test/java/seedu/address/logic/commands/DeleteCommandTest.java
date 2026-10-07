@@ -13,12 +13,14 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
@@ -233,30 +235,69 @@ public class DeleteCommandTest {
     @Test
     public void execute_ambiguousNameAfterValidName_deletesNobody() {
         String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
-        model.addPerson(new PersonBuilder().withName("John Doe").build());
-        model.addPerson(new PersonBuilder().withName("john doe").build());
+        Person firstMatch = new PersonBuilder().withName("John Doe").build();
+        Person secondMatch = new PersonBuilder().withName("john doe").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
         DeleteCommand command = DeleteCommand.forNames(List.of(validName, "John Doe"));
 
-        assertCommandFailure(command, model, String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "John Doe"));
+        assertAmbiguousName(command, "John Doe", List.of(firstMatch, secondMatch));
     }
 
     @Test
     public void execute_namesDifferOnlyInWhitespace_reportsAmbiguity() {
-        model.addPerson(new PersonBuilder().withName("John Doe").build());
-        model.addPerson(new PersonBuilder().withName("John  Doe").build());
-        assertCommandFailure(DeleteCommand.forNames(List.of("John Doe")), model,
-                String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "John Doe"));
+        Person firstMatch = new PersonBuilder().withName("John Doe").build();
+        Person secondMatch = new PersonBuilder().withName("John  Doe").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe")), "John Doe", List.of(firstMatch, secondMatch));
     }
 
     @Test
-    public void execute_ambiguousNameWithHiddenMatch_deletesNobody() {
+    public void execute_ambiguousNameWithHiddenMatch_allowsImmediateDeletionByIndex() throws Exception {
         Person visiblePlayer = new PersonBuilder().withName("John Doe").build();
+        Person hiddenPlayer = new PersonBuilder().withName("john doe").build();
         model.addPerson(visiblePlayer);
-        model.addPerson(new PersonBuilder().withName("john doe").build());
+        model.addPerson(hiddenPlayer);
         model.updateFilteredPersonList(person -> person.equals(visiblePlayer));
 
-        assertCommandFailure(DeleteCommand.forNames(List.of("John Doe")), model,
-                String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "John Doe"));
+        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe")), "John Doe",
+                List.of(visiblePlayer, hiddenPlayer));
+        List<Person> expectedPersons = new ArrayList<>(model.getAddressBook().getPersonList());
+        expectedPersons.remove(hiddenPlayer);
+
+        new DeleteCommand(INDEX_SECOND_PERSON).execute(model);
+
+        assertEquals(expectedPersons, model.getAddressBook().getPersonList());
+        assertEquals(List.of(visiblePlayer), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_moreThanTwoMatches_showsEveryMatchInOrder() {
+        Person firstMatch = new PersonBuilder().withName("John Doe").withSquadName("Squad A").build();
+        Person secondMatch = new PersonBuilder().withName("john doe").withSquadName("Squad B").build();
+        Person thirdMatch = new PersonBuilder().withName("JOHN DOE").withPosition("Defender").build();
+        model.addPerson(firstMatch);
+        model.addPerson(new PersonBuilder().withName("Unrelated Player").build());
+        model.addPerson(secondMatch);
+        model.addPerson(thirdMatch);
+        model.updateFilteredPersonList(person -> false);
+
+        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe")), "John Doe",
+                List.of(firstMatch, secondMatch, thirdMatch));
+    }
+
+    @Test
+    public void execute_multipleAmbiguousNames_showsOnlyFirstGroup() {
+        Person firstMatch = new PersonBuilder().withName("John Doe").build();
+        Person secondMatch = new PersonBuilder().withName("john doe").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        model.addPerson(new PersonBuilder().withName("Amy Tan").build());
+        model.addPerson(new PersonBuilder().withName("amy tan").build());
+
+        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe", "Amy Tan")), "John Doe",
+                List.of(firstMatch, secondMatch));
     }
 
     @Test
@@ -336,6 +377,19 @@ public class DeleteCommandTest {
         String expected = DeleteCommand.class.getCanonicalName()
                 + "{targetIndices=" + List.of(targetIndex) + ", targetNames=[]}";
         assertEquals(expected, deleteCommand.toString());
+    }
+
+    private void assertAmbiguousName(DeleteCommand command, String name, List<Person> expectedMatches) {
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+
+        CommandException exception = assertThrows(CommandException.class, () -> command.execute(model));
+
+        String details = IntStream.range(0, expectedMatches.size())
+                .mapToObj(index -> (index + 1) + ". " + Messages.formatPlayerDetails(expectedMatches.get(index)))
+                .collect(Collectors.joining("\n"));
+        assertEquals(String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, name, details), exception.getMessage());
+        assertEquals(originalPersons, model.getAddressBook().getPersonList());
+        assertEquals(expectedMatches, model.getFilteredPersonList());
     }
 
     /**

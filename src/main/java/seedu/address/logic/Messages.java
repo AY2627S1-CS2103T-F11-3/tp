@@ -53,4 +53,13 @@ public class Messages {
         return builder.toString();
     }
 
+    /**
+     * Formats contact and player details to help distinguish players with similar names.
+     */
+    public static String formatPlayerDetails(Person person) {
+        return String.format("%s; Squad: %s; Position: %s; Guardian: %s; Contact: %s; Availability: %s; Remark: %s",
+                format(person), person.getSquadName(), person.getPosition(), person.getGuardianName(),
+                person.getGuardianNumber(), person.getAvailability(), person.getRemark());
+    }
+
 }

@@ -16,6 +16,7 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -128,6 +129,35 @@ public class LogicManagerTest {
 
         assertEquals(expectedModel, model);
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_ambiguousNameThenIndex_showsMatchesAndSavesOnlySelectedDeletion() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        Person firstMatch = new PersonBuilder().withName("John Doe").withSquadName("Squad A").build();
+        Person secondMatch = new PersonBuilder().withName("john doe").withSquadName("Squad B").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        model.updateFilteredPersonList(person -> person.equals(firstMatch));
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        String validName = originalPersons.getFirst().getName().fullName;
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        savedStorage.saveAddressBook(model.getAddressBook());
+
+        assertThrows(CommandException.class, () -> logic.execute("delete /name " + validName + ", John Doe"));
+
+        assertEquals(originalPersons, model.getAddressBook().getPersonList());
+        assertEquals(originalPersons, savedStorage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(List.of(firstMatch, secondMatch), model.getFilteredPersonList());
+
+        logic.execute("delete 2");
+
+        List<Person> expectedPersons = new ArrayList<>(originalPersons);
+        expectedPersons.remove(secondMatch);
+        assertEquals(expectedPersons, model.getAddressBook().getPersonList());
+        assertEquals(expectedPersons, savedStorage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(List.of(firstMatch), model.getFilteredPersonList());
     }
 
     @Test
