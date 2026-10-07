@@ -11,11 +11,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.Availability;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Position;
 import seedu.address.model.person.Remark;
+import seedu.address.model.person.SquadName;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -31,6 +36,11 @@ class JsonAdaptedPerson {
     private final String address;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String remark;
+    private final String squadName;
+    private final String position;
+    private final String guardianName;
+    private final String guardianNumber;
+    private final String availability;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -38,15 +48,28 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
-            @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("remark") String remark) {
+            @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("remark") String remark,
+            @JsonProperty("squadName") String squadName, @JsonProperty("position") String position,
+            @JsonProperty("guardianName") String guardianName, @JsonProperty("guardianNumber") String guardianNumber,
+            @JsonProperty("availability") String availability) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.remark = remark;
+        this.squadName = squadName;
+        this.position = position;
+        this.guardianName = guardianName;
+        this.guardianNumber = guardianNumber;
+        this.availability = availability;
         if (tags != null) {
             this.tags.addAll(tags);
         }
+    }
+
+    JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags,
+                       String remark) {
+        this(name, phone, email, address, tags, remark, null, null, null, null, null);
     }
 
     /**
@@ -58,6 +81,11 @@ class JsonAdaptedPerson {
         email = source.getEmail().value;
         address = source.getAddress().value;
         remark = source.getRemark().value;
+        squadName = source.getSquadName().value;
+        position = source.getPosition().value;
+        guardianName = source.getGuardianName().value;
+        guardianNumber = source.getGuardianNumber().value;
+        availability = source.getAvailability().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -113,7 +141,54 @@ class JsonAdaptedPerson {
         }
         final Remark modelRemark = new Remark(remark);
 
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelRemark);
+        final SquadName modelSquadName = createSquadName();
+        final Position modelPosition = createPosition();
+        final GuardianName modelGuardianName = createGuardianName();
+        final GuardianNumber modelGuardianNumber = createGuardianNumber();
+        final Availability modelAvailability = createAvailability();
+
+        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelRemark, modelSquadName,
+                modelPosition, modelGuardianName, modelGuardianNumber, modelAvailability);
+    }
+
+    private SquadName createSquadName() throws IllegalValueException {
+        String value = squadName == null ? "Unassigned" : squadName;
+        if (!SquadName.isValidSquadName(value)) {
+            throw new IllegalValueException(SquadName.MESSAGE_CONSTRAINTS);
+        }
+        return new SquadName(value);
+    }
+
+    private Position createPosition() throws IllegalValueException {
+        String value = position == null ? "Unassigned" : position;
+        if (!Position.isValidPosition(value)) {
+            throw new IllegalValueException(Position.MESSAGE_CONSTRAINTS);
+        }
+        return new Position(value);
+    }
+
+    private GuardianName createGuardianName() throws IllegalValueException {
+        String value = guardianName == null ? "Not provided" : guardianName;
+        if (!GuardianName.isValidGuardianName(value)) {
+            throw new IllegalValueException(GuardianName.MESSAGE_CONSTRAINTS);
+        }
+        return new GuardianName(value);
+    }
+
+    private GuardianNumber createGuardianNumber() throws IllegalValueException {
+        String value = guardianNumber == null ? "000" : guardianNumber;
+        if (!GuardianNumber.isValidGuardianNumber(value)) {
+            throw new IllegalValueException(GuardianNumber.MESSAGE_CONSTRAINTS);
+        }
+        return new GuardianNumber(value);
+    }
+
+    private Availability createAvailability() throws IllegalValueException {
+        String value = availability == null ? Availability.AVAILABLE : availability;
+        if (!Availability.isValidAvailability(value)) {
+            throw new IllegalValueException(Availability.MESSAGE_CONSTRAINTS);
+        }
+        return new Availability(value);
     }
 
 }

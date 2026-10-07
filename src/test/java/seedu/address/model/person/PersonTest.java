@@ -88,12 +88,35 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different squad name -> returns false
+        editedAlice = new PersonBuilder(ALICE).withSquadName("U15 A").build();
+        assertFalse(ALICE.equals(editedAlice));
+
+        // different position -> returns false
+        editedAlice = new PersonBuilder(ALICE).withPosition("Goalkeeper").build();
+        assertFalse(ALICE.equals(editedAlice));
+
+        // different guardian name -> returns false
+        editedAlice = new PersonBuilder(ALICE).withGuardianName("Alex Tan").build();
+        assertFalse(ALICE.equals(editedAlice));
+
+        // different guardian number -> returns false
+        editedAlice = new PersonBuilder(ALICE).withGuardianNumber("91234567").build();
+        assertFalse(ALICE.equals(editedAlice));
+
+        // different availability -> returns false
+        editedAlice = new PersonBuilder(ALICE).withAvailability(Availability.UNAVAILABLE).build();
+        assertFalse(ALICE.equals(editedAlice));
     }
 
     @Test
     public void toStringMethod() {
         String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
-                + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress() + ", tags=" + ALICE.getTags() + "}";
+                + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress() + ", tags=" + ALICE.getTags()
+                + ", squadName=" + ALICE.getSquadName() + ", position=" + ALICE.getPosition()
+                + ", guardianName=" + ALICE.getGuardianName() + ", guardianNumber="
+                + ALICE.getGuardianNumber() + ", availability=" + ALICE.getAvailability() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }
