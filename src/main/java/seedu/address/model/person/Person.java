@@ -23,7 +23,7 @@ public class Person {
     private final SquadName squadName;
     private final Position position;
     private final GuardianName guardianName;
-    private final GuardianNumber guardianNumber;
+    private final GuardianContact guardianContact;
     private final Availability availability;
     private final Set<Tag> tags = new HashSet<>();
     private final Remark remark;
@@ -33,16 +33,16 @@ public class Person {
      */
     public Person(Name name, Set<Tag> tags, Remark remark,
                   SquadName squadName, Position position, GuardianName guardianName,
-                  GuardianNumber guardianNumber, Availability availability) {
+                  GuardianContact guardianContact, Availability availability) {
         requireAllNonNull(name, tags, remark, squadName, position, guardianName,
-                guardianNumber, availability);
+                guardianContact, availability);
         this.name = name;
         this.tags.addAll(tags);
         this.remark = remark;
         this.squadName = squadName;
         this.position = position;
         this.guardianName = guardianName;
-        this.guardianNumber = guardianNumber;
+        this.guardianContact = guardianContact;
         this.availability = availability;
     }
 
@@ -74,8 +74,8 @@ public class Person {
         return guardianName;
     }
 
-    public GuardianNumber getGuardianNumber() {
-        return guardianNumber;
+    public GuardianContact getGuardianContact() {
+        return guardianContact;
     }
 
     public Availability getAvailability() {
@@ -115,7 +115,7 @@ public class Person {
                 && squadName.equals(otherPerson.squadName)
                 && position.equals(otherPerson.position)
                 && guardianName.equals(otherPerson.guardianName)
-                && guardianNumber.equals(otherPerson.guardianNumber)
+                && guardianContact.equals(otherPerson.guardianContact)
                 && availability.equals(otherPerson.availability);
     }
 
@@ -123,7 +123,7 @@ public class Person {
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, tags, squadName, position, guardianName,
-                guardianNumber, availability);
+                guardianContact, availability);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class Person {
                 .add("squadName", squadName)
                 .add("position", position)
                 .add("guardianName", guardianName)
-                .add("guardianNumber", guardianNumber)
+                .add("guardianContact", guardianContact)
                 .add("availability", availability)
                 .toString();
     }

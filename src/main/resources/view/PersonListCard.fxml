@@ -31,7 +31,7 @@
       <Label fx:id="squadName" styleClass="cell_small_label" text="\$squadName" />
       <Label fx:id="position" styleClass="cell_small_label" text="\$position" />
       <Label fx:id="guardianName" styleClass="cell_small_label" text="\$guardianName" />
-      <Label fx:id="guardianNumber" styleClass="cell_small_label" text="\$guardianNumber" />
+      <Label fx:id="guardianContact" styleClass="cell_small_label" text="\$guardianContact" />
       <Label fx:id="availability" styleClass="cell_small_label" text="\$availability" />
       <Label fx:id="remark" styleClass="cell_small_label" text="\$remark" />
     </VBox>

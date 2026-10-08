@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
-import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -27,27 +27,27 @@ public class SampleDataUtil {
         return new Person[] {
             new Person(new Name("Alex Yeoh"),
                 getTagSet("friends"), EMPTY_REMARK, new SquadName("U12 A"), new Position("Goalkeeper"),
-                new GuardianName("Jamie Yeoh"), new GuardianNumber("81234567"),
+                new GuardianName("Jamie Yeoh"), new GuardianContact("81234567"),
                 new Availability(Availability.AVAILABLE)),
             new Person(new Name("Bernice Yu"),
                 getTagSet("colleagues", "friends"), EMPTY_REMARK, new SquadName("U12 A"),
-                new Position("Defender"), new GuardianName("Casey Yu"), new GuardianNumber("82345678"),
+                new Position("Defender"), new GuardianName("Casey Yu"), new GuardianContact("82345678"),
                 new Availability(Availability.UNAVAILABLE)),
             new Person(new Name("Charlotte Oliveiro"),
                 getTagSet("neighbours"), EMPTY_REMARK, new SquadName("U13 B"), new Position("Midfielder"),
-                new GuardianName("Morgan Oliveiro"), new GuardianNumber("83456789"),
+                new GuardianName("Morgan Oliveiro"), new GuardianContact("83456789"),
                 new Availability(Availability.AVAILABLE)),
             new Person(new Name("David Li"),
                 getTagSet("family"), EMPTY_REMARK, new SquadName("U13 B"), new Position("Forward"),
-                new GuardianName("Taylor Li"), new GuardianNumber("84567890"),
+                new GuardianName("Taylor Li"), new GuardianContact("84567890"),
                 new Availability(Availability.AVAILABLE)),
             new Person(new Name("Irfan Ibrahim"),
                 getTagSet("classmates"), EMPTY_REMARK, new SquadName("U14 A"), new Position("Defender"),
-                new GuardianName("Aisha Ibrahim"), new GuardianNumber("85678901"),
+                new GuardianName("Aisha Ibrahim"), new GuardianContact("85678901"),
                 new Availability(Availability.UNAVAILABLE)),
             new Person(new Name("Roy Balakrishnan"),
                 getTagSet("colleagues"), EMPTY_REMARK, new SquadName("U14 A"), new Position("Midfielder"),
-                new GuardianName("Ravi Balakrishnan"), new GuardianNumber("86789012"),
+                new GuardianName("Ravi Balakrishnan"), new GuardianContact("86789012"),
                 new Availability(Availability.AVAILABLE))
         };
     }

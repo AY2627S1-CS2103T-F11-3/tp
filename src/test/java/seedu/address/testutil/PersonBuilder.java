@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
-import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -24,7 +24,7 @@ public class PersonBuilder {
     public static final String DEFAULT_SQUAD_NAME = "Unassigned";
     public static final String DEFAULT_POSITION = "Unassigned";
     public static final String DEFAULT_GUARDIAN_NAME = "Not provided";
-    public static final String DEFAULT_GUARDIAN_NUMBER = "000";
+    public static final String DEFAULT_GUARDIAN_CONTACT = "000";
     public static final String DEFAULT_AVAILABILITY = Availability.AVAILABLE;
 
     private Name name;
@@ -33,7 +33,7 @@ public class PersonBuilder {
     private SquadName squadName;
     private Position position;
     private GuardianName guardianName;
-    private GuardianNumber guardianNumber;
+    private GuardianContact guardianContact;
     private Availability availability;
 
     /**
@@ -46,7 +46,7 @@ public class PersonBuilder {
         squadName = new SquadName(DEFAULT_SQUAD_NAME);
         position = new Position(DEFAULT_POSITION);
         guardianName = new GuardianName(DEFAULT_GUARDIAN_NAME);
-        guardianNumber = new GuardianNumber(DEFAULT_GUARDIAN_NUMBER);
+        guardianContact = new GuardianContact(DEFAULT_GUARDIAN_CONTACT);
         availability = new Availability(DEFAULT_AVAILABILITY);
     }
 
@@ -60,7 +60,7 @@ public class PersonBuilder {
         squadName = personToCopy.getSquadName();
         position = personToCopy.getPosition();
         guardianName = personToCopy.getGuardianName();
-        guardianNumber = personToCopy.getGuardianNumber();
+        guardianContact = personToCopy.getGuardianContact();
         availability = personToCopy.getAvailability();
     }
 
@@ -113,10 +113,10 @@ public class PersonBuilder {
     }
 
     /**
-     * Sets the guardian number of the {@code Person} that we are building.
+     * Sets the guardian contact of the {@code Person} that we are building.
      */
-    public PersonBuilder withGuardianNumber(String guardianNumber) {
-        this.guardianNumber = new GuardianNumber(guardianNumber);
+    public PersonBuilder withGuardianContact(String guardianContact) {
+        this.guardianContact = new GuardianContact(guardianContact);
         return this;
     }
 
@@ -133,7 +133,7 @@ public class PersonBuilder {
      */
     public Person build() {
         return new Person(name, tags, remark, squadName, position, guardianName,
-                guardianNumber, availability);
+                guardianContact, availability);
     }
 
 }

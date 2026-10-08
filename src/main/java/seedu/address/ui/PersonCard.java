@@ -39,7 +39,7 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label guardianName;
     @FXML
-    private Label guardianNumber;
+    private Label guardianContact;
     @FXML
     private Label availability;
     @FXML
@@ -58,7 +58,7 @@ public class PersonCard extends UiPart<Region> {
         squadName.setText("Squad: " + person.getSquadName().value);
         position.setText("Position: " + person.getPosition().value);
         guardianName.setText("Guardian: " + person.getGuardianName().value);
-        guardianNumber.setText("Guardian number: " + person.getGuardianNumber().value);
+        guardianContact.setText("Guardian contact: " + person.getGuardianContact().value);
         availability.setText("Availability: " + person.getAvailability().value);
         remark.setText(person.getRemark().value);
         person.getTags().stream()

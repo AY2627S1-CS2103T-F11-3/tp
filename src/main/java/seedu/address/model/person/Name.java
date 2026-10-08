@@ -37,7 +37,6 @@ public class Name {
         return StringUtil.normalizeWhitespace(test).matches(VALIDATION_REGEX);
     }
 
-
     @Override
     public String toString() {
         return fullName;

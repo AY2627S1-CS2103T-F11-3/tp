@@ -89,7 +89,7 @@ Format: `add n/NAME [t/TAG]…​`
   case-sensitive when checking for duplicates.
 * This alias applies to `add` only; use `n/` when editing a name with `edit`.
 * Player phone number, email and address are no longer stored. The former `p/`, `e/` and `a/` parameters are rejected.
-* New players currently receive squad and position `Unassigned`, guardian name `Not provided`, guardian number `000`,
+* New players currently receive squad and position `Unassigned`, guardian name `Not provided`, guardian contact `000`,
   and availability `available`. These fields cannot be supplied through `add` yet.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**

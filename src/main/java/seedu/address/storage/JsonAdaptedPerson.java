@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
-import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -33,7 +33,7 @@ class JsonAdaptedPerson {
     private final String squadName;
     private final String position;
     private final String guardianName;
-    private final String guardianNumber;
+    private final String guardianContact;
     private final String availability;
 
     /**
@@ -43,18 +43,28 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(@JsonProperty("name") String name,
             @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("remark") String remark,
             @JsonProperty("squadName") String squadName, @JsonProperty("position") String position,
-            @JsonProperty("guardianName") String guardianName, @JsonProperty("guardianNumber") String guardianNumber,
-            @JsonProperty("availability") String availability) {
+            @JsonProperty("guardianName") String guardianName,
+            @JsonProperty("guardianContact") String guardianContact,
+            @JsonProperty("availability") String availability,
+            @JsonProperty("guardianNumber") String legacyGuardianContact) {
         this.name = name;
         this.remark = remark;
         this.squadName = squadName;
         this.position = position;
         this.guardianName = guardianName;
-        this.guardianNumber = guardianNumber;
+        this.guardianContact = guardianContact == null ? legacyGuardianContact : guardianContact;
         this.availability = availability;
         if (tags != null) {
             this.tags.addAll(tags);
         }
+    }
+
+    /**
+     * Constructs a person using the current field names.
+     */
+    public JsonAdaptedPerson(String name, List<JsonAdaptedTag> tags, String remark,
+            String squadName, String position, String guardianName, String guardianContact, String availability) {
+        this(name, tags, remark, squadName, position, guardianName, guardianContact, availability, null);
     }
 
     JsonAdaptedPerson(String name, List<JsonAdaptedTag> tags,
@@ -71,7 +81,7 @@ class JsonAdaptedPerson {
         squadName = source.getSquadName().value;
         position = source.getPosition().value;
         guardianName = source.getGuardianName().value;
-        guardianNumber = source.getGuardianNumber().value;
+        guardianContact = source.getGuardianContact().value;
         availability = source.getAvailability().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
@@ -107,11 +117,11 @@ class JsonAdaptedPerson {
         final SquadName modelSquadName = createSquadName();
         final Position modelPosition = createPosition();
         final GuardianName modelGuardianName = createGuardianName();
-        final GuardianNumber modelGuardianNumber = createGuardianNumber();
+        final GuardianContact modelGuardianContact = createGuardianContact();
         final Availability modelAvailability = createAvailability();
 
         return new Person(modelName, modelTags, modelRemark, modelSquadName,
-                modelPosition, modelGuardianName, modelGuardianNumber, modelAvailability);
+                modelPosition, modelGuardianName, modelGuardianContact, modelAvailability);
     }
 
     private SquadName createSquadName() throws IllegalValueException {
@@ -138,12 +148,12 @@ class JsonAdaptedPerson {
         return new GuardianName(value);
     }
 
-    private GuardianNumber createGuardianNumber() throws IllegalValueException {
-        String value = guardianNumber == null ? "000" : guardianNumber;
-        if (!GuardianNumber.isValidGuardianNumber(value)) {
-            throw new IllegalValueException(GuardianNumber.MESSAGE_CONSTRAINTS);
+    private GuardianContact createGuardianContact() throws IllegalValueException {
+        String value = guardianContact == null ? "000" : guardianContact;
+        if (!GuardianContact.isValidGuardianContact(value)) {
+            throw new IllegalValueException(GuardianContact.MESSAGE_CONSTRAINTS);
         }
-        return new GuardianNumber(value);
+        return new GuardianContact(value);
     }
 
     private Availability createAvailability() throws IllegalValueException {

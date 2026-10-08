@@ -6,24 +6,24 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 /**
  * Represents a player's guardian's contact number.
  */
-public class GuardianNumber {
+public class GuardianContact {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Guardian numbers should only contain digits, and should be at least 3 digits long";
+            "Guardian contacts should only contain digits, and should be at least 3 digits long";
     public static final String VALIDATION_REGEX = "\\d{3,}";
 
     public final String value;
 
     /**
-     * Constructs a {@code GuardianNumber}.
+     * Constructs a {@code GuardianContact}.
      */
-    public GuardianNumber(String guardianNumber) {
-        requireNonNull(guardianNumber);
-        checkArgument(isValidGuardianNumber(guardianNumber), MESSAGE_CONSTRAINTS);
-        value = guardianNumber;
+    public GuardianContact(String guardianContact) {
+        requireNonNull(guardianContact);
+        checkArgument(isValidGuardianContact(guardianContact), MESSAGE_CONSTRAINTS);
+        value = guardianContact;
     }
 
-    public static boolean isValidGuardianNumber(String test) {
+    public static boolean isValidGuardianContact(String test) {
         return test.matches(VALIDATION_REGEX);
     }
 
@@ -34,8 +34,8 @@ public class GuardianNumber {
 
     @Override
     public boolean equals(Object other) {
-        return other == this || (other instanceof GuardianNumber otherGuardianNumber
-                && value.equals(otherGuardianNumber.value));
+        return other == this || (other instanceof GuardianContact otherGuardianContact
+                && value.equals(otherGuardianContact.value));
     }
 
     @Override
