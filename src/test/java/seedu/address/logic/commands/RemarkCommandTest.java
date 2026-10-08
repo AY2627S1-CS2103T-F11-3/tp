@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_REMARK_AMY;
@@ -28,6 +29,23 @@ public class RemarkCommandTest {
     private static final String REMARK_STUB = "Some remark";
 
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+
+    @Test
+    public void execute_changeRemark_preservesPlayerProfileFields() {
+        Person original = new PersonBuilder().withName("Original Player").withTags("captain")
+                .withSquadName("U12 A").withPosition("Defender").withGuardianName("Jane Doe")
+                .withGuardianNumber("81234567").withAvailability("unavailable").build();
+        Model profileModel = new ModelManager();
+        profileModel.addPerson(original);
+        Person edited = new PersonBuilder(original).withRemark(REMARK_STUB).build();
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(edited);
+        RemarkCommand command = new RemarkCommand(INDEX_FIRST_PERSON, new Remark(REMARK_STUB));
+
+        assertCommandSuccess(command, profileModel,
+                String.format(RemarkCommand.MESSAGE_ADD_REMARK_SUCCESS, Messages.format(edited)), expectedModel);
+        assertEquals(edited.getRemark(), profileModel.getFilteredPersonList().getFirst().getRemark());
+    }
 
     @Test
     public void execute_addRemarkUnfilteredList_success() {

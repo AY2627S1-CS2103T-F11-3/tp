@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe` : Adds a contact named `John Doe` to the Address Book.
 
      For `add`, you can use `name/John Doe` instead of `n/John Doe`.
 
@@ -58,7 +58,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
   For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
 
 * Parameters can be in any order.<br>
-  For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For example, if the command specifies `n/NAME t/TAG`, `t/TAG n/NAME` is also acceptable.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
@@ -79,21 +79,24 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+Format: `add n/NAME [t/TAG]…​`
 
 * For `add`, `name/` is an alias for `n/`. Both prefixes accept the same name values and validation rules.
 * Specify the name exactly once. Repeating `n/`, repeating `name/`, or using both is rejected, even if the values match.
-* Name, phone number, email and address are required with either name prefix. Parameters can appear in any order.
+* Name is required with either name prefix. Parameters can appear in any order.
 * This alias applies to `add` only; use `n/` when editing a name with `edit`.
+* Player phone number, email and address are no longer stored. The former `p/`, `e/` and `a/` parameters are rejected.
+* New players currently receive squad and position `Unassigned`, guardian name `Not provided`, guardian number `000`,
+  and availability `available`. These fields cannot be supplied through `add` yet.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
 </div>
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add name/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+* `add n/John Doe`
+* `add name/John Doe`
+* `add n/Betsy Crowe t/friend t/criminal`
 
 ### Listing all persons: `list`
 
@@ -105,16 +108,17 @@ Format: `list`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [t/TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Only name and tags can be edited with this command. Player phone number, email and address are no longer supported.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 1 n/John Doe` Edits the name of the 1st person to be `John Doe`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
 ### Locating persons by name: `find`
@@ -197,6 +201,10 @@ Format: `exit`
 
 AddressBook automatically saves data after every command. You do not need to save manually.
 
+Older data files containing player phone numbers, emails and addresses can still be loaded. Those legacy fields are
+ignored and omitted the next time the file is saved; player names and the remaining profile fields are retained.
+Players in older files without squad or position receive the current `Unassigned` defaults.
+
 ### Editing the data file
 
 AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
@@ -230,10 +238,10 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` (`name/` can replace `n/`; specify the name once) <br> e.g., `add name/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add** | `add n/NAME [t/TAG]…​` (`name/` can replace `n/`; specify the name once) <br> e.g., `add name/James Ho t/friend t/colleague`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
+**Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **Help** | `help`

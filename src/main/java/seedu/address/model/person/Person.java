@@ -18,11 +18,8 @@ public class Person {
 
     // Identity fields
     private final Name name;
-    private final Phone phone;
-    private final Email email;
 
     // Data fields
-    private final Address address;
     private final SquadName squadName;
     private final Position position;
     private final GuardianName guardianName;
@@ -34,15 +31,12 @@ public class Person {
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Remark remark,
+    public Person(Name name, Set<Tag> tags, Remark remark,
                   SquadName squadName, Position position, GuardianName guardianName,
                   GuardianNumber guardianNumber, Availability availability) {
-        requireAllNonNull(name, phone, email, address, tags, remark, squadName, position, guardianName,
+        requireAllNonNull(name, tags, remark, squadName, position, guardianName,
                 guardianNumber, availability);
         this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
         this.tags.addAll(tags);
         this.remark = remark;
         this.squadName = squadName;
@@ -54,18 +48,6 @@ public class Person {
 
     public Name getName() {
         return name;
-    }
-
-    public Phone getPhone() {
-        return phone;
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
-    public Address getAddress() {
-        return address;
     }
 
     /**
@@ -129,9 +111,6 @@ public class Person {
         }
 
         return name.equals(otherPerson.name)
-                && phone.equals(otherPerson.phone)
-                && email.equals(otherPerson.email)
-                && address.equals(otherPerson.address)
                 && tags.equals(otherPerson.tags)
                 && squadName.equals(otherPerson.squadName)
                 && position.equals(otherPerson.position)
@@ -143,7 +122,7 @@ public class Person {
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, squadName, position, guardianName,
+        return Objects.hash(name, tags, squadName, position, guardianName,
                 guardianNumber, availability);
     }
 
@@ -151,9 +130,6 @@ public class Person {
     public String toString() {
         return new ToStringBuilder(this)
                 .add("name", name)
-                .add("phone", phone)
-                .add("email", email)
-                .add("address", address)
                 .add("tags", tags)
                 .add("squadName", squadName)
                 .add("position", position)
