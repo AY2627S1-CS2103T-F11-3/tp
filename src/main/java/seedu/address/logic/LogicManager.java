@@ -47,10 +47,13 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         Command command = addressBookParser.parseCommand(commandText);
-        ReadOnlyAddressBook addressBookBeforeCommand = new AddressBook(model.getAddressBook());
+        ReadOnlyAddressBook addressBookBeforeCommand = command.isAddressBookMutating()
+                ? new AddressBook(model.getAddressBook()) : null;
         CommandResult commandResult = command.execute(model);
 
-        saveAddressBook(addressBookBeforeCommand);
+        if (command.isAddressBookMutating()) {
+            saveAddressBook(addressBookBeforeCommand);
+        }
 
         return commandResult;
     }
