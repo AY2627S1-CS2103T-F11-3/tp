@@ -53,19 +53,19 @@ public class FilterCommandParser implements Parser<FilterCommand> {
             int valueEnd = index + 1 < prefixes.size() ? prefixes.get(index + 1).start() : args.length();
             String value = args.substring(prefix.end(), valueEnd).strip();
             switch (prefix.value()) {
-            case LONG_SQUAD_PREFIX, SHORT_SQUAD_PREFIX -> {
-                if (squadValue != null) {
-                    throw new ParseException(MESSAGE_DUPLICATE_SQUAD);
+                case LONG_SQUAD_PREFIX, SHORT_SQUAD_PREFIX -> {
+                    if (squadValue != null) {
+                        throw new ParseException(MESSAGE_DUPLICATE_SQUAD);
+                    }
+                    squadValue = value;
                 }
-                squadValue = value;
-            }
-            case LONG_AVAILABILITY_PREFIX, SHORT_AVAILABILITY_PREFIX -> {
-                if (availabilityValue != null) {
-                    throw new ParseException(MESSAGE_DUPLICATE_AVAILABILITY);
+                case LONG_AVAILABILITY_PREFIX, SHORT_AVAILABILITY_PREFIX -> {
+                    if (availabilityValue != null) {
+                        throw new ParseException(MESSAGE_DUPLICATE_AVAILABILITY);
+                    }
+                    availabilityValue = value;
                 }
-                availabilityValue = value;
-            }
-            default -> throw invalidFormat();
+                default -> throw invalidFormat();
             }
         }
 

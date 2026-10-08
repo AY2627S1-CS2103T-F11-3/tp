@@ -15,6 +15,12 @@ public class MatchesFilterCriteriaPredicate implements Predicate<Person> {
     private final Optional<SquadName> squadName;
     private final Optional<Availability> availability;
 
+    /**
+     * Creates a predicate for the supplied optional criteria.
+     *
+     * @param squadName squad criterion, if supplied
+     * @param availability availability criterion, if supplied
+     */
     public MatchesFilterCriteriaPredicate(Optional<SquadName> squadName, Optional<Availability> availability) {
         this.squadName = requireNonNull(squadName);
         this.availability = requireNonNull(availability);
