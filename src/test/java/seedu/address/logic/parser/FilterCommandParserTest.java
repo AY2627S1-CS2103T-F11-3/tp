@@ -18,35 +18,57 @@ public class FilterCommandParserTest {
 
     @Test
     public void parse_validCriteria_returnsFilterCommand() {
-        assertParseSuccess(parser, "/squad Soccer Stars", command("Soccer Stars", null));
-        assertParseSuccess(parser, "/availability TrUe", command(null, Availability.AVAILABLE));
-        assertParseSuccess(parser, "/availability false /squad Football Fellas",
+        assertParseSuccess(parser, "squad/Soccer Stars", command("Soccer Stars", null));
+        assertParseSuccess(parser, "available/TrUe", command(null, Availability.AVAILABLE));
+        assertParseSuccess(parser, "available/false squad/Football Fellas",
                 command("Football Fellas", Availability.UNAVAILABLE));
         assertParseSuccess(parser, "sn/Soccer Stars av/true", command("Soccer Stars", Availability.AVAILABLE));
-        assertParseSuccess(parser, "/squad Soccer Stars av/false",
+        assertParseSuccess(parser, "squad/Soccer Stars av/false",
                 command("Soccer Stars", Availability.UNAVAILABLE));
+        assertParseSuccess(parser, "sn/Soccer Stars available/true",
+                command("Soccer Stars", Availability.AVAILABLE));
+        assertParseSuccess(parser, "\t squad/ Soccer Stars \t av/ false ",
+                command("Soccer Stars", Availability.UNAVAILABLE));
+    }
+
+    @Test
+    public void parse_squadHyphensAndRepeatedWhitespace_success() {
+        assertParseSuccess(parser, "squad/ \tU12-A \n Stars  2 ", command("U12-A Stars 2", null));
+        assertParseSuccess(parser, "sn/ \tU12-A \n Stars  2 ", command("U12-A Stars 2", null));
+    }
+
+    @Test
+    public void parse_invalidSquadName_throwsParseException() {
+        assertParseFailure(parser, "squad/Team@A", SquadName.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "sn/Team_A", SquadName.MESSAGE_CONSTRAINTS);
     }
 
     @Test
     public void parse_missingCriteriaOrValue_throwsParseException() {
         assertParseFailure(parser, "", FilterCommandParser.MESSAGE_MISSING_CRITERION);
         assertParseFailure(parser, "   ", FilterCommandParser.MESSAGE_MISSING_CRITERION);
-        assertParseFailure(parser, "/squad", FilterCommandParser.MESSAGE_MISSING_SQUAD);
+        assertParseFailure(parser, "squad/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
         assertParseFailure(parser, "sn/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
-        assertParseFailure(parser, "/availability", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
+        assertParseFailure(parser, "available/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
         assertParseFailure(parser, "av/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
     }
 
     @Test
     public void parse_invalidAvailability_throwsParseException() {
-        assertParseFailure(parser, "/availability available", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "available/available", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
         assertParseFailure(parser, "av/yes", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
     }
 
     @Test
     public void parse_duplicateCriteria_throwsParseException() {
-        assertParseFailure(parser, "/squad Team A sn/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "/availability true av/false",
+        assertParseFailure(parser, "squad/Team A sn/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
+        assertParseFailure(parser, "available/true av/false",
+                FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "sn/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
+        assertParseFailure(parser, "squad/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
+        assertParseFailure(parser, "av/true available/false",
+                FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "available/true available/false",
                 FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
     }
 
@@ -54,9 +76,13 @@ public class FilterCommandParserTest {
     public void parse_unknownPrefixOrPreamble_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, FilterCommand.MESSAGE_USAGE);
         assertParseFailure(parser, "/position Goalkeeper", expectedMessage);
-        assertParseFailure(parser, "/squad Team A /position Goalkeeper", expectedMessage);
+        assertParseFailure(parser, "squad/Team A /position Goalkeeper", expectedMessage);
         assertParseFailure(parser, "/squadTeam", expectedMessage);
-        assertParseFailure(parser, "unexpected /squad Team A", expectedMessage);
+        assertParseFailure(parser, "unexpected squad/Team A", expectedMessage);
+        assertParseFailure(parser, "/squad Team A", expectedMessage);
+        assertParseFailure(parser, "/availability true", expectedMessage);
+        assertParseFailure(parser, "availability/true", expectedMessage);
+        assertParseFailure(parser, "position/Goalkeeper", expectedMessage);
     }
 
     private FilterCommand command(String squadName, String availability) {

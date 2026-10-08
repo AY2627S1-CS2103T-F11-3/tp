@@ -14,7 +14,7 @@ public class MessagesTest {
         Person player = new PersonBuilder().withName("John Doe")
                 .withTags("captain")
                 .withSquadName("Squad A").withPosition("Defender").withGuardianName("Jane Doe")
-                .withGuardianNumber("87654321").withAvailability("unavailable").withRemark("Left footed").build();
+                .withGuardianContact("87654321").withAvailability("unavailable").withRemark("Left footed").build();
 
         String expected = "John Doe; Tags: [captain]"
                 + "; Squad: Squad A; Position: Defender; Guardian: Jane Doe; Contact: 87654321"

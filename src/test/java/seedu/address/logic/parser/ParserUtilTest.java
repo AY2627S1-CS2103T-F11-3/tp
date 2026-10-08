@@ -69,6 +69,13 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseName_hyphensAndRepeatedWhitespace_returnsNormalizedName() throws Exception {
+        assertEquals(new Name("Rachel-Anne Walker 2"), ParserUtil.parseName(" \tRachel-Anne \n Walker  2 "));
+        assertThrows(ParseException.class, Name.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseName(" \t\r\n "));
+        assertThrows(ParseException.class, Name.MESSAGE_CONSTRAINTS, () -> ParserUtil.parseName("Rachel/Walker"));
+    }
+
+    @Test
     public void parseTag_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseTag(null));
     }

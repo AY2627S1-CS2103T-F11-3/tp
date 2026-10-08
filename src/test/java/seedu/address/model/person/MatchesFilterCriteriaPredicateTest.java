@@ -38,6 +38,17 @@ public class MatchesFilterCriteriaPredicateTest {
     }
 
     @Test
+    public void test_squadWhitespaceAndCase_returnsExpectedResult() {
+        Person player = new PersonBuilder().withSquadName(" Soccer   Stars ").build();
+        MatchesFilterCriteriaPredicate normalizedPredicate = new MatchesFilterCriteriaPredicate(
+                Optional.of(new SquadName(" \tSoccer \n Stars ")), Optional.empty());
+        MatchesFilterCriteriaPredicate differentCasePredicate = new MatchesFilterCriteriaPredicate(
+                Optional.of(new SquadName("soccer stars")), Optional.empty());
+        assertTrue(normalizedPredicate.test(player));
+        assertFalse(differentCasePredicate.test(player));
+    }
+
+    @Test
     public void equals() {
         MatchesFilterCriteriaPredicate firstPredicate = new MatchesFilterCriteriaPredicate(
                 Optional.of(new SquadName("Soccer Stars")), Optional.empty());

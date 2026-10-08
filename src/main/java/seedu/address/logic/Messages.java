@@ -52,8 +52,10 @@ public class Messages {
      */
     public static String formatPlayerDetails(Person person) {
         return String.format("%s; Squad: %s; Position: %s; Guardian: %s; Contact: %s; Availability: %s; Remark: %s",
-                format(person), person.getSquadName(), person.getPosition(), person.getGuardianName(),
-                person.getGuardianNumber(), person.getAvailability(), person.getRemark());
+                format(person), person.getSquadName(), person.getPosition(),
+                person.getGuardianName() == null ? "Not provided" : person.getGuardianName(),
+                person.getGuardianContact() == null ? "Not provided" : person.getGuardianContact(),
+                person.getAvailability(), person.getRemark());
     }
 
 }

@@ -19,8 +19,8 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
-import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -97,11 +97,11 @@ public class EditCommand extends Command {
         SquadName updatedSquadName = personToEdit.getSquadName();
         Position updatedPosition = personToEdit.getPosition();
         GuardianName updatedGuardianName = personToEdit.getGuardianName();
-        GuardianNumber updatedGuardianNumber = personToEdit.getGuardianNumber();
+        GuardianContact updatedGuardianContact = personToEdit.getGuardianContact();
         Availability updatedAvailability = personToEdit.getAvailability();
 
         return new Person(updatedName, updatedTags, updatedRemark,
-                updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianNumber, updatedAvailability);
+                updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianContact, updatedAvailability);
     }
 
     @Override

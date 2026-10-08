@@ -41,7 +41,7 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_add() throws Exception {
-        Person person = new PersonBuilder().build();
+        Person person = new PersonBuilder().withSquadName("Soccer Stars").withPosition("Goalkeeper").build();
         AddCommand command = (AddCommand) parser.parseCommand(PersonUtil.getAddCommand(person));
         assertEquals(new AddCommand(person), command);
     }
@@ -111,7 +111,7 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_filter() throws Exception {
-        assertTrue(parser.parseCommand("filter /squad Soccer Stars") instanceof FilterCommand);
+        assertTrue(parser.parseCommand("filter squad/Soccer Stars") instanceof FilterCommand);
     }
 
     @Test

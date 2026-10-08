@@ -55,6 +55,32 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_addPlayer_savesOptionalDetailsAndRejectsDuplicate() throws Exception {
+        Person player = new PersonBuilder().withName("John Doe").withSquadName("Soccer Stars")
+                .withPosition("Goalkeeper").withGuardianName("Jane Doe").withGuardianContact("81234567")
+                .withAvailability("unavailable").build();
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.addPerson(player);
+        String command = "add name/John Doe squad/Soccer Stars position/goal-keeper"
+                + " guardian/Jane Doe contact/8123-4567 available/f a l s e";
+        assertCommandSuccess(command, "Player John Doe added!", expectedModel);
+        JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertCommandException("add n/John Doe sn/Soccer Stars pos/Goalkeeper",
+                "John Doe is already a registered player!");
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertParseException("add n/Invalid Contact sn/Stars pos/Defender gc/1234567",
+                seedu.address.model.person.GuardianContact.MESSAGE_CONSTRAINTS);
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+
+        Person minimal = new PersonBuilder().withName("Mike Ox").withSquadName("Football Fellas")
+                .withPosition("Striker").build();
+        expectedModel.addPerson(minimal);
+        assertCommandSuccess("add n/Mike Ox sn/Football Fellas pos/Striker", "Player Mike Ox added!", expectedModel);
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
     public void execute_invalidCommandFormat_throwsParseException() {
         String invalidCommand = "uicfhmowqewca";
         assertParseException(invalidCommand, MESSAGE_UNKNOWN_COMMAND);
@@ -246,7 +272,7 @@ public class LogicManagerTest {
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
-        assertCommandSuccess("filter /availability TRUE",
+        assertCommandSuccess("filter available/TRUE",
                 String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, expectedModel.getFilteredPersonList().size()),
                 expectedModel);
     }

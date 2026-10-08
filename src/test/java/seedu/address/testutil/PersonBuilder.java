@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
-import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -23,8 +23,8 @@ public class PersonBuilder {
     public static final String DEFAULT_REMARK = "";
     public static final String DEFAULT_SQUAD_NAME = "Unassigned";
     public static final String DEFAULT_POSITION = "Unassigned";
-    public static final String DEFAULT_GUARDIAN_NAME = "Not provided";
-    public static final String DEFAULT_GUARDIAN_NUMBER = "000";
+    public static final String DEFAULT_GUARDIAN_NAME = null;
+    public static final String DEFAULT_GUARDIAN_CONTACT = null;
     public static final String DEFAULT_AVAILABILITY = Availability.AVAILABLE;
 
     private Name name;
@@ -33,7 +33,7 @@ public class PersonBuilder {
     private SquadName squadName;
     private Position position;
     private GuardianName guardianName;
-    private GuardianNumber guardianNumber;
+    private GuardianContact guardianContact;
     private Availability availability;
 
     /**
@@ -45,8 +45,8 @@ public class PersonBuilder {
         remark = new Remark(DEFAULT_REMARK);
         squadName = new SquadName(DEFAULT_SQUAD_NAME);
         position = new Position(DEFAULT_POSITION);
-        guardianName = new GuardianName(DEFAULT_GUARDIAN_NAME);
-        guardianNumber = new GuardianNumber(DEFAULT_GUARDIAN_NUMBER);
+        guardianName = null;
+        guardianContact = null;
         availability = new Availability(DEFAULT_AVAILABILITY);
     }
 
@@ -60,7 +60,7 @@ public class PersonBuilder {
         squadName = personToCopy.getSquadName();
         position = personToCopy.getPosition();
         guardianName = personToCopy.getGuardianName();
-        guardianNumber = personToCopy.getGuardianNumber();
+        guardianContact = personToCopy.getGuardianContact();
         availability = personToCopy.getAvailability();
     }
 
@@ -108,15 +108,15 @@ public class PersonBuilder {
      * Sets the guardian name of the {@code Person} that we are building.
      */
     public PersonBuilder withGuardianName(String guardianName) {
-        this.guardianName = new GuardianName(guardianName);
+        this.guardianName = guardianName == null ? null : new GuardianName(guardianName);
         return this;
     }
 
     /**
-     * Sets the guardian number of the {@code Person} that we are building.
+     * Sets the guardian contact of the {@code Person} that we are building.
      */
-    public PersonBuilder withGuardianNumber(String guardianNumber) {
-        this.guardianNumber = new GuardianNumber(guardianNumber);
+    public PersonBuilder withGuardianContact(String guardianContact) {
+        this.guardianContact = guardianContact == null ? null : new GuardianContact(guardianContact);
         return this;
     }
 
@@ -133,7 +133,7 @@ public class PersonBuilder {
      */
     public Person build() {
         return new Person(name, tags, remark, squadName, position, guardianName,
-                guardianNumber, availability);
+                guardianContact, availability);
     }
 
 }
