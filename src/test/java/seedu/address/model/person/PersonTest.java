@@ -9,6 +9,8 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.util.HashSet;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.testutil.PersonBuilder;
@@ -51,6 +53,24 @@ public class PersonTest {
         String nameWithTrailingSpaces = VALID_NAME_BOB + " ";
         editedBob = new PersonBuilder(BOB).withName(nameWithTrailingSpaces).build();
         assertTrue(BOB.isSamePerson(editedBob));
+    }
+
+    // TODO: test formats
+    @Test
+    public void toListString_validPerson_returnsFormattedString() {
+        Person person = new Person(
+                new Name("John Doe"),
+                new HashSet<>(),
+                new Remark(""),
+                new SquadName("Soccer Stars"),
+                new Position("Goalkeeper"),
+                new GuardianName("Jane Doe"),
+                new GuardianContact("91234567"),
+                new Availability("available")
+        );
+
+        String expected = "John Doe, Soccer Stars, Goalkeeper, available";
+        assertEquals(expected, person.toListString());
     }
 
     @Test
