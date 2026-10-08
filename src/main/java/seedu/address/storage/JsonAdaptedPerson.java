@@ -10,14 +10,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
-import seedu.address.model.person.Address;
 import seedu.address.model.person.Availability;
-import seedu.address.model.person.Email;
 import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.GuardianNumber;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
 import seedu.address.model.person.Position;
 import seedu.address.model.person.Remark;
 import seedu.address.model.person.SquadName;
@@ -31,9 +28,6 @@ class JsonAdaptedPerson {
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
 
     private final String name;
-    private final String phone;
-    private final String email;
-    private final String address;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String remark;
     private final String squadName;
@@ -46,16 +40,12 @@ class JsonAdaptedPerson {
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
      */
     @JsonCreator
-    public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
-            @JsonProperty("email") String email, @JsonProperty("address") String address,
+    public JsonAdaptedPerson(@JsonProperty("name") String name,
             @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("remark") String remark,
             @JsonProperty("squadName") String squadName, @JsonProperty("position") String position,
             @JsonProperty("guardianName") String guardianName, @JsonProperty("guardianNumber") String guardianNumber,
             @JsonProperty("availability") String availability) {
         this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.address = address;
         this.remark = remark;
         this.squadName = squadName;
         this.position = position;
@@ -67,9 +57,9 @@ class JsonAdaptedPerson {
         }
     }
 
-    JsonAdaptedPerson(String name, String phone, String email, String address, List<JsonAdaptedTag> tags,
+    JsonAdaptedPerson(String name, List<JsonAdaptedTag> tags,
                        String remark) {
-        this(name, phone, email, address, tags, remark, null, null, null, null, null);
+        this(name, tags, remark, null, null, null, null, null);
     }
 
     /**
@@ -77,9 +67,6 @@ class JsonAdaptedPerson {
      */
     public JsonAdaptedPerson(Person source) {
         name = source.getName().fullName;
-        phone = source.getPhone().value;
-        email = source.getEmail().value;
-        address = source.getAddress().value;
         remark = source.getRemark().value;
         squadName = source.getSquadName().value;
         position = source.getPosition().value;
@@ -110,30 +97,6 @@ class JsonAdaptedPerson {
         }
         final Name modelName = new Name(name);
 
-        if (phone == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName()));
-        }
-        if (!Phone.isValidPhone(phone)) {
-            throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
-        }
-        final Phone modelPhone = new Phone(phone);
-
-        if (email == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
-        }
-        if (!Email.isValidEmail(email)) {
-            throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
-        }
-        final Email modelEmail = new Email(email);
-
-        if (address == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
-        }
-        if (!Address.isValidAddress(address)) {
-            throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
-        }
-        final Address modelAddress = new Address(address);
-
         final Set<Tag> modelTags = new HashSet<>(personTags);
 
         if (remark == null) {
@@ -147,7 +110,7 @@ class JsonAdaptedPerson {
         final GuardianNumber modelGuardianNumber = createGuardianNumber();
         final Availability modelAvailability = createAvailability();
 
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelRemark, modelSquadName,
+        return new Person(modelName, modelTags, modelRemark, modelSquadName,
                 modelPosition, modelGuardianName, modelGuardianNumber, modelAvailability);
     }
 

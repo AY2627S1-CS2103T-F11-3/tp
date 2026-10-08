@@ -42,19 +42,13 @@ public class Messages {
     public static String format(Person person) {
         final StringBuilder builder = new StringBuilder();
         builder.append(person.getName())
-                .append("; Phone: ")
-                .append(person.getPhone())
-                .append("; Email: ")
-                .append(person.getEmail())
-                .append("; Address: ")
-                .append(person.getAddress())
                 .append("; Tags: ");
         person.getTags().forEach(builder::append);
         return builder.toString();
     }
 
     /**
-     * Formats contact and player details to help distinguish players with similar names.
+     * Formats player details to help distinguish players with similar names.
      */
     public static String formatPlayerDetails(Person person) {
         return String.format("%s; Squad: %s; Position: %s; Guardian: %s; Contact: %s; Availability: %s; Remark: %s",

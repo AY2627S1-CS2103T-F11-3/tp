@@ -1,0 +1,22 @@
+{
+  "persons": [ {
+    "name": "Legacy Player",
+    "phone": "98765432",
+    "email": "legacy@example.com",
+    "address": "Old Street",
+    "tags": [],
+    "remark": ""
+  }, {
+    "name": "Existing Player",
+    "phone": "87654321",
+    "email": "existing@example.com",
+    "address": "Existing Street",
+    "tags": [ "captain" ],
+    "remark": "Left footed",
+    "squadName": "U12 A",
+    "position": "Defender",
+    "guardianName": "Jane Doe",
+    "guardianNumber": "81234567",
+    "availability": "unavailable"
+  } ]
+}
