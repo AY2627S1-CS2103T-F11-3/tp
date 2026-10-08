@@ -29,10 +29,15 @@ public class PersonTest {
         // null -> returns false
         assertFalse(ALICE.isSamePerson(null));
 
-        // same name, all other attributes different -> returns true
+        // same identity, different tags -> returns true
         Person editedAlice = new PersonBuilder(ALICE)
                 .withTags(VALID_TAG_HUSBAND).build();
         assertTrue(ALICE.isSamePerson(editedAlice));
+
+        assertFalse(ALICE.isSamePerson(new PersonBuilder(ALICE).withSquadName("Another Squad").build()));
+        assertFalse(ALICE.isSamePerson(new PersonBuilder(ALICE).withPosition("Striker").build()));
+        assertTrue(ALICE.isSamePerson(new PersonBuilder(ALICE).withGuardianName("Jane Doe")
+                .withGuardianContact("81234567").withAvailability("unavailable").build()));
 
         // different name, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withName(VALID_NAME_BOB).build();
@@ -42,10 +47,10 @@ public class PersonTest {
         Person editedBob = new PersonBuilder(BOB).withName(VALID_NAME_BOB.toLowerCase()).build();
         assertFalse(BOB.isSamePerson(editedBob));
 
-        // name has trailing spaces, all other attributes same -> returns false
+        // name has trailing spaces, all other attributes same -> returns true after normalization
         String nameWithTrailingSpaces = VALID_NAME_BOB + " ";
         editedBob = new PersonBuilder(BOB).withName(nameWithTrailingSpaces).build();
-        assertFalse(BOB.isSamePerson(editedBob));
+        assertTrue(BOB.isSamePerson(editedBob));
     }
 
     @Test
@@ -86,8 +91,8 @@ public class PersonTest {
         editedAlice = new PersonBuilder(ALICE).withGuardianName("Alex Tan").build();
         assertFalse(ALICE.equals(editedAlice));
 
-        // different guardian number -> returns false
-        editedAlice = new PersonBuilder(ALICE).withGuardianNumber("91234567").build();
+        // different guardian contact -> returns false
+        editedAlice = new PersonBuilder(ALICE).withGuardianContact("91234567").build();
         assertFalse(ALICE.equals(editedAlice));
 
         // different availability -> returns false
@@ -99,8 +104,8 @@ public class PersonTest {
     public void toStringMethod() {
         String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", tags=" + ALICE.getTags()
                 + ", squadName=" + ALICE.getSquadName() + ", position=" + ALICE.getPosition()
-                + ", guardianName=" + ALICE.getGuardianName() + ", guardianNumber="
-                + ALICE.getGuardianNumber() + ", availability=" + ALICE.getAvailability() + "}";
+                + ", guardianName=" + ALICE.getGuardianName() + ", guardianContact="
+                + ALICE.getGuardianContact() + ", availability=" + ALICE.getAvailability() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

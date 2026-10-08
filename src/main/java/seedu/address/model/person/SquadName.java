@@ -3,13 +3,16 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import seedu.address.commons.util.StringUtil;
+
 /**
  * Represents a player's squad name.
  */
 public class SquadName {
 
-    public static final String MESSAGE_CONSTRAINTS = "Squad names should not be blank";
-    public static final String VALIDATION_REGEX = "[^\\s].*";
+    public static final String MESSAGE_CONSTRAINTS =
+            "Squad names should only contain alphanumeric characters, hyphens and whitespace, and should not be blank";
+    public static final String VALIDATION_REGEX = Name.VALIDATION_REGEX;
 
     public final String value;
 
@@ -19,11 +22,11 @@ public class SquadName {
     public SquadName(String squadName) {
         requireNonNull(squadName);
         checkArgument(isValidSquadName(squadName), MESSAGE_CONSTRAINTS);
-        value = squadName;
+        value = StringUtil.normalizeWhitespace(squadName);
     }
 
     public static boolean isValidSquadName(String test) {
-        return test.matches(VALIDATION_REGEX);
+        return StringUtil.normalizeWhitespace(test).matches(VALIDATION_REGEX);
     }
 
     @Override

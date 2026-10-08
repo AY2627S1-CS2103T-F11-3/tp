@@ -1,5 +1,6 @@
 package seedu.address.model.person;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -17,6 +18,18 @@ public class NameTest {
     public void constructor_invalidName_throwsIllegalArgumentException() {
         String invalidName = "";
         assertThrows(IllegalArgumentException.class, () -> new Name(invalidName));
+        assertThrows(IllegalArgumentException.class, () -> new Name(" \t\n "));
+        assertThrows(IllegalArgumentException.class, () -> new Name("John/Doe"));
+    }
+
+    @Test
+    public void constructor_whitespace_normalizesName() {
+        Name name = new Name(" \tJohn-Paul \r\n  Doe 2 ");
+        Name normalized = new Name("John-Paul Doe 2");
+        assertEquals("John-Paul Doe 2", name.fullName);
+        assertEquals("John-Paul Doe 2", name.toString());
+        assertEquals(normalized, name);
+        assertEquals(normalized.hashCode(), name.hashCode());
     }
 
     @Test
@@ -29,6 +42,8 @@ public class NameTest {
         assertFalse(Name.isValidName(" ")); // spaces only
         assertFalse(Name.isValidName("^")); // only non-alphanumeric characters
         assertFalse(Name.isValidName("peter*")); // contains non-alphanumeric characters
+        assertFalse(Name.isValidName("John/Doe")); // command separator
+        assertFalse(Name.isValidName(" \t\r\n ")); // whitespace only
 
         // valid name
         assertTrue(Name.isValidName("peter jack")); // alphabets only
@@ -36,6 +51,7 @@ public class NameTest {
         assertTrue(Name.isValidName("peter the 2nd")); // alphanumeric characters
         assertTrue(Name.isValidName("Capital Tan")); // with capital letters
         assertTrue(Name.isValidName("David Roger Jackson Ray Jr 2nd")); // long names
+        assertTrue(Name.isValidName(" \tJohn-Paul \n Doe 2 ")); // hyphens and whitespace
     }
 
     @Test
@@ -56,5 +72,6 @@ public class NameTest {
 
         // different values -> returns false
         assertFalse(name.equals(new Name("Other Valid Name")));
+        assertFalse(name.equals(new Name("valid name"))); // capitalization is significant
     }
 }

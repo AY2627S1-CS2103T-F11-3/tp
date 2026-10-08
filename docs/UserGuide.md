@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe sn/Soccer Stars pos/Goalkeeper` : Adds a player named `John Doe`.
 
      For `add`, you can use `name/John Doe` instead of `n/John Doe`.
 
@@ -75,28 +75,40 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a player profile: `add`
 
-Adds a person to the address book.
+Adds a player. Name, squad and position are required; the other fields are optional.
 
-Format: `add n/NAME [t/TAG]…​`
+Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…`
 
-* For `add`, `name/` is an alias for `n/`. Both prefixes accept the same name values and validation rules.
-* Specify the name exactly once. Repeating `n/`, repeating `name/`, or using both is rejected, even if the values match.
-* Name is required with either name prefix. Parameters can appear in any order.
-* This alias applies to `add` only; use `n/` when editing a name with `edit`.
-* Player phone number, email and address are no longer stored. The former `p/`, `e/` and `a/` parameters are rejected.
-* New players currently receive squad and position `Unassigned`, guardian name `Not provided`, guardian number `000`,
-  and availability `available`. These fields cannot be supplied through `add` yet.
+| Field | Full prefix | Shorthand |
+| --- | --- | --- |
+| Player name | `name/` | `n/` |
+| Squad name | `squad/` | `sn/` |
+| Position | `position/` | `pos/` |
+| Guardian name | `guardian/` | `g/` |
+| Guardian contact | `contact/` | `gc/` |
+| Availability | `available/` | `av/` |
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
-</div>
+* Fields can appear in any order. Specify each once using either prefix; mixing aliases for the same field is rejected.
+  Tags (`t/`) may be repeated.
+* Player, squad and supplied guardian names must not be blank. They accept letters, digits, hyphens and whitespace;
+  surrounding whitespace is removed and repeated whitespace becomes one space. Names remain case-sensitive.
+* Choose one position: `Goalkeeper`, `Defender`, `Midfielder` or `Striker`. Case, whitespace and hyphens are ignored
+  (for example, `goal-keeper` means `Goalkeeper`).
+* Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
+  values are rejected. Contacts must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
+* Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
+* Players with the same normalized name, squad and position are rejected as duplicates, regardless of other fields.
+  The same name is allowed with a different squad or position.
+
+Success displays `Player NAME added!`. Missing required fields are reported first; otherwise, the first invalid or
+repeated field is reported from left to right.
 
 Examples:
-* `add n/John Doe`
-* `add name/John Doe`
-* `add n/Betsy Crowe t/friend t/criminal`
+
+* `add name/John Doe squad/Soccer Stars position/Goalkeeper`
+* `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
 
 ### Listing all persons: `list`
 
@@ -144,16 +156,16 @@ Displays registered players that match a squad, availability, or both.
 
 Formats:
 
-* `filter /squad SQUAD_NAME [/availability true|false]`
-* `filter /availability true|false [/squad SQUAD_NAME]`
+* `filter squad/SQUAD_NAME [available/true|false]`
+* `filter available/true|false [squad/SQUAD_NAME]`
 
-Short forms are also accepted: `sn/SQUAD_NAME` for `/squad SQUAD_NAME`, and `av/true` or `av/false`
-for `/availability true|false`.
+Short forms are also accepted: `sn/SQUAD_NAME` for `squad/SQUAD_NAME`, and `av/true` or `av/false`
+for `available/true|false`.
 
 * Supply at least one criterion. Criteria can appear in either order, but each criterion can appear only once.
   Long and short forms count as the same criterion.
-* A squad name must not be blank. Squad matching is case-sensitive; surrounding whitespace is ignored, while
-  whitespace within the name is preserved.
+* Squad names must not be blank and may contain only letters, digits, hyphens and whitespace. Squad matching is
+  case-sensitive; surrounding whitespace is ignored and repeated whitespace is treated as a single space.
 * Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
   as `available`; `false` matches players stored as `unavailable`.
 * When both criteria are supplied, a player must satisfy both. If no players match, the result is
@@ -164,9 +176,9 @@ for `/availability true|false`.
 
 Examples:
 
-* `filter /squad Soccer Stars`
-* `filter /availability true`
-* `filter /availability true /squad Football Fellas`
+* `filter squad/Soccer Stars`
+* `filter available/true`
+* `filter available/true squad/Football Fellas`
 * `filter sn/Soccer Stars av/false`
 
 ### Deleting players: `delete`
@@ -204,8 +216,7 @@ Formats:
 * Do not mix index selectors with name selectors. After `/name`, numbers are names, not indices.
 * Empty entries, such as `John Doe,,Amy Tan` or a trailing comma, are rejected.
 * Commas always separate names; quotation marks do not escape them.
-* Player names currently support only letters, digits, and spaces when adding players. Creating players with punctuation
-  in their names is not yet supported.
+* Player names support letters, digits, hyphens and whitespace. Other punctuation is not supported.
 
 Examples:
 
@@ -269,11 +280,11 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME [t/TAG]…​` (`name/` can replace `n/`; specify the name once) <br> e.g., `add name/James Ho t/friend t/colleague`
+**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter /squad SQUAD_NAME [/availability true|false]` or `filter /availability true|false [/squad SQUAD_NAME]`<br> e.g., `filter /squad Soccer Stars av/true`
+**Filter** | `filter squad/SQUAD_NAME [available/true|false]` or `filter available/true|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
 **List** | `list`
 **Help** | `help`

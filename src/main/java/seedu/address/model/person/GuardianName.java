@@ -3,13 +3,17 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import seedu.address.commons.util.StringUtil;
+
 /**
  * Represents a player's guardian name.
  */
 public class GuardianName {
 
-    public static final String MESSAGE_CONSTRAINTS = "Guardian names should not be blank";
-    public static final String VALIDATION_REGEX = "[^\\s].*";
+    public static final String MESSAGE_CONSTRAINTS =
+            "Guardian names should only contain alphanumeric characters, hyphens and whitespace, "
+                    + "and should not be blank";
+    public static final String VALIDATION_REGEX = Name.VALIDATION_REGEX;
 
     public final String value;
 
@@ -19,11 +23,11 @@ public class GuardianName {
     public GuardianName(String guardianName) {
         requireNonNull(guardianName);
         checkArgument(isValidGuardianName(guardianName), MESSAGE_CONSTRAINTS);
-        value = guardianName;
+        value = StringUtil.normalizeWhitespace(guardianName);
     }
 
     public static boolean isValidGuardianName(String test) {
-        return test.matches(VALIDATION_REGEX);
+        return StringUtil.normalizeWhitespace(test).matches(VALIDATION_REGEX);
     }
 
     @Override

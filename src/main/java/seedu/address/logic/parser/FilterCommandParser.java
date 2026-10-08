@@ -1,6 +1,10 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +27,11 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     public static final String MESSAGE_MISSING_AVAILABILITY = "Error! Availability must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
             "Invalid availability entered! Availability should either be true or false!";
-    public static final String MESSAGE_DUPLICATE_SQUAD = "Error! Parameter /squad cannot be specified more than once!";
+    public static final String MESSAGE_DUPLICATE_SQUAD =
+            "Error! Parameter " + PREFIX_SQUADNAME_FULL + " cannot be specified more than once!";
     public static final String MESSAGE_DUPLICATE_AVAILABILITY =
-            "Error! Parameter /availability cannot be specified more than once!";
+            "Error! Parameter " + PREFIX_AVAILABILITY_FULL + " cannot be specified more than once!";
 
-    private static final String LONG_SQUAD_PREFIX = "/squad";
-    private static final String LONG_AVAILABILITY_PREFIX = "/availability";
-    private static final String SHORT_SQUAD_PREFIX = "sn/";
-    private static final String SHORT_AVAILABILITY_PREFIX = "av/";
     private static final Pattern PREFIX_TOKEN_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>/\\S+|\\S+/)");
 
     @Override
@@ -52,20 +53,18 @@ public class FilterCommandParser implements Parser<FilterCommand> {
             PrefixMatch prefix = prefixes.get(index);
             int valueEnd = index + 1 < prefixes.size() ? prefixes.get(index + 1).start() : args.length();
             String value = args.substring(prefix.end(), valueEnd).strip();
-            switch (prefix.value()) {
-                case LONG_SQUAD_PREFIX, SHORT_SQUAD_PREFIX -> {
-                    if (squadValue != null) {
-                        throw new ParseException(MESSAGE_DUPLICATE_SQUAD);
-                    }
-                    squadValue = value;
+            if (isSquadPrefix(prefix.value())) {
+                if (squadValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_SQUAD);
                 }
-                case LONG_AVAILABILITY_PREFIX, SHORT_AVAILABILITY_PREFIX -> {
-                    if (availabilityValue != null) {
-                        throw new ParseException(MESSAGE_DUPLICATE_AVAILABILITY);
-                    }
-                    availabilityValue = value;
+                squadValue = value;
+            } else if (isAvailabilityPrefix(prefix.value())) {
+                if (availabilityValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_AVAILABILITY);
                 }
-                default -> throw invalidFormat();
+                availabilityValue = value;
+            } else {
+                throw invalidFormat();
             }
         }
 
@@ -87,8 +86,15 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     }
 
     private boolean isSupportedPrefix(String prefix) {
-        return prefix.equals(LONG_SQUAD_PREFIX) || prefix.equals(LONG_AVAILABILITY_PREFIX)
-                || prefix.equals(SHORT_SQUAD_PREFIX) || prefix.equals(SHORT_AVAILABILITY_PREFIX);
+        return isSquadPrefix(prefix) || isAvailabilityPrefix(prefix);
+    }
+
+    private boolean isSquadPrefix(String prefix) {
+        return prefix.equals(PREFIX_SQUADNAME.getPrefix()) || prefix.equals(PREFIX_SQUADNAME_FULL.getPrefix());
+    }
+
+    private boolean isAvailabilityPrefix(String prefix) {
+        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix());
     }
 
     private Optional<SquadName> parseSquad(String value) throws ParseException {

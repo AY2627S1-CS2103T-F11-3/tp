@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.HOON;
@@ -95,7 +96,7 @@ public class JsonAddressBookStorageTest {
         expected.addPerson(new PersonBuilder().withName("Legacy Player").build());
         expected.addPerson(new PersonBuilder().withName("Existing Player").withTags("captain")
                 .withRemark("Left footed").withSquadName("U12 A").withPosition("Defender")
-                .withGuardianName("Jane Doe").withGuardianNumber("81234567")
+                .withGuardianName("Jane Doe").withGuardianContact("81234567")
                 .withAvailability("unavailable").build());
         assertEquals(expected, new AddressBook(migrated));
 
@@ -106,6 +107,8 @@ public class JsonAddressBookStorageTest {
         assertFalse(savedJson.contains("\"phone\""));
         assertFalse(savedJson.contains("\"email\""));
         assertFalse(savedJson.contains("\"address\""));
+        assertFalse(savedJson.contains("\"guardianNumber\""));
+        assertTrue(savedJson.contains("\"guardianContact\""));
         assertEquals(expected, new AddressBook(storage.readAddressBook().orElseThrow()));
     }
 

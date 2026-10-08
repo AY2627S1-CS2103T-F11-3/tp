@@ -12,7 +12,7 @@ import seedu.address.model.tag.Tag;
 
 /**
  * Represents a Person in the address book.
- * Guarantees: details are present and not null, field values are validated, immutable.
+ * Guarantees: required fields are present, field values are validated, immutable.
  */
 public class Person {
 
@@ -23,26 +23,25 @@ public class Person {
     private final SquadName squadName;
     private final Position position;
     private final GuardianName guardianName;
-    private final GuardianNumber guardianNumber;
+    private final GuardianContact guardianContact;
     private final Availability availability;
     private final Set<Tag> tags = new HashSet<>();
     private final Remark remark;
 
     /**
-     * Every field must be present and not null.
+     * Every field except the optional guardian name and contact must be present and not null.
      */
     public Person(Name name, Set<Tag> tags, Remark remark,
                   SquadName squadName, Position position, GuardianName guardianName,
-                  GuardianNumber guardianNumber, Availability availability) {
-        requireAllNonNull(name, tags, remark, squadName, position, guardianName,
-                guardianNumber, availability);
+                  GuardianContact guardianContact, Availability availability) {
+        requireAllNonNull(name, tags, remark, squadName, position, availability);
         this.name = name;
         this.tags.addAll(tags);
         this.remark = remark;
         this.squadName = squadName;
         this.position = position;
         this.guardianName = guardianName;
-        this.guardianNumber = guardianNumber;
+        this.guardianContact = guardianContact;
         this.availability = availability;
     }
 
@@ -74,8 +73,8 @@ public class Person {
         return guardianName;
     }
 
-    public GuardianNumber getGuardianNumber() {
-        return guardianNumber;
+    public GuardianContact getGuardianContact() {
+        return guardianContact;
     }
 
     public Availability getAvailability() {
@@ -83,7 +82,7 @@ public class Person {
     }
 
     /**
-     * Returns true if both persons have the same name.
+     * Returns true if both players have the same name, squad and position.
      * This defines a weaker notion of equality between two persons.
      */
     public boolean isSamePerson(Person otherPerson) {
@@ -92,7 +91,9 @@ public class Person {
         }
 
         return otherPerson != null
-                && otherPerson.getName().equals(getName());
+                && otherPerson.getName().equals(getName())
+                && otherPerson.getSquadName().equals(getSquadName())
+                && otherPerson.getPosition().equals(getPosition());
     }
 
     /**
@@ -114,8 +115,8 @@ public class Person {
                 && tags.equals(otherPerson.tags)
                 && squadName.equals(otherPerson.squadName)
                 && position.equals(otherPerson.position)
-                && guardianName.equals(otherPerson.guardianName)
-                && guardianNumber.equals(otherPerson.guardianNumber)
+                && Objects.equals(guardianName, otherPerson.guardianName)
+                && Objects.equals(guardianContact, otherPerson.guardianContact)
                 && availability.equals(otherPerson.availability);
     }
 
@@ -123,7 +124,7 @@ public class Person {
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, tags, squadName, position, guardianName,
-                guardianNumber, availability);
+                guardianContact, availability);
     }
 
     @Override
@@ -134,7 +135,7 @@ public class Person {
                 .add("squadName", squadName)
                 .add("position", position)
                 .add("guardianName", guardianName)
-                .add("guardianNumber", guardianNumber)
+                .add("guardianContact", guardianContact)
                 .add("availability", availability)
                 .toString();
     }
