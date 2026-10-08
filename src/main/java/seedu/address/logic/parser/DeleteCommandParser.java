@@ -1,11 +1,15 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.Messages;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -14,11 +18,9 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class DeleteCommandParser implements Parser<DeleteCommand> {
 
-    public static final String MESSAGE_MISSING_NAME = "Error! Specify at least one player name after /name!";
+    public static final String MESSAGE_MISSING_NAME =
+            "Error! Specify at least one player name after " + PREFIX_NAME + " or " + PREFIX_NAME_FULL + "!";
     public static final String MESSAGE_EMPTY_NAME = "Invalid name list! Specify a name between each comma!";
-
-    private static final Pattern NAME_ARGUMENTS = Pattern.compile("/name(?:\\s+(.*))?",
-            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     /**
      * Parses the given {@code String} of arguments in the context of the DeleteCommand
@@ -29,15 +31,23 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
     @Override
     public DeleteCommand parse(String args) throws ParseException {
         String trimmedArgs = args.trim();
-        Matcher nameMatcher = NAME_ARGUMENTS.matcher(trimmedArgs);
-        if (nameMatcher.matches()) {
-            return DeleteCommand.forNames(parseNames(nameMatcher.group(1)));
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(" " + trimmedArgs, PREFIX_NAME, PREFIX_NAME_FULL);
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_NAME_FULL);
+        if (argMultimap.getValue(PREFIX_NAME).isPresent() && argMultimap.getValue(PREFIX_NAME_FULL).isPresent()) {
+            throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_NAME_FULL));
+        }
+        Optional<String> nameValue = argMultimap.getValue(PREFIX_NAME).or(() -> argMultimap.getValue(PREFIX_NAME_FULL));
+        if (nameValue.isPresent()) {
+            if (!argMultimap.getPreamble().isEmpty()) {
+                throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+            }
+            return DeleteCommand.forNames(parseNames(nameValue.get()));
         }
         return new DeleteCommand(parseIndices(trimmedArgs));
     }
 
     private List<String> parseNames(String args) throws ParseException {
-        if (args == null || args.isBlank()) {
+        if (args.isBlank()) {
             throw new ParseException(MESSAGE_MISSING_NAME);
         }
         List<String> names = new ArrayList<>();

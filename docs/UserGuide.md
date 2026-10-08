@@ -176,7 +176,7 @@ Deletes one or more players from the address book.
 Formats:
 
 * By displayed index: `delete INDEX [INDEX]...`
-* By full name: `delete /name NAME[, NAME]...`
+* By full name: `delete n/NAME[, NAME]...`
 
 **Deleting by index**
 
@@ -190,7 +190,9 @@ Formats:
 
 **Deleting by name**
 
-* Use `/name` once, followed by full names separated by commas. `/NAME` is also accepted.
+* Use `n/` or `name/` once, followed by full names separated by commas.
+  Both prefixes are lowercase, and the space after them is optional.
+  Repeated prefixes, including using both aliases together, are rejected.
 * Name matching searches all registered players, including players hidden by a filter.
 * Matching ignores capitalization and surrounding whitespace, and treats repeated whitespace as a single space.
 * Partial names do not match. If a name is missing or matches multiple players, nobody is deleted.
@@ -201,7 +203,7 @@ Formats:
 * If a batch contains an ambiguous name, none of the requested players are deleted. Only matches for the first
   ambiguous name are shown; submit any other intended deletions again after resolving that name.
 * Repeating a name deletes that player only once.
-* Do not mix index selectors with name selectors. After `/name`, numbers are names, not indices.
+* Do not mix index selectors with name selectors. After `n/`, numbers are names, not indices.
 * Empty entries, such as `John Doe,,Amy Tan` or a trailing comma, are rejected.
 * Commas always separate names; quotation marks do not escape them.
 * Player names currently support only letters, digits, and spaces when adding players. Creating players with punctuation
@@ -213,8 +215,9 @@ Examples:
 * `list` followed by `delete 2 4` deletes the players originally shown at indices 2 and 4.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 * `delete 1 abc` reports a non-numeric index and deletes nobody.
-* `delete /name John Doe, Amy Tan` deletes both players if each name identifies exactly one registered player.
-* `delete /name 17` selects a player whose full name is `17`.
+* `delete n/John Doe, Amy Tan` deletes both players if each name identifies exactly one registered player.
+* `delete name/John Doe, Amy Tan` does the same using the full prefix.
+* `delete n/17` selects a player whose full name is `17`.
 
 ### Clearing all entries: `clear`
 
@@ -271,7 +274,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME [t/TAG]…​` (`name/` can replace `n/`; specify the name once) <br> e.g., `add name/James Ho t/friend t/colleague`
 **Clear** | `clear`
-**Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
+**Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter /squad SQUAD_NAME [/availability true|false]` or `filter /availability true|false [/squad SQUAD_NAME]`<br> e.g., `filter /squad Soccer Stars av/true`
