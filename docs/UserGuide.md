@@ -126,6 +126,37 @@ Examples:
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
+### Filtering players: `filter`
+
+Displays registered players that match a squad, availability, or both.
+
+Formats:
+
+* `filter /squad SQUAD_NAME [/availability true|false]`
+* `filter /availability true|false [/squad SQUAD_NAME]`
+
+Short forms are also accepted: `sn/SQUAD_NAME` for `/squad SQUAD_NAME`, and `av/true` or `av/false`
+for `/availability true|false`.
+
+* Supply at least one criterion. Criteria can appear in either order, but each criterion can appear only once.
+  Long and short forms count as the same criterion.
+* A squad name must not be blank. Squad matching is case-sensitive; surrounding whitespace is ignored, while
+  whitespace within the name is preserved.
+* Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
+  as `available`; `false` matches players stored as `unavailable`.
+* When both criteria are supplied, a player must satisfy both. If no players match, the result is
+  `No matching players found!`.
+* Results replace the currently displayed list and use its normal consecutive indexes. Those indexes can be used
+  immediately with `delete`.
+* Unknown filter prefixes and text before the first criterion are rejected as an invalid command format.
+
+Examples:
+
+* `filter /squad Soccer Stars`
+* `filter /availability true`
+* `filter /availability true /squad Football Fellas`
+* `filter sn/Soccer Stars av/false`
+
 ### Deleting players: `delete`
 
 Deletes one or more players from the address book.
@@ -227,5 +258,6 @@ Action | Format, Examples
 **Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Filter** | `filter /squad SQUAD_NAME [/availability true|false]` or `filter /availability true|false [/squad SQUAD_NAME]`<br> e.g., `filter /squad Soccer Stars av/true`
 **List** | `list`
 **Help** | `help`
