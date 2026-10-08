@@ -208,7 +208,8 @@ public class LogicManagerTest {
         MatchesFilterCriteriaPredicate predicate = new MatchesFilterCriteriaPredicate(Optional.empty(),
                 Optional.of(new Availability(Availability.AVAILABLE)));
         expectedModel.updateFilteredPersonList(predicate);
-        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")) {
+        JsonAddressBookStorage addressBookStorage = new
+                JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
                 throw DUMMY_IO_EXCEPTION;
