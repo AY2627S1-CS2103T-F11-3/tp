@@ -68,7 +68,9 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_deleteNames_returnsDeleteCommand() throws Exception {
         assertEquals(DeleteCommand.forNames(List.of("Arun s/o Kumar", "Amy Tan")),
-                parser.parseCommand("delete /name Arun s/o Kumar, Amy Tan"));
+                parser.parseCommand("delete n/Arun s/o Kumar, Amy Tan"));
+        assertEquals(DeleteCommand.forNames(List.of("Arun s/o Kumar", "Amy Tan")),
+                parser.parseCommand("delete\tname/Arun s/o Kumar, Amy Tan"));
     }
 
     @Test

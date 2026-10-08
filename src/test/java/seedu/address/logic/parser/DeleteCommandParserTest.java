@@ -2,8 +2,11 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_TOO_LARGE;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
@@ -16,6 +19,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.Messages;
 import seedu.address.logic.commands.DeleteCommand;
 
 /**
@@ -109,50 +113,76 @@ public class DeleteCommandParserTest {
 
     @Test
     public void parse_singleName_returnsDeleteCommand() {
-        assertParseSuccess(parser, "/name John Doe", DeleteCommand.forNames(List.of("John Doe")));
+        assertParseSuccess(parser, "n/John Doe", DeleteCommand.forNames(List.of("John Doe")));
+        assertParseSuccess(parser, "name/John Doe", DeleteCommand.forNames(List.of("John Doe")));
+        assertParseSuccess(parser, " \tn/ John Doe ", DeleteCommand.forNames(List.of("John Doe")));
     }
 
     @Test
     public void parse_multipleNames_returnsDeleteCommand() {
-        assertParseSuccess(parser, " /NAME\t John Doe ,  Amy Tan  ",
+        assertParseSuccess(parser, " name/\t John Doe ,  Amy Tan  ",
                 DeleteCommand.forNames(List.of("John Doe", "Amy Tan")));
     }
 
     @Test
     public void parse_nameWithSymbols_preservesName() {
-        assertParseSuccess(parser, "/name Arun s/o Kumar, Anne-Marie O'Neill",
+        assertParseSuccess(parser, "n/Arun s/o Kumar, Anne-Marie O'Neill",
                 DeleteCommand.forNames(List.of("Arun s/o Kumar", "Anne-Marie O'Neill")));
-        assertParseSuccess(parser, "/name Player /name Example",
+        assertParseSuccess(parser, "n/Player /name Example",
                 DeleteCommand.forNames(List.of("Player /name Example")));
     }
 
     @Test
     public void parse_numericName_returnsNameSelector() {
-        assertParseSuccess(parser, "/name 17", DeleteCommand.forNames(List.of("17")));
+        assertParseSuccess(parser, "n/17", DeleteCommand.forNames(List.of("17")));
     }
 
     @Test
     public void parse_missingName_throwsParseException() {
-        assertParseFailure(parser, "/name", MESSAGE_MISSING_NAME);
-        assertParseFailure(parser, "/name \t ", MESSAGE_MISSING_NAME);
+        assertParseFailure(parser, "n/", MESSAGE_MISSING_NAME);
+        assertParseFailure(parser, "name/", MESSAGE_MISSING_NAME);
+        assertParseFailure(parser, "n/\t ", MESSAGE_MISSING_NAME);
     }
 
     @Test
     public void parse_emptyNameEntry_throwsParseException() {
-        assertParseFailure(parser, "/name ,John Doe", MESSAGE_EMPTY_NAME);
-        assertParseFailure(parser, "/name John Doe,", MESSAGE_EMPTY_NAME);
-        assertParseFailure(parser, "/name John Doe, ,Amy Tan", MESSAGE_EMPTY_NAME);
-        assertParseFailure(parser, "/name ,", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "n/,John Doe", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "n/John Doe,", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "n/John Doe, ,Amy Tan", MESSAGE_EMPTY_NAME);
+        assertParseFailure(parser, "n/,", MESSAGE_EMPTY_NAME);
     }
 
     @Test
     public void parse_mixedIndicesAndNamePrefix_throwsParseException() {
-        assertParseFailure(parser, "1 /name John Doe", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "1 n/John Doe",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, "1 name/John Doe",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
     }
 
     @Test
     public void parse_namePrefixWithoutBoundary_throwsParseException() {
         assertParseFailure(parser, "/names John Doe", MESSAGE_NON_NUMERIC_INDEX);
         assertParseFailure(parser, "/nameJohn Doe", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "1n/John Doe", MESSAGE_NON_NUMERIC_INDEX);
+    }
+
+    @Test
+    public void parse_repeatedNamePrefixes_throwsParseException() {
+        assertParseFailure(parser, "n/John Doe n/Amy Tan",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
+        assertParseFailure(parser, "name/John Doe name/Amy Tan",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME_FULL));
+        assertParseFailure(parser, "n/John Doe name/Amy Tan",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_NAME_FULL));
+        assertParseFailure(parser, "name/John Doe n/Amy Tan",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_NAME_FULL));
+    }
+
+    @Test
+    public void parse_unsupportedNamePrefixes_throwsParseException() {
+        assertParseFailure(parser, "/name John Doe", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "N/John Doe", MESSAGE_NON_NUMERIC_INDEX);
+        assertParseFailure(parser, "NAME/John Doe", MESSAGE_NON_NUMERIC_INDEX);
     }
 }

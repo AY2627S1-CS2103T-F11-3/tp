@@ -2,6 +2,8 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,8 +27,9 @@ public class DeleteCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Deletes players by displayed indices or full names.\n"
-            + "Parameters: INDEX [INDEX]... or /name NAME[, NAME]...\n"
-            + "Examples: " + COMMAND_WORD + " 1 3; " + COMMAND_WORD + " /name John Doe, Amy Tan";
+            + "Parameters: INDEX [INDEX]... or " + PREFIX_NAME + "NAME[, NAME]...\n"
+            + "Use " + PREFIX_NAME_FULL + " as an alias for " + PREFIX_NAME + ".\n"
+            + "Examples: " + COMMAND_WORD + " 1 3; " + COMMAND_WORD + " " + PREFIX_NAME + "John Doe, Amy Tan";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
     public static final String MESSAGE_DELETE_PERSONS_SUCCESS = "Deleted %1$d players: %2$s";

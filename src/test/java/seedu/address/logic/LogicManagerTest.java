@@ -141,7 +141,7 @@ public class LogicManagerTest {
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
                 first.getName().fullName + ", " + third.getName().fullName);
 
-        assertCommandSuccess("delete /name " + first.getName().fullName + ", " + third.getName().fullName,
+        assertCommandSuccess("delete n/" + first.getName().fullName + ", " + third.getName().fullName,
                 expectedMessage, expectedModel);
 
         JsonAddressBookStorage savedStorage =
@@ -158,9 +158,9 @@ public class LogicManagerTest {
         savedStorage.saveAddressBook(model.getAddressBook());
         String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
 
-        assertCommandException("delete /name " + validName + ", Missing Player",
+        assertCommandException("delete n/" + validName + ", Missing Player",
                 String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player"));
-        assertParseException("delete /name " + validName + ",",
+        assertParseException("delete n/" + validName + ",",
                 MESSAGE_EMPTY_NAME);
 
         assertEquals(expectedModel, model);
@@ -181,7 +181,7 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         savedStorage.saveAddressBook(model.getAddressBook());
 
-        assertThrows(CommandException.class, () -> logic.execute("delete /name " + validName + ", John Doe"));
+        assertThrows(CommandException.class, () -> logic.execute("delete n/" + validName + ", John Doe"));
 
         assertEquals(originalPersons, model.getAddressBook().getPersonList());
         assertEquals(originalPersons, savedStorage.readAddressBook().orElseThrow().getPersonList());
