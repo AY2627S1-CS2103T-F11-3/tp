@@ -77,49 +77,38 @@ Format: `help`
 
 ### Adding a player profile: `add`
 
-Creates a player with a name, squad and football position.
+Adds a player. Name, squad and position are required; the other fields are optional.
 
 Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…`
 
-| Field | Full prefix | Shorthand | Required |
-| --- | --- | --- | --- |
-| Player name | `name/` | `n/` | Yes |
-| Squad name | `squad/` | `sn/` | Yes |
-| Position | `position/` | `pos/` | Yes |
-| Guardian name | `guardian/` | `g/` | No |
-| Guardian contact | `contact/` | `gc/` | No |
-| Availability | `available/` | `av/` | No |
+| Field | Full prefix | Shorthand |
+| --- | --- | --- |
+| Player name | `name/` | `n/` |
+| Squad name | `squad/` | `sn/` |
+| Position | `position/` | `pos/` |
+| Guardian name | `guardian/` | `g/` |
+| Guardian contact | `contact/` | `gc/` |
+| Availability | `available/` | `av/` |
 
-* All prefixes end with `/`. Values may follow the slash immediately. Parameters can appear in any order.
-* Specify each field once. Repeating a prefix or mixing its shorthand and full form is rejected, even when values match.
+* Fields can appear in any order. Specify each once using either prefix; mixing aliases for the same field is rejected.
   Tags (`t/`) may be repeated.
-* Player, squad and supplied guardian names must not be blank and may contain only letters, digits, hyphens and
-  whitespace. Surrounding whitespace is removed and repeated whitespace becomes a single space. Capitalization is
-  preserved; names and squads are case-sensitive when checking for duplicates.
-* Position must be `Goalkeeper`, `Defender`, `Midfielder` or `Striker`. Case, whitespace and hyphens are ignored:
-  `goal-keeper` and `G O A L K E E P E R` both mean `Goalkeeper`. Multiple positions and `Left Striker` are not supported.
-* Guardian name and contact can be supplied independently. Omitted values are stored as null and displayed as
-  `Not provided`. An explicitly supplied empty value is rejected.
-* A guardian contact must contain exactly eight digits after removing whitespace and hyphens. For example,
-  `contact/8123-4567` is stored as `81234567`.
-* Availability defaults to `true`. Supplied values must be `true` or `false`, ignoring case and all whitespace.
-* A duplicate has the same normalized name, squad and position. Changing guardian details, availability or tags does
-  not distinguish duplicates. Players with the same name but different squads or positions are allowed.
-* Required prefixes are checked first. Missing fields report `Error! Name must be specified!`,
-  `Error! Squad name must be specified!` or `Error! Position must be specified!`. Supplied values and duplicate
-  prefixes are then evaluated from left to right; the first error is reported.
-* Success: `Player NAME added!`. Duplicate: `NAME is already a registered player!`.
-* Player phone number, email and address are no longer stored; `p/`, `e/` and `a/` are rejected.
-* Existing profiles can retain an `Unassigned` squad or position. New players must supply a squad and a supported
-  position. Existing guardian placeholders are migrated to null, and previously stored `Forward` becomes `Striker`.
-* The name aliases above apply to `add`; use `n/` when editing a name with `edit`.
+* Player, squad and supplied guardian names must not be blank. They accept letters, digits, hyphens and whitespace;
+  surrounding whitespace is removed and repeated whitespace becomes one space. Names remain case-sensitive.
+* Choose one position: `Goalkeeper`, `Defender`, `Midfielder` or `Striker`. Case, whitespace and hyphens are ignored
+  (for example, `goal-keeper` means `Goalkeeper`).
+* Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
+  values are rejected. Contacts must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
+* Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
+* Players with the same normalized name, squad and position are rejected as duplicates, regardless of other fields.
+  The same name is allowed with a different squad or position.
+
+Success displays `Player NAME added!`. Missing required fields are reported first; otherwise, the first invalid or
+repeated field is reported from left to right.
 
 Examples:
 
 * `add name/John Doe squad/Soccer Stars position/Goalkeeper`
-* `add n/John Doe sn/Soccer Stars pos/goal-keeper`
-* `add name/Mike Ox squad/Football Fellas position/Striker guardian/Long Ox contact/99999999 available/false`
-* `add n/Betsy Crowe sn/Soccer Stars pos/Midfielder g/Jane Crowe gc/8123-4567 av/true t/captain`
+* `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
 
 ### Listing all persons: `list`
 
