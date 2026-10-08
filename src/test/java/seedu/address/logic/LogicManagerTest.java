@@ -12,6 +12,7 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Availability;
+import seedu.address.model.person.MatchesFilterCriteriaPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -196,6 +199,28 @@ public class LogicManagerTest {
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
         assertCommandSuccess(ListCommand.COMMAND_WORD, ListCommand.MESSAGE_SUCCESS, expectedModel);
+    }
+
+    @Test
+    public void execute_filterWithFailingStorage_succeeds() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        MatchesFilterCriteriaPredicate predicate = new MatchesFilterCriteriaPredicate(Optional.empty(),
+                Optional.of(new Availability(Availability.AVAILABLE)));
+        expectedModel.updateFilteredPersonList(predicate);
+        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                throw DUMMY_IO_EXCEPTION;
+            }
+        };
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
+        logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
+
+        assertCommandSuccess("filter /availability TRUE",
+                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, expectedModel.getFilteredPersonList().size()),
+                expectedModel);
     }
 
     @Test
