@@ -1,6 +1,11 @@
 package seedu.address.testutil;
 
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.Set;
@@ -28,6 +33,15 @@ public class PersonUtil {
     public static String getPersonDetails(Person person) {
         StringBuilder sb = new StringBuilder();
         sb.append(PREFIX_NAME + person.getName().fullName + " ");
+        sb.append(PREFIX_SQUADNAME + person.getSquadName().value + " ");
+        sb.append(PREFIX_POSITION + person.getPosition().value + " ");
+        if (person.getGuardianName() != null) {
+            sb.append(PREFIX_GUARDIANNAME + person.getGuardianName().value + " ");
+        }
+        if (person.getGuardianContact() != null) {
+            sb.append(PREFIX_GUARDIANCONTACT + person.getGuardianContact().value + " ");
+        }
+        sb.append(PREFIX_AVAILABILITY + Boolean.toString(person.getAvailability().value.equals("available")) + " ");
         person.getTags().stream().forEach(
             s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );

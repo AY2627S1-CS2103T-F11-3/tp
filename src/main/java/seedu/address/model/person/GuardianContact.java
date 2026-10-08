@@ -9,8 +9,8 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 public class GuardianContact {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Guardian contacts should only contain digits, and should be at least 3 digits long";
-    public static final String VALIDATION_REGEX = "\\d{3,}";
+            "Invalid telephone number entered! Telephone number should be 8 digits long and contain only digits!";
+    public static final String VALIDATION_REGEX = "[0-9]{8}";
 
     public final String value;
 
@@ -20,11 +20,17 @@ public class GuardianContact {
     public GuardianContact(String guardianContact) {
         requireNonNull(guardianContact);
         checkArgument(isValidGuardianContact(guardianContact), MESSAGE_CONSTRAINTS);
-        value = guardianContact;
+        value = normalize(guardianContact);
     }
 
+    /** Returns whether the contact normalizes to exactly eight digits. */
     public static boolean isValidGuardianContact(String test) {
-        return test.matches(VALIDATION_REGEX);
+        requireNonNull(test);
+        return normalize(test).matches(VALIDATION_REGEX);
+    }
+
+    private static String normalize(String contact) {
+        return contact.replaceAll("[\\s-]", "");
     }
 
     @Override

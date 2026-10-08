@@ -12,7 +12,7 @@ import seedu.address.model.tag.Tag;
 
 /**
  * Represents a Person in the address book.
- * Guarantees: details are present and not null, field values are validated, immutable.
+ * Guarantees: required fields are present, field values are validated, immutable.
  */
 public class Person {
 
@@ -29,13 +29,12 @@ public class Person {
     private final Remark remark;
 
     /**
-     * Every field must be present and not null.
+     * Every field except the optional guardian name and contact must be present and not null.
      */
     public Person(Name name, Set<Tag> tags, Remark remark,
                   SquadName squadName, Position position, GuardianName guardianName,
                   GuardianContact guardianContact, Availability availability) {
-        requireAllNonNull(name, tags, remark, squadName, position, guardianName,
-                guardianContact, availability);
+        requireAllNonNull(name, tags, remark, squadName, position, availability);
         this.name = name;
         this.tags.addAll(tags);
         this.remark = remark;
@@ -83,7 +82,7 @@ public class Person {
     }
 
     /**
-     * Returns true if both persons have the same name.
+     * Returns true if both players have the same name, squad and position.
      * This defines a weaker notion of equality between two persons.
      */
     public boolean isSamePerson(Person otherPerson) {
@@ -92,7 +91,9 @@ public class Person {
         }
 
         return otherPerson != null
-                && otherPerson.getName().equals(getName());
+                && otherPerson.getName().equals(getName())
+                && otherPerson.getSquadName().equals(getSquadName())
+                && otherPerson.getPosition().equals(getPosition());
     }
 
     /**
@@ -114,8 +115,8 @@ public class Person {
                 && tags.equals(otherPerson.tags)
                 && squadName.equals(otherPerson.squadName)
                 && position.equals(otherPerson.position)
-                && guardianName.equals(otherPerson.guardianName)
-                && guardianContact.equals(otherPerson.guardianContact)
+                && Objects.equals(guardianName, otherPerson.guardianName)
+                && Objects.equals(guardianContact, otherPerson.guardianContact)
                 && availability.equals(otherPerson.availability);
     }
 

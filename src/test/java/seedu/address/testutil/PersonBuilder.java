@@ -23,8 +23,8 @@ public class PersonBuilder {
     public static final String DEFAULT_REMARK = "";
     public static final String DEFAULT_SQUAD_NAME = "Unassigned";
     public static final String DEFAULT_POSITION = "Unassigned";
-    public static final String DEFAULT_GUARDIAN_NAME = "Not provided";
-    public static final String DEFAULT_GUARDIAN_CONTACT = "000";
+    public static final String DEFAULT_GUARDIAN_NAME = null;
+    public static final String DEFAULT_GUARDIAN_CONTACT = null;
     public static final String DEFAULT_AVAILABILITY = Availability.AVAILABLE;
 
     private Name name;
@@ -45,8 +45,8 @@ public class PersonBuilder {
         remark = new Remark(DEFAULT_REMARK);
         squadName = new SquadName(DEFAULT_SQUAD_NAME);
         position = new Position(DEFAULT_POSITION);
-        guardianName = new GuardianName(DEFAULT_GUARDIAN_NAME);
-        guardianContact = new GuardianContact(DEFAULT_GUARDIAN_CONTACT);
+        guardianName = null;
+        guardianContact = null;
         availability = new Availability(DEFAULT_AVAILABILITY);
     }
 
@@ -108,7 +108,7 @@ public class PersonBuilder {
      * Sets the guardian name of the {@code Person} that we are building.
      */
     public PersonBuilder withGuardianName(String guardianName) {
-        this.guardianName = new GuardianName(guardianName);
+        this.guardianName = guardianName == null ? null : new GuardianName(guardianName);
         return this;
     }
 
@@ -116,7 +116,7 @@ public class PersonBuilder {
      * Sets the guardian contact of the {@code Person} that we are building.
      */
     public PersonBuilder withGuardianContact(String guardianContact) {
-        this.guardianContact = new GuardianContact(guardianContact);
+        this.guardianContact = guardianContact == null ? null : new GuardianContact(guardianContact);
         return this;
     }
 

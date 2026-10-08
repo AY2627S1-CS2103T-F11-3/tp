@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe sn/Soccer Stars pos/Goalkeeper` : Adds a player named `John Doe`.
 
      For `add`, you can use `name/John Doe` instead of `n/John Doe`.
 
@@ -75,31 +75,51 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a player profile: `add`
 
-Adds a person to the address book.
+Creates a player with a name, squad and football position.
 
-Format: `add n/NAME [t/TAG]…​`
+Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…`
 
-* For `add`, `name/` is an alias for `n/`. Both prefixes accept the same name values and validation rules.
-* Specify the name exactly once. Repeating `n/`, repeating `name/`, or using both is rejected, even if the values match.
-* Name is required with either name prefix. Parameters can appear in any order.
-* Names must not be blank and may contain only letters, digits, hyphens and whitespace. Surrounding whitespace is
-  removed and repeated whitespace is replaced with a single space. Capitalization is preserved and names are
-  case-sensitive when checking for duplicates.
-* This alias applies to `add` only; use `n/` when editing a name with `edit`.
-* Player phone number, email and address are no longer stored. The former `p/`, `e/` and `a/` parameters are rejected.
-* New players currently receive squad and position `Unassigned`, guardian name `Not provided`, guardian contact `000`,
-  and availability `available`. These fields cannot be supplied through `add` yet.
+| Field | Full prefix | Shorthand | Required |
+| --- | --- | --- | --- |
+| Player name | `name/` | `n/` | Yes |
+| Squad name | `squad/` | `sn/` | Yes |
+| Position | `position/` | `pos/` | Yes |
+| Guardian name | `guardian/` | `g/` | No |
+| Guardian contact | `contact/` | `gc/` | No |
+| Availability | `available/` | `av/` | No |
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
-</div>
+* All prefixes end with `/`. Values may follow the slash immediately. Parameters can appear in any order.
+* Specify each field once. Repeating a prefix or mixing its shorthand and full form is rejected, even when values match.
+  Tags (`t/`) may be repeated.
+* Player, squad and supplied guardian names must not be blank and may contain only letters, digits, hyphens and
+  whitespace. Surrounding whitespace is removed and repeated whitespace becomes a single space. Capitalization is
+  preserved; names and squads are case-sensitive when checking for duplicates.
+* Position must be `Goalkeeper`, `Defender`, `Midfielder` or `Striker`. Case, whitespace and hyphens are ignored:
+  `goal-keeper` and `G O A L K E E P E R` both mean `Goalkeeper`. Multiple positions and `Left Striker` are not supported.
+* Guardian name and contact can be supplied independently. Omitted values are stored as null and displayed as
+  `Not provided`. An explicitly supplied empty value is rejected.
+* A guardian contact must contain exactly eight digits after removing whitespace and hyphens. For example,
+  `contact/8123-4567` is stored as `81234567`.
+* Availability defaults to `true`. Supplied values must be `true` or `false`, ignoring case and all whitespace.
+* A duplicate has the same normalized name, squad and position. Changing guardian details, availability or tags does
+  not distinguish duplicates. Players with the same name but different squads or positions are allowed.
+* Required prefixes are checked first. Missing fields report `Error! Name must be specified!`,
+  `Error! Squad name must be specified!` or `Error! Position must be specified!`. Supplied values and duplicate
+  prefixes are then evaluated from left to right; the first error is reported.
+* Success: `Player NAME added!`. Duplicate: `NAME is already a registered player!`.
+* Player phone number, email and address are no longer stored; `p/`, `e/` and `a/` are rejected.
+* Existing profiles can retain an `Unassigned` squad or position. New players must supply a squad and a supported
+  position. Existing guardian placeholders are migrated to null, and previously stored `Forward` becomes `Striker`.
+* The name aliases above apply to `add`; use `n/` when editing a name with `edit`.
 
 Examples:
-* `add n/John Doe`
-* `add name/John Doe`
-* `add n/Betsy Crowe t/friend t/criminal`
+
+* `add name/John Doe squad/Soccer Stars position/Goalkeeper`
+* `add n/John Doe sn/Soccer Stars pos/goal-keeper`
+* `add name/Mike Ox squad/Football Fellas position/Striker guardian/Long Ox contact/99999999 available/false`
+* `add n/Betsy Crowe sn/Soccer Stars pos/Midfielder g/Jane Crowe gc/8123-4567 av/true t/captain`
 
 ### Listing all persons: `list`
 
@@ -271,7 +291,7 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME [t/TAG]…​` (`name/` can replace `n/`; specify the name once) <br> e.g., `add name/James Ho t/friend t/colleague`
+**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`

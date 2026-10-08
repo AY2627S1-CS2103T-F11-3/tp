@@ -80,8 +80,8 @@ class JsonAdaptedPerson {
         remark = source.getRemark().value;
         squadName = source.getSquadName().value;
         position = source.getPosition().value;
-        guardianName = source.getGuardianName().value;
-        guardianContact = source.getGuardianContact().value;
+        guardianName = source.getGuardianName() == null ? null : source.getGuardianName().value;
+        guardianContact = source.getGuardianContact() == null ? null : source.getGuardianContact().value;
         availability = source.getAvailability().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
@@ -134,6 +134,10 @@ class JsonAdaptedPerson {
 
     private Position createPosition() throws IllegalValueException {
         String value = position == null ? "Unassigned" : position;
+        // Sample profiles previously used Forward for the striker role.
+        if ("Forward".equalsIgnoreCase(value)) {
+            value = "Striker";
+        }
         if (!Position.isValidPosition(value)) {
             throw new IllegalValueException(Position.MESSAGE_CONSTRAINTS);
         }
@@ -141,7 +145,10 @@ class JsonAdaptedPerson {
     }
 
     private GuardianName createGuardianName() throws IllegalValueException {
-        String value = guardianName == null ? "Not provided" : guardianName;
+        if (guardianName == null || ("Not provided".equals(guardianName) && "000".equals(guardianContact))) {
+            return null;
+        }
+        String value = guardianName;
         if (!GuardianName.isValidGuardianName(value)) {
             throw new IllegalValueException(GuardianName.MESSAGE_CONSTRAINTS);
         }
@@ -149,7 +156,10 @@ class JsonAdaptedPerson {
     }
 
     private GuardianContact createGuardianContact() throws IllegalValueException {
-        String value = guardianContact == null ? "000" : guardianContact;
+        if (guardianContact == null || "000".equals(guardianContact)) {
+            return null;
+        }
+        String value = guardianContact;
         if (!GuardianContact.isValidGuardianContact(value)) {
             throw new IllegalValueException(GuardianContact.MESSAGE_CONSTRAINTS);
         }

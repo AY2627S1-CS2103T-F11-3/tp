@@ -1,6 +1,7 @@
 package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static seedu.address.storage.JsonAdaptedPerson.MISSING_FIELD_MESSAGE_FORMAT;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.BENSON;
@@ -52,6 +53,36 @@ public class JsonAdaptedPersonTest {
         JsonAdaptedPerson invalidGuardian = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
                 "Team A", "Defender", "Jane/Doe", "81234567", "available");
         assertThrows(IllegalValueException.class, GuardianName.MESSAGE_CONSTRAINTS, invalidGuardian::toModelType);
+    }
+
+    @Test
+    public void toModelType_omittedGuardianDetails_remainNullAfterRoundTrip() throws Exception {
+        Person person = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Stars", "Striker", null, null, "available").toModelType();
+        assertNull(person.getGuardianName());
+        assertNull(person.getGuardianContact());
+        assertEquals(person, new JsonAdaptedPerson(person).toModelType());
+    }
+
+    @Test
+    public void toModelType_legacyPlaceholders_migratesWithoutLosingIdentity() throws Exception {
+        Person person = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Unassigned", "Unassigned", "Not provided", "000", "available").toModelType();
+        assertEquals("Unassigned", person.getPosition().value);
+        assertNull(person.getGuardianName());
+        assertNull(person.getGuardianContact());
+        Person formerForward = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Stars", "Forward", "Jane Doe", "81234567", "available").toModelType();
+        assertEquals("Striker", formerForward.getPosition().value);
+        assertEquals("81234567", formerForward.getGuardianContact().value);
+    }
+
+    @Test
+    public void toModelType_guardianNamedNotProvided_preservesExplicitName() throws Exception {
+        Person person = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Stars", "Striker", "Not provided", null, "available").toModelType();
+        assertEquals("Not provided", person.getGuardianName().value);
+        assertEquals(person, new JsonAdaptedPerson(person).toModelType());
     }
 
     @Test

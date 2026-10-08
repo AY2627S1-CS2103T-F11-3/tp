@@ -57,8 +57,10 @@ public class PersonCard extends UiPart<Region> {
         name.setText(person.getName().fullName);
         squadName.setText("Squad: " + person.getSquadName().value);
         position.setText("Position: " + person.getPosition().value);
-        guardianName.setText("Guardian: " + person.getGuardianName().value);
-        guardianContact.setText("Guardian contact: " + person.getGuardianContact().value);
+        guardianName.setText("Guardian: " + (person.getGuardianName() == null ? "Not provided"
+                : person.getGuardianName().value));
+        guardianContact.setText("Guardian contact: " + (person.getGuardianContact() == null ? "Not provided"
+                : person.getGuardianContact().value));
         availability.setText("Availability: " + person.getAvailability().value);
         remark.setText(person.getRemark().value);
         person.getTags().stream()

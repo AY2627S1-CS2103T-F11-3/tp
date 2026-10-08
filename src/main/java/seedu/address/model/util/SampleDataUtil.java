@@ -38,7 +38,7 @@ public class SampleDataUtil {
                 new GuardianName("Morgan Oliveiro"), new GuardianContact("83456789"),
                 new Availability(Availability.AVAILABLE)),
             new Person(new Name("David Li"),
-                getTagSet("family"), EMPTY_REMARK, new SquadName("U13 B"), new Position("Forward"),
+                getTagSet("family"), EMPTY_REMARK, new SquadName("U13 B"), new Position("Striker"),
                 new GuardianName("Taylor Li"), new GuardianContact("84567890"),
                 new Availability(Availability.AVAILABLE)),
             new Person(new Name("Irfan Ibrahim"),

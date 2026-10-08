@@ -29,10 +29,15 @@ public class PersonTest {
         // null -> returns false
         assertFalse(ALICE.isSamePerson(null));
 
-        // same name, all other attributes different -> returns true
+        // same identity, different tags -> returns true
         Person editedAlice = new PersonBuilder(ALICE)
                 .withTags(VALID_TAG_HUSBAND).build();
         assertTrue(ALICE.isSamePerson(editedAlice));
+
+        assertFalse(ALICE.isSamePerson(new PersonBuilder(ALICE).withSquadName("Another Squad").build()));
+        assertFalse(ALICE.isSamePerson(new PersonBuilder(ALICE).withPosition("Striker").build()));
+        assertTrue(ALICE.isSamePerson(new PersonBuilder(ALICE).withGuardianName("Jane Doe")
+                .withGuardianContact("81234567").withAvailability("unavailable").build()));
 
         // different name, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withName(VALID_NAME_BOB).build();
