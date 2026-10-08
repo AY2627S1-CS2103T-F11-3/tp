@@ -111,7 +111,7 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_filter() throws Exception {
-        assertTrue(parser.parseCommand("filter /squad Soccer Stars") instanceof FilterCommand);
+        assertTrue(parser.parseCommand("filter squad/Soccer Stars") instanceof FilterCommand);
     }
 
     @Test

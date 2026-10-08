@@ -220,7 +220,7 @@ public class LogicManagerTest {
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
-        assertCommandSuccess("filter /availability TRUE",
+        assertCommandSuccess("filter available/TRUE",
                 String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, expectedModel.getFilteredPersonList().size()),
                 expectedModel);
     }

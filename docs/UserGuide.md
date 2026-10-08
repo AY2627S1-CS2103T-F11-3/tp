@@ -144,11 +144,11 @@ Displays registered players that match a squad, availability, or both.
 
 Formats:
 
-* `filter /squad SQUAD_NAME [/availability true|false]`
-* `filter /availability true|false [/squad SQUAD_NAME]`
+* `filter squad/SQUAD_NAME [available/true|false]`
+* `filter available/true|false [squad/SQUAD_NAME]`
 
-Short forms are also accepted: `sn/SQUAD_NAME` for `/squad SQUAD_NAME`, and `av/true` or `av/false`
-for `/availability true|false`.
+Short forms are also accepted: `sn/SQUAD_NAME` for `squad/SQUAD_NAME`, and `av/true` or `av/false`
+for `available/true|false`.
 
 * Supply at least one criterion. Criteria can appear in either order, but each criterion can appear only once.
   Long and short forms count as the same criterion.
@@ -164,9 +164,9 @@ for `/availability true|false`.
 
 Examples:
 
-* `filter /squad Soccer Stars`
-* `filter /availability true`
-* `filter /availability true /squad Football Fellas`
+* `filter squad/Soccer Stars`
+* `filter available/true`
+* `filter available/true squad/Football Fellas`
 * `filter sn/Soccer Stars av/false`
 
 ### Deleting players: `delete`
@@ -274,6 +274,6 @@ Action | Format, Examples
 **Delete** | `delete INDEX [INDEX]...` or `delete /name NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete /name John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter /squad SQUAD_NAME [/availability true|false]` or `filter /availability true|false [/squad SQUAD_NAME]`<br> e.g., `filter /squad Soccer Stars av/true`
+**Filter** | `filter squad/SQUAD_NAME [available/true|false]` or `filter available/true|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
 **List** | `list`
 **Help** | `help`
