@@ -59,6 +59,13 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_hyphensAndRepeatedWhitespace_success() {
+        Person expectedPerson = new PersonBuilder().withName("John-Paul Doe 2").withTags().build();
+        assertParseSuccess(parser, " n/ \tJohn-Paul \n Doe  2 ", new AddCommand(expectedPerson));
+        assertParseSuccess(parser, " name/ \tJohn-Paul \n Doe  2 ", new AddCommand(expectedPerson));
+    }
+
+    @Test
     public void parse_repeatedNamePrefix_failure() {
         String expectedMessage = Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME);
         assertParseFailure(parser, NAME_DESC_AMY + NAME_DESC_BOB, expectedMessage);

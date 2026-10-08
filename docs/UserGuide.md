@@ -84,6 +84,9 @@ Format: `add n/NAME [t/TAG]…​`
 * For `add`, `name/` is an alias for `n/`. Both prefixes accept the same name values and validation rules.
 * Specify the name exactly once. Repeating `n/`, repeating `name/`, or using both is rejected, even if the values match.
 * Name is required with either name prefix. Parameters can appear in any order.
+* Names must not be blank and may contain only letters, digits, hyphens and whitespace. Surrounding whitespace is
+  removed and repeated whitespace is replaced with a single space. Capitalization is preserved and names are
+  case-sensitive when checking for duplicates.
 * This alias applies to `add` only; use `n/` when editing a name with `edit`.
 * Player phone number, email and address are no longer stored. The former `p/`, `e/` and `a/` parameters are rejected.
 * New players currently receive squad and position `Unassigned`, guardian name `Not provided`, guardian number `000`,
@@ -152,8 +155,8 @@ for `available/true|false`.
 
 * Supply at least one criterion. Criteria can appear in either order, but each criterion can appear only once.
   Long and short forms count as the same criterion.
-* A squad name must not be blank. Squad matching is case-sensitive; surrounding whitespace is ignored, while
-  whitespace within the name is preserved.
+* Squad names must not be blank and may contain only letters, digits, hyphens and whitespace. Squad matching is
+  case-sensitive; surrounding whitespace is ignored and repeated whitespace is treated as a single space.
 * Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
   as `available`; `false` matches players stored as `unavailable`.
 * When both criteria are supplied, a player must satisfy both. If no players match, the result is
@@ -204,8 +207,7 @@ Formats:
 * Do not mix index selectors with name selectors. After `/name`, numbers are names, not indices.
 * Empty entries, such as `John Doe,,Amy Tan` or a trailing comma, are rejected.
 * Commas always separate names; quotation marks do not escape them.
-* Player names currently support only letters, digits, and spaces when adding players. Creating players with punctuation
-  in their names is not yet supported.
+* Player names support letters, digits, hyphens and whitespace. Other punctuation is not supported.
 
 Examples:
 

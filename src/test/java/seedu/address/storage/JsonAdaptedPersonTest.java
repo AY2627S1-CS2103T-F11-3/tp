@@ -12,7 +12,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.Person;
+import seedu.address.model.person.SquadName;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -28,6 +31,27 @@ public class JsonAdaptedPersonTest {
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(BENSON);
         assertEquals(BENSON, person.toModelType());
+    }
+
+    @Test
+    public void toModelType_namesWithWhitespace_normalizesNames() throws Exception {
+        JsonAdaptedPerson adapted = new JsonAdaptedPerson(" \tJohn-Paul \n Doe 2 ", VALID_TAGS, VALID_REMARK,
+                " \tSoccer \n Stars ", "Defender", " \tJane-Anne \n Doe ", "81234567", "available");
+        Person person = adapted.toModelType();
+        assertEquals("John-Paul Doe 2", person.getName().fullName);
+        assertEquals("Soccer Stars", person.getSquadName().value);
+        assertEquals("Jane-Anne Doe", person.getGuardianName().value);
+        assertEquals(person, new JsonAdaptedPerson(person).toModelType());
+    }
+
+    @Test
+    public void toModelType_invalidSquadOrGuardianName_throwsIllegalValueException() {
+        JsonAdaptedPerson invalidSquad = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Team@A", "Defender", "Jane Doe", "81234567", "available");
+        assertThrows(IllegalValueException.class, SquadName.MESSAGE_CONSTRAINTS, invalidSquad::toModelType);
+        JsonAdaptedPerson invalidGuardian = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Team A", "Defender", "Jane/Doe", "81234567", "available");
+        assertThrows(IllegalValueException.class, GuardianName.MESSAGE_CONSTRAINTS, invalidGuardian::toModelType);
     }
 
     @Test

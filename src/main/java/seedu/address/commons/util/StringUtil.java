@@ -11,6 +11,14 @@ import java.util.Arrays;
  * Helper functions for handling strings.
  */
 public class StringUtil {
+    /**
+     * Trims surrounding whitespace and replaces each run of whitespace with a single space.
+     */
+    public static String normalizeWhitespace(String value) {
+        requireNonNull(value);
+        return value.replaceAll("\\s+", " ").strip();
+    }
+
 
     /**
      * Returns true if the {@code sentence} contains the {@code word}.

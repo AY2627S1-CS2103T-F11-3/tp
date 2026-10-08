@@ -32,6 +32,18 @@ public class FilterCommandParserTest {
     }
 
     @Test
+    public void parse_squadHyphensAndRepeatedWhitespace_success() {
+        assertParseSuccess(parser, "squad/ \tU12-A \n Stars  2 ", command("U12-A Stars 2", null));
+        assertParseSuccess(parser, "sn/ \tU12-A \n Stars  2 ", command("U12-A Stars 2", null));
+    }
+
+    @Test
+    public void parse_invalidSquadName_throwsParseException() {
+        assertParseFailure(parser, "squad/Team@A", SquadName.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "sn/Team_A", SquadName.MESSAGE_CONSTRAINTS);
+    }
+
+    @Test
     public void parse_missingCriteriaOrValue_throwsParseException() {
         assertParseFailure(parser, "", FilterCommandParser.MESSAGE_MISSING_CRITERION);
         assertParseFailure(parser, "   ", FilterCommandParser.MESSAGE_MISSING_CRITERION);

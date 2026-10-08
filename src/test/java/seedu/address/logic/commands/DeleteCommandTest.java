@@ -25,6 +25,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.testutil.PersonBuilder;
 
 /**
@@ -249,12 +250,16 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_namesDifferOnlyInWhitespace_reportsAmbiguity() {
+    public void execute_namesDifferOnlyInWhitespace_rejectsDuplicateAndDeletesPlayer() {
         Person firstMatch = new PersonBuilder().withName("John Doe").build();
         Person secondMatch = new PersonBuilder().withName("John  Doe").build();
         model.addPerson(firstMatch);
-        model.addPerson(secondMatch);
-        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe")), "John Doe", List.of(firstMatch, secondMatch));
+        assertThrows(DuplicatePersonException.class, () -> model.addPerson(secondMatch));
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(firstMatch);
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
+                Messages.format(firstMatch));
+        assertCommandSuccess(DeleteCommand.forNames(List.of("John  Doe")), model, expectedMessage, expectedModel);
     }
 
     @Test
