@@ -9,6 +9,15 @@ import seedu.address.model.Model;
 public abstract class Command {
 
     /**
+     * Returns whether executing this command changes address book data and therefore requires persistence.
+     * Commands are mutating by default so newly added write commands remain safe unless they opt out explicitly.
+     */
+    public boolean isAddressBookMutating() {
+        return true;
+    }
+
+
+    /**
      * Executes the command and returns the result message.
      *
      * @param model {@code Model} which the command should operate on.
