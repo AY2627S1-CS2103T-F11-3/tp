@@ -65,7 +65,7 @@ public class PersonTest {
                 new SquadName("Soccer Stars"),
                 new Position("Goalkeeper"),
                 new GuardianName("Jane Doe"),
-                new GuardianNumber("91234567"),
+                new GuardianContact("91234567"),
                 new Availability("available")
         );
 
