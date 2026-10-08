@@ -68,8 +68,22 @@ public class LogicManagerTest {
 
     @Test
     public void execute_validCommand_success() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
         String listCommand = ListCommand.COMMAND_WORD;
-        assertCommandSuccess(listCommand, ListCommand.MESSAGE_SUCCESS, model);
+
+        // Build the expected output based on the players in model
+        StringBuilder expectedMessage = new StringBuilder();
+        List<Person> list = model.getFilteredPersonList();
+        for (int i = 0; i < list.size(); i++) {
+            expectedMessage.append(i + 1)
+                    .append(". ")
+                    .append(list.get(i).toListString());
+            if (i < list.size() - 1) {
+                expectedMessage.append("\n");
+            }
+        }
+
+        assertCommandSuccess(listCommand, expectedMessage.toString(), model);
     }
 
     @Test
@@ -199,7 +213,19 @@ public class LogicManagerTest {
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
-        assertCommandSuccess(ListCommand.COMMAND_WORD, ListCommand.MESSAGE_SUCCESS, expectedModel);
+        // TODO: Repeated... maybe create a helper method?
+        StringBuilder expectedMessage = new StringBuilder();
+        List<Person> list = expectedModel.getFilteredPersonList();
+        for (int i = 0; i < list.size(); i++) {
+            expectedMessage.append(i + 1)
+                    .append(". ")
+                    .append(list.get(i).toListString());
+            if (i < list.size() - 1) {
+                expectedMessage.append("\n");
+            }
+        }
+
+        assertCommandSuccess(ListCommand.COMMAND_WORD, expectedMessage.toString(), expectedModel);
     }
 
     @Test

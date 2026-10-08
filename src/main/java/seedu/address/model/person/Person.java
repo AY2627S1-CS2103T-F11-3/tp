@@ -96,6 +96,20 @@ public class Person {
     }
 
     /**
+     * Formats the player details for list view output:
+     * <name>, <squad>, <position>, <availability>
+     *
+     * @return the formatted string.
+     */
+    public String toListString() {
+        return String.format("%s, %s, %s, %s",
+                getName().fullName,
+                getSquadName().value,
+                getPosition(),
+                getAvailability()); // e.g. true or false
+    }
+
+    /**
      * Returns true if both persons have the same identity and data fields.
      * This defines a stronger notion of equality between two persons.
      */
