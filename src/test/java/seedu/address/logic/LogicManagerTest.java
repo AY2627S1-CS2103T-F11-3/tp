@@ -188,12 +188,13 @@ public class LogicManagerTest {
     public void execute_readOnlyCommandWithFailingStorage_succeeds() throws Exception {
         model.setAddressBook(getTypicalAddressBook());
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")) {
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
-                throw DUMMY_IO_EXCEPTION;
-            }
-        };
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")) {
+                @Override
+                public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                    throw DUMMY_IO_EXCEPTION;
+                }
+            };
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
