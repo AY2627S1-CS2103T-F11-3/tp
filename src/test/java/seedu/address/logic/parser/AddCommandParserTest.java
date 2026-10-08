@@ -27,6 +27,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -47,6 +48,58 @@ import seedu.address.testutil.PersonBuilder;
 
 public class AddCommandParserTest {
     private AddCommandParser parser = new AddCommandParser();
+
+    @Test
+    public void parse_fullNamePrefix_success() {
+        String name = " name/" + VALID_NAME_BOB;
+        Person expectedPerson = new PersonBuilder(BOB).withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, name + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                new AddCommand(expectedPerson));
+        assertParseSuccess(parser, ADDRESS_DESC_BOB + TAG_DESC_FRIEND + EMAIL_DESC_BOB + name + PHONE_DESC_BOB,
+                new AddCommand(expectedPerson));
+
+        Person expectedPersonWithoutTags = new PersonBuilder(BOB).withTags().build();
+        assertParseSuccess(parser, " name/  " + VALID_NAME_BOB + "  "
+                + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB, new AddCommand(expectedPersonWithoutTags));
+    }
+
+    @Test
+    public void parse_repeatedFullNamePrefix_failure() {
+        String otherFields = PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB;
+        String expectedMessage = Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME_FULL);
+        assertParseFailure(parser, " name/John Doe name/Jane Doe" + otherFields, expectedMessage);
+        assertParseFailure(parser, " name/John Doe name/John Doe" + otherFields, expectedMessage);
+    }
+
+    @Test
+    public void parse_mixedNamePrefixes_failure() {
+        String otherFields = PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB;
+        String expectedMessage = Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_NAME_FULL);
+        assertParseFailure(parser, " n/John Doe name/Jane Doe" + otherFields, expectedMessage);
+        assertParseFailure(parser, " name/Jane Doe n/John Doe" + otherFields, expectedMessage);
+        assertParseFailure(parser, " n/John Doe name/John Doe" + otherFields, expectedMessage);
+        assertParseFailure(parser, " n/ name/John Doe" + otherFields, expectedMessage);
+    }
+
+    @Test
+    public void parse_fullNamePrefixInvalidValue_failure() {
+        String otherFields = PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB;
+        assertParseFailure(parser, " name/" + otherFields, Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " name/   " + otherFields, Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " name/John@Doe" + otherFields, Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, PREAMBLE_NON_EMPTY + " name/" + VALID_NAME_BOB + otherFields,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_fullNamePrefixCompulsoryFieldMissing_failure() {
+        String name = " name/" + VALID_NAME_BOB;
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, name + EMAIL_DESC_BOB + ADDRESS_DESC_BOB, expectedMessage);
+        assertParseFailure(parser, name + PHONE_DESC_BOB + ADDRESS_DESC_BOB, expectedMessage);
+        assertParseFailure(parser, name + PHONE_DESC_BOB + EMAIL_DESC_BOB, expectedMessage);
+        assertParseFailure(parser, PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB, expectedMessage);
+    }
 
     @Test
     public void parse_allFieldsPresent_success() {
