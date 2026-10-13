@@ -41,8 +41,8 @@ public class DeleteCommandTest {
         Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
 
-        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
-                Messages.format(personToDelete));
+        String expectedMessage = String.format("Deleted player: %s (%s, %s).",
+                personToDelete.getName(), personToDelete.getSquadName(), personToDelete.getPosition());
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(personToDelete);
@@ -66,8 +66,8 @@ public class DeleteCommandTest {
         Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
 
-        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
-                Messages.format(personToDelete));
+        String expectedMessage = String.format("Deleted player: %s (%s, %s).",
+                personToDelete.getName(), personToDelete.getSquadName(), personToDelete.getPosition());
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(personToDelete);
@@ -99,7 +99,7 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(originalPersons.get(3));
 
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
-                originalPersons.get(1).getName().fullName + ", " + originalPersons.get(3).getName().fullName);
+                "1. Benson Meier (Unassigned, Unassigned)\n2. Daniel Meier (Unassigned, Unassigned)");
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
@@ -112,7 +112,7 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(originalPersons.get(1));
 
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
-                originalPersons.get(1).getName().fullName + ", " + originalPersons.get(0).getName().fullName);
+                "1. Benson Meier (Unassigned, Unassigned)\n2. Alice Pauline (Unassigned, Unassigned)");
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
@@ -123,8 +123,8 @@ public class DeleteCommandTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(personToDelete);
 
-        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
-                Messages.format(personToDelete));
+        String expectedMessage = String.format("Deleted player: %s (%s, %s).",
+                personToDelete.getName(), personToDelete.getSquadName(), personToDelete.getPosition());
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
@@ -195,7 +195,7 @@ public class DeleteCommandTest {
         DeleteCommand command = DeleteCommand.forNames(List.of(first.getName().fullName, third.getName().fullName));
 
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
-                first.getName().fullName + ", " + third.getName().fullName);
+                "1. Alice Pauline (Unassigned, Unassigned)\n2. Carl Kurz (Unassigned, Unassigned)");
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
@@ -207,7 +207,8 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(player);
 
         DeleteCommand command = DeleteCommand.forNames(List.of("  JOHN\tDOE  "));
-        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(player));
+        String expectedMessage = String.format("Deleted player: %s (%s, %s).",
+                player.getName(), player.getSquadName(), player.getPosition());
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
@@ -219,7 +220,8 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(player);
 
         DeleteCommand command = DeleteCommand.forNames(List.of("John Doe", "john doe", "John  Doe"));
-        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(player));
+        String expectedMessage = String.format("Deleted player: %s (%s, %s).",
+                player.getName(), player.getSquadName(), player.getPosition());
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
     }
 
@@ -257,8 +259,8 @@ public class DeleteCommandTest {
         assertThrows(DuplicatePersonException.class, () -> model.addPerson(secondMatch));
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(firstMatch);
-        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
-                Messages.format(firstMatch));
+        String expectedMessage = String.format("Deleted player: %s (%s, %s).",
+                firstMatch.getName(), firstMatch.getSquadName(), firstMatch.getPosition());
         assertCommandSuccess(DeleteCommand.forNames(List.of("John  Doe")), model, expectedMessage, expectedModel);
     }
 

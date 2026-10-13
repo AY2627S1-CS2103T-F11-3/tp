@@ -31,8 +31,8 @@ public class DeleteCommand extends Command {
             + "Use " + PREFIX_NAME_FULL + " as an alias for " + PREFIX_NAME + ".\n"
             + "Examples: " + COMMAND_WORD + " 1 3; " + COMMAND_WORD + " " + PREFIX_NAME + "John Doe, Amy Tan";
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
-    public static final String MESSAGE_DELETE_PERSONS_SUCCESS = "Deleted %1$d players: %2$s";
+    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted player: %1$s.";
+    public static final String MESSAGE_DELETE_PERSONS_SUCCESS = "Deleted %1$d players:\n%2$s";
     public static final String MESSAGE_NO_DISPLAYED_PLAYERS =
             "No players are currently displayed. Use list to show all players before deleting by index.";
     public static final String MESSAGE_INDEX_OUT_OF_RANGE =
@@ -144,11 +144,16 @@ public class DeleteCommand extends Command {
 
     private String formatSuccess(List<Person> deletedPersons) {
         if (deletedPersons.size() == 1) {
-            return String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(deletedPersons.getFirst()));
+            return String.format(MESSAGE_DELETE_PERSON_SUCCESS, formatPlayer(deletedPersons.getFirst()));
         }
-        String names = deletedPersons.stream().map(person -> person.getName().fullName)
-                .collect(Collectors.joining(", "));
-        return String.format(MESSAGE_DELETE_PERSONS_SUCCESS, deletedPersons.size(), names);
+        String players = IntStream.range(0, deletedPersons.size())
+                .mapToObj(index -> (index + 1) + ". " + formatPlayer(deletedPersons.get(index)))
+                .collect(Collectors.joining("\n"));
+        return String.format(MESSAGE_DELETE_PERSONS_SUCCESS, deletedPersons.size(), players);
+    }
+
+    private String formatPlayer(Person player) {
+        return String.format("%s (%s, %s)", player.getName(), player.getSquadName(), player.getPosition());
     }
 
     @Override
