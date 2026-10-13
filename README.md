@@ -27,7 +27,7 @@ SquadLink allows coaches to:
 
 ### Running SquadLink
 
-1. Download the latest SquadLink `.jar` file from the Releases page.
+1. Download `squadlink.jar` from the [SquadLink Releases page](https://github.com/AY2627S1-CS2103T-F11-3/tp/releases).
 2. Copy the `.jar` file to the folder where you want to store SquadLink data.
 3. Open a terminal in that folder.
 4. Run:
@@ -42,9 +42,9 @@ The SquadLink application should open shortly after.
 
 For more information about using and developing SquadLink, refer to:
 
-- [User Guide](https://nus-cs2103-ay2627-s1.github.io/tp/UserGuide.html)
-- [Developer Guide](https://nus-cs2103-ay2627-s1.github.io/tp/DeveloperGuide.html)
-- [About Us](https://nus-cs2103-ay2627-s1.github.io/tp/AboutUs.html)
+- [User Guide](https://ay2627s1-cs2103t-f11-3.github.io/tp/UserGuide.html)
+- [Developer Guide](https://ay2627s1-cs2103t-f11-3.github.io/tp/DeveloperGuide.html)
+- [About Us](https://ay2627s1-cs2103t-f11-3.github.io/tp/AboutUs.html)
 
 ## Acknowledgements
 
