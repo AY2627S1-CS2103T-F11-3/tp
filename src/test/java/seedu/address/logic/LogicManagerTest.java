@@ -120,7 +120,7 @@ public class LogicManagerTest {
         expectedModel.deletePerson(originalPersons.get(0));
         expectedModel.deletePerson(originalPersons.get(2));
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
-                originalPersons.get(0).getName().fullName + ", " + originalPersons.get(2).getName().fullName);
+                "1. Alice Pauline (Unassigned, Unassigned)\n2. Carl Kurz (Unassigned, Unassigned)");
 
         assertCommandSuccess("delete 1 3", expectedMessage, expectedModel);
 
@@ -139,7 +139,7 @@ public class LogicManagerTest {
         expectedModel.deletePerson(first);
         expectedModel.deletePerson(third);
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
-                first.getName().fullName + ", " + third.getName().fullName);
+                "1. Alice Pauline (Unassigned, Unassigned)\n2. Carl Kurz (Unassigned, Unassigned)");
 
         assertCommandSuccess("delete n/" + first.getName().fullName + ", " + third.getName().fullName,
                 expectedMessage, expectedModel);
