@@ -171,36 +171,16 @@ public class MainWindow extends UiPart<Stage> {
         return personListPanel;
     }
 
-    private void showPlayerList() {
-        personListPanelPlaceholder.getChildren().setAll(personListPanel.getRoot());
-    }
-
-    private void showOverview(CommandResult result) {
-        OverviewPanel overviewPanel = new OverviewPanel(result.getOverview().orElseThrow(), () -> {
-            showPlayerList();
-            resultDisplay.setFeedbackToUser("Player list restored. Current filter and indexes are preserved.");
-        });
-        personListPanelPlaceholder.getChildren().setAll(overviewPanel);
-    }
-
     /**
      * Executes the command and returns the result.
      *
      * @see seedu.address.logic.Logic#execute(String)
      */
-    CommandResult executeCommand(String commandText) throws CommandException, ParseException {
+    private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
-            if (commandResult.getOverview().isPresent()) {
-                showOverview(commandResult);
-                resultDisplay.setFeedbackToUser("Club overview displayed. Use View players to return to your list.");
-            } else {
-                if (!commandResult.isShowHelp() && !commandResult.isExit()) {
-                    showPlayerList();
-                }
-                resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
-            }
+            resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
@@ -213,7 +193,6 @@ public class MainWindow extends UiPart<Stage> {
             return commandResult;
         } catch (CommandException | ParseException e) {
             logger.info("An error occurred while executing command: " + commandText);
-            showPlayerList();
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }
