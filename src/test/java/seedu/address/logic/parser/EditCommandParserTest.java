@@ -126,6 +126,23 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_availabilityWithWhitespaceAndOtherFields_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withAvailability(VALID_AVAILABILITY_UNAVAILABLE).build();
+        EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_AVAILABILITY + " f a l s e",
+                expectedCommand);
+
+        descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
+                .withAvailability("available").withTags(VALID_TAG_FRIEND).build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
+        String userInput = targetIndex.getOneBased() + TAG_DESC_FRIEND + " " + PREFIX_AVAILABILITY_FULL
+                + " t r u e" + NAME_DESC_AMY;
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
     public void parse_resetTags_success() {
         Index targetIndex = INDEX_THIRD_PERSON;
         String userInput = targetIndex.getOneBased() + TAG_EMPTY;
