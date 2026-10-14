@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -22,11 +24,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
+import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.ModelManager;
 import seedu.address.model.overview.ClubOverview;
 import seedu.address.model.overview.SquadSummary;
@@ -135,6 +140,74 @@ public class OverviewPanelTest {
             assertEquals("Bob", model.getFilteredPersonList().getFirst().getName().fullName);
             assertFalse(stage.isShowing());
             stage.close();
+        });
+    }
+
+    @Test
+    public void commands_errorsFromOverview_restorePlayerListAndShowError() throws Exception {
+        onFxThread(() -> {
+            ModelManager model = new ModelManager();
+            model.addPerson(new PersonBuilder().withName("Alice").withSquadName("Alpha").build());
+            model.addPerson(new PersonBuilder().withName("Bob").withSquadName("Beta").build());
+            model.updateFilteredPersonList(player -> player.getSquadName().value.equals("Beta"));
+            var displayed = List.copyOf(model.getFilteredPersonList());
+            Stage stage = new Stage();
+            try {
+                MainWindow window = new MainWindow(stage, new LogicManager(model, null),
+                        Path.of("data/addressbook.json"));
+                window.fillInnerParts();
+                window.executeCommand("overview");
+                ParseException parseError = assertThrows(ParseException.class, () ->
+                        window.executeCommand("overview invalid"));
+                assertNull(stage.getScene().lookup(".overview-panel"));
+                assertEquals(displayed, model.getFilteredPersonList());
+                TextArea feedback = (TextArea) stage.getScene().lookup("#resultDisplay");
+                assertEquals(parseError.getMessage(), feedback.getText());
+
+                window.executeCommand("overview");
+                CommandException commandError = assertThrows(CommandException.class, () ->
+                        window.executeCommand("delete 2"));
+                assertNull(stage.getScene().lookup(".overview-panel"));
+                assertEquals(displayed, model.getFilteredPersonList());
+                assertEquals(2, model.getAddressBook().getPersonList().size());
+                assertEquals(commandError.getMessage(), feedback.getText());
+            } finally {
+                stage.close();
+            }
+        });
+    }
+
+    @Test
+    public void commands_helpAndExit_keepOverviewAndDispatchActions() throws Exception {
+        onFxThread(() -> {
+            ModelManager model = new ModelManager();
+            model.addPerson(new PersonBuilder().build());
+            Stage stage = new Stage();
+            int[] helpRequests = {0};
+            try {
+                MainWindow window = new MainWindow(stage, new LogicManager(model, null),
+                        Path.of("data/addressbook.json")) {
+                    @Override
+                    public void handleHelp() {
+                        helpRequests[0]++;
+                    }
+                };
+                window.fillInnerParts();
+                window.executeCommand("overview");
+                var overviewPanel = stage.getScene().lookup(".overview-panel");
+                assertNotNull(overviewPanel);
+                assertTrue(window.executeCommand("help").isShowHelp());
+                assertEquals(1, helpRequests[0]);
+                assertSame(overviewPanel, stage.getScene().lookup(".overview-panel"));
+
+                stage.setWidth(760);
+                assertTrue(window.executeCommand("exit").isExit());
+                assertSame(overviewPanel, stage.getScene().lookup(".overview-panel"));
+                assertFalse(stage.isShowing());
+                assertEquals(760, model.getGuiSettings().getWindowWidth());
+            } finally {
+                stage.close();
+            }
         });
     }
 
