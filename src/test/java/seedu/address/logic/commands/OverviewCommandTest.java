@@ -3,7 +3,6 @@ package seedu.address.logic.commands;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 
 import java.util.List;
 
@@ -26,7 +25,8 @@ public class OverviewCommandTest {
     @Test
     public void execute_emptyClub_showsGuidance() {
         Model model = new ModelManager();
-        assertCommandSuccess(command, model, OverviewCommand.MESSAGE_EMPTY, new ModelManager());
+        assertEquals(OverviewCommand.MESSAGE_EMPTY, command.execute(model).getFeedbackToUser());
+        assertEquals(new ModelManager(), model);
     }
 
     @Test
@@ -37,7 +37,8 @@ public class OverviewCommandTest {
                 + "\nAlpha: 2 total | 1 available | 1 unavailable"
                 + "\nBeta: 1 total | 1 available | 0 unavailable"
                 + "\nZulu: 1 total | 0 available | 1 unavailable (No players available)";
-        assertCommandSuccess(command, model, expected, expectedModel);
+        assertEquals(expected, command.execute(model).getFeedbackToUser());
+        assertEquals(expectedModel, model);
     }
 
     @Test
@@ -140,6 +141,17 @@ public class OverviewCommandTest {
         model.setPerson(player, new PersonBuilder(player).withSquadName("Beta").build());
         assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
                 + "\nBeta: 1 total | 1 available | 0 unavailable", command.execute(model).getFeedbackToUser());
+    }
+
+    @Test
+    public void execute_returnsStructuredPayloadForCards() {
+        var overview = command.execute(createModel()).getOverview().orElseThrow();
+        assertEquals(3, overview.squads().size());
+        assertEquals(4, overview.getTotalPlayers());
+        assertEquals(2, overview.getAvailablePlayers());
+        assertEquals(2, overview.getUnavailablePlayers());
+        assertEquals("Alpha", overview.squads().getFirst().squadName());
+        assertEquals(List.of(), command.execute(new ModelManager()).getOverview().orElseThrow().squads());
     }
 
     private Model createModel() {
