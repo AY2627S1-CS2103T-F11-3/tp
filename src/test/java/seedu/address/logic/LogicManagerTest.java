@@ -81,6 +81,27 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_editAvailability_savesUpdatedPlayerAndFilterUsesNewValue() throws Exception {
+        Person player = new PersonBuilder().withName("John Doe").withSquadName("Soccer Stars")
+                .withPosition("Goalkeeper").withAvailability("available").build();
+        model.addPerson(player);
+        Person updatedPlayer = new PersonBuilder(player).withAvailability("unavailable").build();
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.setPerson(player, updatedPlayer);
+
+        assertCommandSuccess("edit 1 av/false",
+                String.format("Edited person: %s", Messages.format(updatedPlayer)), expectedModel);
+
+        JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+
+        expectedModel.updateFilteredPersonList(person ->
+                person.getAvailability().equals(new Availability("unavailable")));
+        assertCommandSuccess("filter av/false", String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, 1),
+                expectedModel);
+    }
+
+    @Test
     public void execute_invalidCommandFormat_throwsParseException() {
         String invalidCommand = "uicfhmowqewca";
         assertParseException(invalidCommand, MESSAGE_UNKNOWN_COMMAND);

@@ -6,9 +6,12 @@ import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_AVAILABILITY_UNAVAILABLE;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -29,6 +32,7 @@ import seedu.address.testutil.EditPersonDescriptorBuilder;
 public class EditCommandParserTest {
 
     private static final String TAG_EMPTY = " " + PREFIX_TAG;
+    private static final String AVAILABILITY_DESC_UNAVAILABLE = " " + PREFIX_AVAILABILITY + "false";
 
     private static final String MESSAGE_INVALID_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
@@ -108,6 +112,20 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_availability_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withAvailability(VALID_AVAILABILITY_UNAVAILABLE).build();
+        EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, targetIndex.getOneBased() + AVAILABILITY_DESC_UNAVAILABLE, expectedCommand);
+
+        descriptor = new EditPersonDescriptorBuilder().withAvailability("available").build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_AVAILABILITY_FULL + "TrUe",
+                expectedCommand);
+    }
+
+    @Test
     public void parse_resetTags_success() {
         Index targetIndex = INDEX_THIRD_PERSON;
         String userInput = targetIndex.getOneBased() + TAG_EMPTY;
@@ -124,6 +142,18 @@ public class EditCommandParserTest {
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
         assertParseFailure(parser, "1" + INVALID_NAME_DESC + NAME_DESC_AMY,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
+    }
+
+    @Test
+    public void parse_invalidOrRepeatedAvailability_failure() {
+        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY + "yes",
+                EditCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY,
+                EditCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + AVAILABILITY_DESC_UNAVAILABLE,
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_AVAILABILITY));
+        assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + " " + PREFIX_AVAILABILITY_FULL + "true",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL));
     }
 
     @Test

@@ -1,6 +1,8 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
@@ -40,9 +42,10 @@ public class EditCommand extends Command {
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
+            + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
             + "[" + PREFIX_TAG + "TAG]...\n"
-            + "Example: " + COMMAND_WORD + " 1 "
-            + PREFIX_NAME + "John Doe";
+            + "Aliases: " + PREFIX_AVAILABILITY + " for " + PREFIX_AVAILABILITY_FULL + "\n"
+            + "Example: " + COMMAND_WORD + " 1 " + PREFIX_AVAILABILITY + "false";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
@@ -98,7 +101,8 @@ public class EditCommand extends Command {
         Position updatedPosition = personToEdit.getPosition();
         GuardianName updatedGuardianName = personToEdit.getGuardianName();
         GuardianContact updatedGuardianContact = personToEdit.getGuardianContact();
-        Availability updatedAvailability = personToEdit.getAvailability();
+        Availability updatedAvailability =
+                editPersonDescriptor.getAvailability().orElse(personToEdit.getAvailability());
 
         return new Person(updatedName, updatedTags, updatedRemark,
                 updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianContact, updatedAvailability);
@@ -134,6 +138,7 @@ public class EditCommand extends Command {
     public static class EditPersonDescriptor {
         private Name name;
         private Set<Tag> tags;
+        private Availability availability;
 
         public EditPersonDescriptor() {}
 
@@ -144,13 +149,14 @@ public class EditCommand extends Command {
         public EditPersonDescriptor(EditPersonDescriptor toCopy) {
             setName(toCopy.name);
             setTags(toCopy.tags);
+            setAvailability(toCopy.availability);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, tags);
+            return CollectionUtil.isAnyNonNull(name, tags, availability);
         }
 
         public void setName(Name name) {
@@ -178,6 +184,14 @@ public class EditCommand extends Command {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        public void setAvailability(Availability availability) {
+            this.availability = availability;
+        }
+
+        public Optional<Availability> getAvailability() {
+            return Optional.ofNullable(availability);
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -190,7 +204,8 @@ public class EditCommand extends Command {
             }
 
             return Objects.equals(name, otherEditPersonDescriptor.name)
-                    && Objects.equals(tags, otherEditPersonDescriptor.tags);
+                    && Objects.equals(tags, otherEditPersonDescriptor.tags)
+                    && Objects.equals(availability, otherEditPersonDescriptor.availability);
         }
 
         @Override
@@ -198,6 +213,7 @@ public class EditCommand extends Command {
             return new ToStringBuilder(this)
                     .add("name", name)
                     .add("tags", tags)
+                    .add("availability", availability)
                     .toString();
         }
     }

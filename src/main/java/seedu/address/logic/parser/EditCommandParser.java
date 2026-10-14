@@ -2,6 +2,8 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
@@ -11,15 +13,20 @@ import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.Availability;
 import seedu.address.model.tag.Tag;
 
 /**
  * Parses input arguments and creates a new EditCommand object
  */
 public class EditCommandParser implements Parser<EditCommand> {
+
+    public static final String MESSAGE_INVALID_AVAILABILITY =
+            "Invalid availability entered! Availability should either be true or false!";
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand
@@ -29,7 +36,8 @@ public class EditCommandParser implements Parser<EditCommand> {
     public EditCommand parse(String args) throws ParseException {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
-                ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_TAG);
+                ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_AVAILABILITY,
+                        PREFIX_AVAILABILITY_FULL, PREFIX_TAG);
 
         Index index;
 
@@ -39,13 +47,15 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME);
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL);
+        verifyAvailabilityPrefixUsedOnce(argMultimap);
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 
         if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
             editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
         }
+        parseAvailability(argMultimap).ifPresent(editPersonDescriptor::setAvailability);
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
@@ -53,6 +63,33 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
 
         return new EditCommand(index, editPersonDescriptor);
+    }
+
+    private void verifyAvailabilityPrefixUsedOnce(ArgumentMultimap argMultimap) throws ParseException {
+        if (argMultimap.getValue(PREFIX_AVAILABILITY).isPresent()
+                && argMultimap.getValue(PREFIX_AVAILABILITY_FULL).isPresent()) {
+            throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(
+                    PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL));
+        }
+    }
+
+    private Optional<Availability> parseAvailability(ArgumentMultimap argMultimap) throws ParseException {
+        Optional<String> availability = argMultimap.getValue(PREFIX_AVAILABILITY);
+        if (availability.isEmpty()) {
+            availability = argMultimap.getValue(PREFIX_AVAILABILITY_FULL);
+        }
+        if (availability.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String normalizedAvailability = availability.get().replaceAll("\\s", "");
+        if ("true".equalsIgnoreCase(normalizedAvailability)) {
+            return Optional.of(new Availability(Availability.AVAILABLE));
+        }
+        if ("false".equalsIgnoreCase(normalizedAvailability)) {
+            return Optional.of(new Availability(Availability.UNAVAILABLE));
+        }
+        throw new ParseException(MESSAGE_INVALID_AVAILABILITY);
     }
 
     /**
