@@ -4,7 +4,15 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.Collection;
@@ -18,6 +26,10 @@ import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
+import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.Position;
+import seedu.address.model.person.SquadName;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -37,7 +49,9 @@ public class EditCommandParser implements Parser<EditCommand> {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_AVAILABILITY,
-                        PREFIX_AVAILABILITY_FULL, PREFIX_TAG);
+                        PREFIX_AVAILABILITY_FULL, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL,
+                        PREFIX_POSITION, PREFIX_POSITION_FULL, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL,
+                        PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL, PREFIX_TAG);
 
         Index index;
 
@@ -47,14 +61,24 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL);
-        verifyAvailabilityPrefixUsedOnce(argMultimap);
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
+                PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL, PREFIX_POSITION, PREFIX_POSITION_FULL,
+                PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL);
+        verifyAliasesUsedOnce(argMultimap, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL);
+        verifyAliasesUsedOnce(argMultimap, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL);
+        verifyAliasesUsedOnce(argMultimap, PREFIX_POSITION, PREFIX_POSITION_FULL);
+        verifyAliasesUsedOnce(argMultimap, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL);
+        verifyAliasesUsedOnce(argMultimap, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL);
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 
         if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
             editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
         }
+        parseSquadName(argMultimap).ifPresent(editPersonDescriptor::setSquadName);
+        parsePosition(argMultimap).ifPresent(editPersonDescriptor::setPosition);
+        parseGuardianName(argMultimap, editPersonDescriptor);
+        parseGuardianContact(argMultimap, editPersonDescriptor);
         parseAvailability(argMultimap).ifPresent(editPersonDescriptor::setAvailability);
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
 
@@ -65,19 +89,62 @@ public class EditCommandParser implements Parser<EditCommand> {
         return new EditCommand(index, editPersonDescriptor);
     }
 
-    private void verifyAvailabilityPrefixUsedOnce(ArgumentMultimap argMultimap) throws ParseException {
-        if (argMultimap.getValue(PREFIX_AVAILABILITY).isPresent()
-                && argMultimap.getValue(PREFIX_AVAILABILITY_FULL).isPresent()) {
-            throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(
-                    PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL));
+    private void verifyAliasesUsedOnce(ArgumentMultimap argMultimap, Prefix shortPrefix, Prefix fullPrefix)
+            throws ParseException {
+        if (argMultimap.getValue(shortPrefix).isPresent() && argMultimap.getValue(fullPrefix).isPresent()) {
+            throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(shortPrefix, fullPrefix));
+        }
+    }
+
+    private Optional<String> getValue(ArgumentMultimap argMultimap, Prefix shortPrefix, Prefix fullPrefix) {
+        return argMultimap.getValue(shortPrefix).or(() -> argMultimap.getValue(fullPrefix));
+    }
+
+    private Optional<SquadName> parseSquadName(ArgumentMultimap argMultimap) throws ParseException {
+        return parseValue(getValue(argMultimap, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL), SquadName::new);
+    }
+
+    private Optional<Position> parsePosition(ArgumentMultimap argMultimap) throws ParseException {
+        Optional<Position> position = parseValue(
+                getValue(argMultimap, PREFIX_POSITION, PREFIX_POSITION_FULL), Position::new);
+        if (position.isPresent() && position.get().isUnassigned()) {
+            throw new ParseException(Position.MESSAGE_CONSTRAINTS);
+        }
+        return position;
+    }
+
+    private void parseGuardianName(ArgumentMultimap argMultimap, EditPersonDescriptor descriptor)
+            throws ParseException {
+        Optional<String> value = getValue(argMultimap, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL);
+        if (value.isPresent()) {
+            descriptor.setGuardianName(value.get().isEmpty() ? null
+                    : parseValue(value, GuardianName::new).orElseThrow());
+        }
+    }
+
+    private void parseGuardianContact(ArgumentMultimap argMultimap, EditPersonDescriptor descriptor)
+            throws ParseException {
+        Optional<String> value = getValue(argMultimap, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL);
+        if (value.isPresent()) {
+            descriptor.setGuardianContact(value.get().isEmpty() ? null
+                    : parseValue(value, GuardianContact::new).orElseThrow());
+        }
+    }
+
+    private <T> Optional<T> parseValue(Optional<String> value, java.util.function.Function<String, T> constructor)
+            throws ParseException {
+        if (value.isEmpty()) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(constructor.apply(value.get()));
+        } catch (IllegalArgumentException exception) {
+            throw new ParseException(exception.getMessage(), exception);
         }
     }
 
     private Optional<Availability> parseAvailability(ArgumentMultimap argMultimap) throws ParseException {
-        Optional<String> availability = argMultimap.getValue(PREFIX_AVAILABILITY);
-        if (availability.isEmpty()) {
-            availability = argMultimap.getValue(PREFIX_AVAILABILITY_FULL);
-        }
+        Optional<String> availability = getValue(argMultimap, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL);
         if (availability.isEmpty()) {
             return Optional.empty();
         }

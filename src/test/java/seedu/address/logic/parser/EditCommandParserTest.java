@@ -12,7 +12,11 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -140,6 +144,28 @@ public class EditCommandParserTest {
         String userInput = targetIndex.getOneBased() + TAG_DESC_FRIEND + " " + PREFIX_AVAILABILITY_FULL
                 + " t r u e" + NAME_DESC_AMY;
         assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_playerProfileFields_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withSquadName("Soccer Stars")
+                .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567").build();
+        EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
+        String userInput = targetIndex.getOneBased() + " " + PREFIX_GUARDIANNAME_FULL + "Jane Doe "
+                + PREFIX_POSITION + "Defender " + PREFIX_SQUADNAME_FULL + "Soccer Stars "
+                + PREFIX_GUARDIANCONTACT + "8123-4567";
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_emptyOptionalPlayerProfileFields_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withGuardianName(null).withGuardianContact(null).build();
+        EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_GUARDIANNAME_FULL
+                + " " + PREFIX_GUARDIANCONTACT, expectedCommand);
     }
 
     @Test

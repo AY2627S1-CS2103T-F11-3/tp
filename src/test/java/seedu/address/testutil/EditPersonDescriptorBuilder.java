@@ -6,8 +6,12 @@ import java.util.stream.Stream;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
+import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Position;
+import seedu.address.model.person.SquadName;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -32,6 +36,10 @@ public class EditPersonDescriptorBuilder {
         descriptor = new EditPersonDescriptor();
         descriptor.setName(person.getName());
         descriptor.setTags(person.getTags());
+        descriptor.setSquadName(person.getSquadName());
+        descriptor.setPosition(person.getPosition());
+        descriptor.setGuardianName(person.getGuardianName());
+        descriptor.setGuardianContact(person.getGuardianContact());
         descriptor.setAvailability(person.getAvailability());
     }
 
@@ -58,6 +66,30 @@ public class EditPersonDescriptorBuilder {
      */
     public EditPersonDescriptorBuilder withAvailability(String availability) {
         descriptor.setAvailability(new Availability(availability));
+        return this;
+    }
+
+    /** Sets the squad name. */
+    public EditPersonDescriptorBuilder withSquadName(String squadName) {
+        descriptor.setSquadName(new SquadName(squadName));
+        return this;
+    }
+
+    /** Sets the position. */
+    public EditPersonDescriptorBuilder withPosition(String position) {
+        descriptor.setPosition(new Position(position));
+        return this;
+    }
+
+    /** Sets or clears the guardian name. */
+    public EditPersonDescriptorBuilder withGuardianName(String guardianName) {
+        descriptor.setGuardianName(guardianName == null ? null : new GuardianName(guardianName));
+        return this;
+    }
+
+    /** Sets or clears the guardian contact. */
+    public EditPersonDescriptorBuilder withGuardianContact(String guardianContact) {
+        descriptor.setGuardianContact(guardianContact == null ? null : new GuardianContact(guardianContact));
         return this;
     }
 

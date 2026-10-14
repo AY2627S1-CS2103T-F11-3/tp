@@ -3,7 +3,15 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
@@ -42,10 +50,15 @@ public class EditCommand extends Command {
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
+            + "[" + PREFIX_SQUADNAME_FULL + "SQUAD_NAME] "
+            + "[" + PREFIX_POSITION_FULL + "POSITION] "
+            + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
+            + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
             + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
             + "[" + PREFIX_TAG + "TAG]...\n"
-            + "Aliases: " + PREFIX_AVAILABILITY + " for " + PREFIX_AVAILABILITY_FULL + "\n"
-            + "Example: " + COMMAND_WORD + " 1 " + PREFIX_AVAILABILITY + "false";
+            + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
+            + PREFIX_GUARDIANCONTACT + ", and " + PREFIX_AVAILABILITY + " for their full prefixes\n"
+            + "Example: " + COMMAND_WORD + " 1 " + PREFIX_POSITION + "Defender " + PREFIX_AVAILABILITY + "false";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
@@ -97,10 +110,12 @@ public class EditCommand extends Command {
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
         Remark updatedRemark = personToEdit.getRemark(); // edit command does not allow editing remarks
-        SquadName updatedSquadName = personToEdit.getSquadName();
-        Position updatedPosition = personToEdit.getPosition();
-        GuardianName updatedGuardianName = personToEdit.getGuardianName();
-        GuardianContact updatedGuardianContact = personToEdit.getGuardianContact();
+        SquadName updatedSquadName = editPersonDescriptor.getSquadName().orElse(personToEdit.getSquadName());
+        Position updatedPosition = editPersonDescriptor.getPosition().orElse(personToEdit.getPosition());
+        GuardianName updatedGuardianName = editPersonDescriptor.isGuardianNameEdited()
+                ? editPersonDescriptor.getGuardianName().orElse(null) : personToEdit.getGuardianName();
+        GuardianContact updatedGuardianContact = editPersonDescriptor.isGuardianContactEdited()
+                ? editPersonDescriptor.getGuardianContact().orElse(null) : personToEdit.getGuardianContact();
         Availability updatedAvailability =
                 editPersonDescriptor.getAvailability().orElse(personToEdit.getAvailability());
 
@@ -138,7 +153,13 @@ public class EditCommand extends Command {
     public static class EditPersonDescriptor {
         private Name name;
         private Set<Tag> tags;
+        private SquadName squadName;
+        private Position position;
+        private GuardianName guardianName;
+        private GuardianContact guardianContact;
         private Availability availability;
+        private boolean guardianNameEdited;
+        private boolean guardianContactEdited;
 
         public EditPersonDescriptor() {}
 
@@ -149,6 +170,14 @@ public class EditCommand extends Command {
         public EditPersonDescriptor(EditPersonDescriptor toCopy) {
             setName(toCopy.name);
             setTags(toCopy.tags);
+            setSquadName(toCopy.squadName);
+            setPosition(toCopy.position);
+            if (toCopy.guardianNameEdited) {
+                setGuardianName(toCopy.guardianName);
+            }
+            if (toCopy.guardianContactEdited) {
+                setGuardianContact(toCopy.guardianContact);
+            }
             setAvailability(toCopy.availability);
         }
 
@@ -156,7 +185,8 @@ public class EditCommand extends Command {
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, tags, availability);
+            return CollectionUtil.isAnyNonNull(name, tags, squadName, position, availability)
+                    || guardianNameEdited || guardianContactEdited;
         }
 
         public void setName(Name name) {
@@ -184,6 +214,48 @@ public class EditCommand extends Command {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        public void setSquadName(SquadName squadName) {
+            this.squadName = squadName;
+        }
+
+        public Optional<SquadName> getSquadName() {
+            return Optional.ofNullable(squadName);
+        }
+
+        public void setPosition(Position position) {
+            this.position = position;
+        }
+
+        public Optional<Position> getPosition() {
+            return Optional.ofNullable(position);
+        }
+
+        public void setGuardianName(GuardianName guardianName) {
+            this.guardianName = guardianName;
+            guardianNameEdited = true;
+        }
+
+        public Optional<GuardianName> getGuardianName() {
+            return Optional.ofNullable(guardianName);
+        }
+
+        public boolean isGuardianNameEdited() {
+            return guardianNameEdited;
+        }
+
+        public void setGuardianContact(GuardianContact guardianContact) {
+            this.guardianContact = guardianContact;
+            guardianContactEdited = true;
+        }
+
+        public Optional<GuardianContact> getGuardianContact() {
+            return Optional.ofNullable(guardianContact);
+        }
+
+        public boolean isGuardianContactEdited() {
+            return guardianContactEdited;
+        }
+
         public void setAvailability(Availability availability) {
             this.availability = availability;
         }
@@ -205,15 +277,25 @@ public class EditCommand extends Command {
 
             return Objects.equals(name, otherEditPersonDescriptor.name)
                     && Objects.equals(tags, otherEditPersonDescriptor.tags)
-                    && Objects.equals(availability, otherEditPersonDescriptor.availability);
+                    && Objects.equals(squadName, otherEditPersonDescriptor.squadName)
+                    && Objects.equals(position, otherEditPersonDescriptor.position)
+                    && Objects.equals(guardianName, otherEditPersonDescriptor.guardianName)
+                    && Objects.equals(guardianContact, otherEditPersonDescriptor.guardianContact)
+                    && Objects.equals(availability, otherEditPersonDescriptor.availability)
+                    && guardianNameEdited == otherEditPersonDescriptor.guardianNameEdited
+                    && guardianContactEdited == otherEditPersonDescriptor.guardianContactEdited;
         }
 
         @Override
         public String toString() {
             return new ToStringBuilder(this)
-                    .add("name", name)
-                    .add("tags", tags)
-                    .add("availability", availability)
+                .add("name", name)
+                .add("tags", tags)
+                .add("squadName", squadName)
+                .add("position", position)
+                .add("guardianName", guardianName)
+                .add("guardianContact", guardianContact)
+                .add("availability", availability)
                     .toString();
         }
     }

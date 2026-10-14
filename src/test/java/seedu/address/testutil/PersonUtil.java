@@ -54,6 +54,18 @@ public class PersonUtil {
     public static String getEditPersonDescriptorDetails(EditPersonDescriptor descriptor) {
         StringBuilder sb = new StringBuilder();
         descriptor.getName().ifPresent(name -> sb.append(PREFIX_NAME).append(name.fullName).append(" "));
+        descriptor.getSquadName().ifPresent(squad ->
+                sb.append(PREFIX_SQUADNAME).append(squad.value).append(" "));
+        descriptor.getPosition().ifPresent(position ->
+                sb.append(PREFIX_POSITION).append(position.value).append(" "));
+        if (descriptor.isGuardianNameEdited()) {
+            sb.append(PREFIX_GUARDIANNAME).append(descriptor.getGuardianName().map(value -> value.value).orElse(""))
+                    .append(" ");
+        }
+        if (descriptor.isGuardianContactEdited()) {
+            String guardianContact = descriptor.getGuardianContact().map(value -> value.value).orElse("");
+            sb.append(PREFIX_GUARDIANCONTACT).append(guardianContact).append(" ");
+        }
         descriptor.getAvailability().ifPresent(availability -> sb.append(PREFIX_AVAILABILITY)
                 .append(availability.value.equals("available")).append(" "));
         if (descriptor.getTags().isPresent()) {
