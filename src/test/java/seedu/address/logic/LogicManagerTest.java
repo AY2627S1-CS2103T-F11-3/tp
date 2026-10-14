@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
@@ -116,6 +117,54 @@ public class LogicManagerTest {
 
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_overviewWithUnwritableStorage_succeedsAndPreservesFilter() throws Exception {
+        Person player = new PersonBuilder().withSquadName("Alpha").build();
+        model.addPerson(player);
+        model.updateFilteredPersonList(person -> false);
+        JsonAddressBookStorage failingStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("overview.json")) {
+                    @Override
+                    public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                        throw DUMMY_AD_EXCEPTION;
+                    }
+                };
+        logic = new LogicManager(model, new StorageManager(failingStorage,
+                new JsonUserPrefsStorage(temporaryFolder.resolve("overviewPrefs.json"))));
+
+        CommandResult result = logic.execute("overview");
+
+        assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable", result.getFeedbackToUser());
+        assertEquals(List.of(player), model.getAddressBook().getPersonList());
+        assertEquals(List.of(), model.getFilteredPersonList());
+        assertFalse(result.isExit());
+        assertFalse(result.isShowHelp());
+    }
+
+    @Test
+    public void execute_overviewAfterCommands_usesUpdatedDataAndPreservesDeleteIndexes() throws Exception {
+        logic.execute("add n/Alice sn/Alpha pos/Defender");
+        logic.execute("add n/Bob sn/Beta pos/Striker av/false");
+        logic.execute("filter sn/Beta");
+        List<Person> displayedPlayers = List.copyOf(model.getFilteredPersonList());
+        assertEquals("Club overview: 2 squads, 2 players.\nAvailable: 1 | Unavailable: 1\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable"
+                + "\nBeta: 1 total | 0 available | 1 unavailable (No players available)",
+                logic.execute("overview").getFeedbackToUser());
+        assertEquals(displayedPlayers, model.getFilteredPersonList());
+
+        logic.execute("edit 1 av/true");
+        assertEquals("Club overview: 2 squads, 2 players.\nAvailable: 2 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable"
+                + "\nBeta: 1 total | 1 available | 0 unavailable", logic.execute("overview").getFeedbackToUser());
+        logic.execute("filter sn/Beta");
+        logic.execute("overview");
+        logic.execute("delete 1");
+        assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable", logic.execute("overview").getFeedbackToUser());
     }
 
     @Test

@@ -103,6 +103,45 @@ public class OverviewCommandTest {
         assertFalse(command.isAddressBookMutating());
     }
 
+    @Test
+    public void execute_normalisedSquadNames_groupsPlayersTogether() {
+        Model model = new ModelManager();
+        model.addPerson(new PersonBuilder().withName("Alice").withSquadName("  Soccer   Stars  ").build());
+        model.addPerson(new PersonBuilder().withName("Bob").withSquadName("Soccer Stars")
+                .withAvailability("UNAVAILABLE").build());
+        assertEquals("Club overview: 1 squad, 2 players.\nAvailable: 1 | Unavailable: 1\n\nSquads:"
+                + "\nSoccer Stars: 2 total | 1 available | 1 unavailable", command.execute(model).getFeedbackToUser());
+    }
+
+    @Test
+    public void execute_unassignedPlayers_includesLegacySquad() {
+        Model model = new ModelManager();
+        model.addPerson(new PersonBuilder().build());
+        assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
+                + "\nUnassigned: 1 total | 1 available | 0 unavailable", command.execute(model).getFeedbackToUser());
+    }
+
+    @Test
+    public void execute_sameNameInDifferentSquads_countsBothRegistrations() {
+        Model model = new ModelManager();
+        model.addPerson(new PersonBuilder().withName("Alice").withSquadName("Alpha").build());
+        model.addPerson(new PersonBuilder().withName("Alice").withSquadName("Beta").build());
+        assertEquals("Club overview: 2 squads, 2 players.\nAvailable: 2 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable"
+                + "\nBeta: 1 total | 1 available | 0 unavailable", command.execute(model).getFeedbackToUser());
+    }
+
+    @Test
+    public void execute_playerMovesSquad_removesOldSquadAndCountsNewSquad() {
+        Model model = new ModelManager();
+        Person player = new PersonBuilder().withSquadName("Alpha").build();
+        model.addPerson(player);
+        command.execute(model);
+        model.setPerson(player, new PersonBuilder(player).withSquadName("Beta").build());
+        assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
+                + "\nBeta: 1 total | 1 available | 0 unavailable", command.execute(model).getFeedbackToUser());
+    }
+
     private Model createModel() {
         AddressBook addressBook = new AddressBook();
         addressBook.addPerson(new PersonBuilder().withName("Zoe").withSquadName("Zulu")
