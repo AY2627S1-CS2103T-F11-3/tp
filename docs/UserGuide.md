@@ -120,18 +120,24 @@ Format: `list`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* Only name and tags can be edited with this command. Player phone number, email and address are no longer supported.
+* Name, squad, position, guardian name, guardian contact, availability and tags can be edited with this command.
+  Use `sn/`, `pos/`, `g/`, `gc/` and `av/` as shorthand for their respective full prefixes.
+* Squad, position, guardian name, guardian contact and availability use the same validation as `add`. `Unassigned`
+  is not a valid edited position. Supply `guardian/` or `contact/` without a value to remove that optional detail.
+  Player phone number, email and address are no longer supported.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
 Examples:
 *  `edit 1 n/John Doe` Edits the name of the 1st person to be `John Doe`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit 2 av/false` Marks the 2nd player as unavailable.
+*  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
 ### Locating persons by name: `find`
 
@@ -286,7 +292,7 @@ Action | Format, Examples
 **Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
+**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [t/TAG]…​`<br> e.g., `edit 2 sn/Soccer Stars pos/Defender`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true|false]` or `filter available/true|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
 **List** | `list`

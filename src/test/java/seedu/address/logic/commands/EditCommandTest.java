@@ -53,6 +53,23 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_editPlayerProfileFields_success() {
+        Person original = new PersonBuilder().withName("Original Player").withSquadName("U12 A")
+                .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567").build();
+        Model profileModel = new ModelManager();
+        profileModel.addPerson(original);
+        Person edited = new PersonBuilder(original).withSquadName("U13 A").withPosition("Striker")
+                .withGuardianName(null).withGuardianContact(null).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withSquadName("U13 A")
+                .withPosition("Striker").withGuardianName(null).withGuardianContact(null).build();
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(edited);
+
+        assertCommandSuccess(new EditCommand(INDEX_FIRST_PERSON, descriptor), profileModel,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(edited)), expectedModel);
+    }
+
+    @Test
     public void execute_allFieldsSpecifiedUnfilteredList_success() {
         Person editedPerson = new PersonBuilder().build();
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder(editedPerson).build();

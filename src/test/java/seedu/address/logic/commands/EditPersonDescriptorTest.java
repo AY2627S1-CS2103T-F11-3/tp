@@ -40,6 +40,10 @@ public class EditPersonDescriptorTest {
         // different tags -> returns false
         editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different availability -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withAvailability("unavailable").build();
+        assertFalse(DESC_AMY.equals(editedAmy));
     }
 
     @Test
@@ -47,7 +51,12 @@ public class EditPersonDescriptorTest {
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
         String expected = EditPersonDescriptor.class.getCanonicalName() + "{name="
                 + editPersonDescriptor.getName().orElse(null) + ", tags="
-                + editPersonDescriptor.getTags().orElse(null) + "}";
+                + editPersonDescriptor.getTags().orElse(null) + ", squadName="
+                + editPersonDescriptor.getSquadName().orElse(null) + ", position="
+                + editPersonDescriptor.getPosition().orElse(null) + ", guardianName="
+                + editPersonDescriptor.getGuardianName().orElse(null) + ", guardianContact="
+                + editPersonDescriptor.getGuardianContact().orElse(null) + ", availability="
+                + editPersonDescriptor.getAvailability().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }
