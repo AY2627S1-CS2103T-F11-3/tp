@@ -174,17 +174,9 @@ Format: `overview`
 * Use `main` to check indexes before editing or deleting. Those commands use the retained player list.
 * `help` opens help while keeping the overview. Command errors return to the player list and show the error.
 
-Example summary (shown as totals and squad cards):
+Example overview showing club totals and squad cards:
 
-```text
-Club overview: 3 squads, 30 players.
-Available: 18 | Unavailable: 12
-
-Squads:
-Football Fellas: 12 total | 10 available | 2 unavailable
-Soccer Stars: 10 total | 0 available | 10 unavailable (No players available)
-Youth United: 8 total | 8 available | 0 unavailable
-```
+![Club overview showing player availability totals and squad cards](images/overviewCard.png)
 
 ### Editing a player: `edit`
 
