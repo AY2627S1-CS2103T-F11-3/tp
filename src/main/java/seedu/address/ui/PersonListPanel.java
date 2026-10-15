@@ -21,6 +21,8 @@ public class PersonListPanel extends UiPart<Region> {
     @FXML
     private TableView<Person> personTableView;
     @FXML
+    private TableColumn<Person, String> indexColumn;
+    @FXML
     private TableColumn<Person, String> nameColumn;
     @FXML
     private TableColumn<Person, String> squadColumn;
@@ -47,6 +49,7 @@ public class PersonListPanel extends UiPart<Region> {
     }
 
     private void configureColumns() {
+        indexColumn.setCellValueFactory(cell -> stringValue(personTableView.getItems().indexOf(cell.getValue()) + 1));
         nameColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getName().fullName));
         squadColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getSquadName().value));
         positionColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getPosition().value));

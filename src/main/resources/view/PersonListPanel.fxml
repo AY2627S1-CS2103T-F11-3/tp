@@ -7,14 +7,15 @@
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <TableView fx:id="personTableView" styleClass="player-table" VBox.vgrow="ALWAYS">
     <columns>
-      <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Name" />
-      <TableColumn fx:id="squadColumn" prefWidth="120.0" text="Squad" />
-      <TableColumn fx:id="positionColumn" prefWidth="120.0" text="Position" />
-      <TableColumn fx:id="guardianNameColumn" prefWidth="150.0" text="Guardian" />
-      <TableColumn fx:id="guardianContactColumn" prefWidth="130.0" text="Guardian contact" />
-      <TableColumn fx:id="availabilityColumn" prefWidth="110.0" text="Availability" />
-      <TableColumn fx:id="tagsColumn" prefWidth="130.0" text="Tags" />
-      <TableColumn fx:id="remarkColumn" prefWidth="180.0" text="Remark" />
+      <TableColumn fx:id="indexColumn" prefWidth="55.0" sortable="false" text="Index" />
+      <TableColumn fx:id="nameColumn" prefWidth="150.0" sortable="false" text="Name" />
+      <TableColumn fx:id="squadColumn" prefWidth="120.0" sortable="false" text="Squad" />
+      <TableColumn fx:id="positionColumn" prefWidth="120.0" sortable="false" text="Position" />
+      <TableColumn fx:id="guardianNameColumn" prefWidth="150.0" sortable="false" text="Guardian" />
+      <TableColumn fx:id="guardianContactColumn" prefWidth="130.0" sortable="false" text="Guardian contact" />
+      <TableColumn fx:id="availabilityColumn" prefWidth="110.0" sortable="false" text="Availability" />
+      <TableColumn fx:id="tagsColumn" prefWidth="130.0" sortable="false" text="Tags" />
+      <TableColumn fx:id="remarkColumn" prefWidth="180.0" sortable="false" text="Remark" />
     </columns>
   </TableView>
 </VBox>
