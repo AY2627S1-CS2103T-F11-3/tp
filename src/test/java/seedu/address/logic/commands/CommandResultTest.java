@@ -5,7 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+
+import seedu.address.model.overview.ClubOverview;
+import seedu.address.model.overview.SquadSummary;
 
 public class CommandResultTest {
     @Test
@@ -33,6 +38,21 @@ public class CommandResultTest {
 
         // different exit value -> returns false
         assertFalse(commandResult.equals(new CommandResult("feedback", false, true)));
+    }
+
+    @Test
+    public void overviewPayload_preservesSnapshotAndParticipatesInEquality() {
+        ClubOverview summary = new ClubOverview(List.of(new SquadSummary("Alpha", 2, 1)));
+        CommandResult result = new CommandResult("overview", summary);
+        CommandResult same = new CommandResult("overview", new ClubOverview(List.of(new SquadSummary("Alpha", 2, 1))));
+        assertEquals(summary, result.getOverview().orElseThrow());
+        assertEquals(result, same);
+        assertEquals(result.hashCode(), same.hashCode());
+        assertNotEquals(result, new CommandResult("overview"));
+        assertNotEquals(result, new CommandResult("overview", new ClubOverview(List.of())));
+        assertFalse(new CommandResult("feedback").getOverview().isPresent());
+        assertFalse(result.isExit());
+        assertFalse(result.isShowHelp());
     }
 
     @Test

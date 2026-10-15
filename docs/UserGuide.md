@@ -116,6 +116,40 @@ Shows a list of all persons in the address book.
 
 Format: `list`
 
+### Viewing squad availability: `overview`
+
+Opens a scrollable card overview of every squad and the players available for selection.
+
+Format: `overview`
+
+* Shows the number of squads, total registered players, and club-wide available and unavailable counts.
+* Lists each squad's total, available and unavailable player counts in alphabetical order.
+* Flags squads with no available players with `No players available`.
+* Includes all registered players, even those hidden by `find` or `filter`. Your previous player list, filter,
+  and indexes are retained. Use `list`, `find`, or `filter` to view players; `list` shows all players.
+* Squad names remain case-sensitive, as with `filter`. Legacy players with squad `Unassigned` appear under that name.
+* Squads are derived from registered players. A squad disappears from the overview when its last player is deleted.
+* Counts are recalculated each time you run the command. An empty club shows guidance to add players.
+* Extra arguments are rejected with usage guidance.
+* Cards wrap into fewer columns on narrow windows. Long squad names wrap, and the panel scrolls vertically.
+* Availability bars show the proportion of players available. Squads with nobody available show a red
+  border and a text warning.
+* `list`, `find`, and `filter` return to the player list. Other successful player commands also show that list.
+* Use `list`, `find`, or `filter` to check indexes before editing or deleting. Those commands use the retained player list.
+* `help` opens help while keeping the overview. Command errors return to the player list and show the error.
+
+Example summary (shown as totals and squad cards):
+
+```text
+Club overview: 3 squads, 30 players.
+Available: 18 | Unavailable: 12
+
+Squads:
+Football Fellas: 12 total | 10 available | 2 unavailable
+Soccer Stars: 10 total | 0 available | 10 unavailable (No players available)
+Youth United: 8 total | 8 available | 0 unavailable
+```
+
 ### Editing a person: `edit`
 
 Edits an existing person in the address book.
@@ -296,4 +330,5 @@ Action | Format, Examples
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true|false]` or `filter available/true|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
 **List** | `list`
+**Overview** | `overview`
 **Help** | `help`

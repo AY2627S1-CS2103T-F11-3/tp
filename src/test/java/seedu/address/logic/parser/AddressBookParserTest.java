@@ -26,6 +26,7 @@ import seedu.address.logic.commands.FilterCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.OverviewCommand;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
@@ -131,6 +132,19 @@ public class AddressBookParserTest {
                 parser.parseCommand(ListCommand.COMMAND_WORD + " 3"));
         assertThrows(ParseException.class, () ->
                 parser.parseCommand(ListCommand.COMMAND_WORD + " extra text"));
+    }
+
+    @Test
+    public void parseCommand_overview() throws Exception {
+        assertTrue(parser.parseCommand("overview") instanceof OverviewCommand);
+        assertTrue(parser.parseCommand("  overview \t ") instanceof OverviewCommand);
+    }
+
+    @Test
+    public void parseCommand_overviewWithArguments_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, OverviewCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview 1"));
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview squad/Alpha"));
     }
 
     @Test
