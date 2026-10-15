@@ -453,8 +453,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 * **Player index**: A temporary number assigned to a player based on their current position in the displayed player list. It is not a permanent identifier.
 * **Filter**: To display only players that match one or more specified criteria, such as squad or availability.
 * **CLI**: Command-Line Interface; an interface where users primarily interact with the application by typing commands.
-* **Command**: A text instruction entered by the user to perform an operation in SquadLink, such as `add`, `list`, `view` or `delete`.
-* **Parameter prefix**: A keyword beginning with `/` that identifies a command parameter, such as `/squad`, `/position` or `/available`.
+* **Command**: A text instruction entered by the user to perform an operation in SquadLink, such as `add`, `list`, `filter` or `delete`.
+* **Parameter prefix**: A keyword ending with `/` that identifies a command parameter, such as `name/`, `squad/`, `position/` or `available/`.
 
 --------------------------------------------------------------------------------------------------------------------
 

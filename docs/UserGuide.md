@@ -17,11 +17,11 @@ check squad availability, and navigate views by typing commands.
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-F11-3/tp/releases).
+1. Download `squadlink.jar` from the [SquadLink Releases page](https://github.com/AY2627S1-CS2103T-F11-3/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for SquadLink.
+1. Copy the file to the folder you want to use as the _home folder_ for your SquadLink.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar squadlink.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
@@ -53,6 +53,9 @@ check squad availability, and navigate views by typing commands.
 <div markdown="block" class="alert alert-info">
 
 **:information_source: Notes about the command format:**<br>
+
+* Command words and prefixes are lowercase and case-sensitive. Use `name/`, `squad/` and other
+  prefixes ending in `/`; the supported prefixes and aliases are listed under each command.
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
   For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
@@ -119,6 +122,7 @@ Examples:
 * `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
 
 ### Listing all players: `list`
+### Listing all players: `list`
 
 Opens the main page and shows all registered players, clearing any current search or filter.
 To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
@@ -170,17 +174,9 @@ Format: `overview`
 * Use `main` to check indexes before editing or deleting. Those commands use the retained player list.
 * `help` opens help while keeping the overview. Command errors return to the player list and show the error.
 
-Example summary (shown as totals and squad cards):
+Example overview showing club totals and squad cards:
 
-```text
-Club overview: 3 squads, 30 players.
-Available: 18 | Unavailable: 12
-
-Squads:
-Football Fellas: 12 total | 10 available | 2 unavailable
-Soccer Stars: 10 total | 0 available | 10 unavailable (No players available)
-Youth United: 8 total | 8 available | 0 unavailable
-```
+![Club overview showing player availability totals and squad cards](images/overviewCard.png)
 
 ### Editing a player: `edit`
 
@@ -316,8 +312,7 @@ Format: `exit`
 
 ### Saving the data
 
-SquadLink automatically saves player data after commands that change it. You do not need to save manually.
-Read-only commands such as `main` and `overview` do not write player data.
+SquadLink automatically saves after successful commands that change player data. Read-only commands such as `list`, `find` , `filter`, `main` and `overview` do not write the data file. If saving fails, the app reports an error and restores the player data in memory.
 
 Older data files containing player phone numbers, emails and addresses can still be loaded. Those legacy fields are
 ignored and omitted the next time the file is saved; player names and the remaining profile fields are retained.
@@ -325,10 +320,10 @@ Players in older files without squad or position receive the current `Unassigned
 
 ### Editing the data file
 
-SquadLink data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+SquadLink data is saved automatically as a JSON file `data/addressbook.json`, relative to the working directory from which you launch the application. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, SquadLink starts with an empty player list at the next run. The invalid file remains on disk until a command changes player data and triggers a save. Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, SquadLink starts with an empty player list at the next run. The invalid file remains on disk until a command changes player data and saves successfully. Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause SquadLink to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -341,7 +336,7 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous SquadLink data folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous SquadLink home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -361,8 +356,9 @@ Action | Format, Examples
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [t/TAG]…​`<br> e.g., `edit 2 sn/Soccer Stars pos/Defender`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter squad/SQUAD_NAME [available/true|false]` or `filter available/true|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
+**Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
 **List** | `list` (show all registered players and clear the current search or filter)
 **Main** | `main` (return to the main player list and preserve the current search or filter and indexes)
 **Overview** | `overview`
 **Help** | `help`
+**Exit** | `exit`

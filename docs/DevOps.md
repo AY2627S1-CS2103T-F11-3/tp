@@ -19,7 +19,7 @@ The following commands perform common Gradle tasks.
 * **`clean`**: Deletes the files created during the previous build tasks (e.g. files in the `build` folder).<br>
   For example: `./gradlew clean`
 
-* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/addressbook.jar`.<br>
+* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/squadlink.jar`.<br>
   For example: `./gradlew shadowJar`
 
 * **`run`**: Builds and runs the application.<br>
@@ -33,6 +33,15 @@ The following commands perform common Gradle tasks.
   * `./gradlew clean test`: Cleans the project before running all tests
 
 --------------------------------------------------------------------------------------------------------------------
+
+## Preparing a release
+
+1. Run `./gradlew clean check shadowJar` (Windows: `.\gradlew.bat clean check shadowJar`).
+2. Copy `build/libs/squadlink.jar` into a fresh folder and run `java -jar squadlink.jar` from that folder.
+3. Test adding, listing, filtering, editing and deleting players, then restart to check saved data.
+4. Test the packaged JAR on the supported operating systems before publishing it.
+5. Attach the tested `squadlink.jar` to the team's GitHub release, with release notes and the Java 25 requirement.
+6. Check the User Guide, help link and release download links after deployment.
 
 ## Continuous integration (CI)
 
