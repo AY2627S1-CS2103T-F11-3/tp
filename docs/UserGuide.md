@@ -3,7 +3,9 @@ layout: page
 title: User Guide
 ---
 
-SquadLink is a **desktop application for coaches managing youth football players across multiple squads, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, SquadLink can help you manage player profiles faster than traditional GUI applications.
+SquadLink is a **desktop application for coaches of small youth football clubs to manage players across multiple squads**.
+It combines a Command Line Interface (CLI) with a Graphical User Interface (GUI) so you can manage player profiles,
+check squad availability, and navigate views by typing commands.
 
 * Table of Contents
 {:toc}
@@ -26,7 +28,11 @@ SquadLink is a **desktop application for coaches managing youth football players
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
-   * `list` : Lists all players.
+   * `list` : Shows all players and clears any current search or filter.
+
+   * `overview` : Shows squad cards and club-wide player availability.
+
+   * `main` : Returns to the main player list, keeping the current search or filter.
 
    * `add n/John Doe sn/Soccer Stars pos/Goalkeeper` : Adds a player named `John Doe`.
 
@@ -63,8 +69,10 @@ SquadLink is a **desktop application for coaches managing youth football players
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME t/TAG`, `t/TAG n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for `help`, `list`, `exit`, and `clear` are ignored.<br>
   For example, `help 123` is interpreted as `help`.
+
+* `main` and `overview` accept no parameters. Extra arguments, such as `main 123`, are rejected with usage guidance.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
@@ -100,7 +108,7 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
 * Choose one position: `Goalkeeper`, `Defender`, `Midfielder` or `Striker`. Case, whitespace and hyphens are ignored
   (for example, `goal-keeper` means `Goalkeeper`).
 * Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
-  values are rejected. Contacts must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
+  values are rejected. Guardian contact numbers must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
 * Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
 * Players with the same normalized name, squad and position are rejected as duplicates, regardless of other fields.
   The same name is allowed with a different squad or position.
@@ -114,27 +122,92 @@ Examples:
 * `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
 
 ### Listing all players: `list`
+### Listing all players: `list`
 
-Shows a list of all players in the player roster.
+Opens the main page and shows all registered players, clearing any current search or filter.
+To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
 
 Format: `list`
 
+### Returning to the main page: `main`
+
+Returns to the main player list from the overview without changing the current filter, player order, or indexes.
+
+Format: `main`
+
+* Use `main` to return to the player list you were viewing before `overview`.
+* If already on the main page, the command keeps the current list and displays a confirmation.
+* An empty player list remains empty, including when a search or filter has no matches.
+  Use `list` to show all registered players if the current results are empty.
+* The command does not change or save player data. Extra arguments are rejected with usage guidance.
+* Use `list` instead when you want to clear the current filter and show every registered player.
+
+Success displays `Main page displayed. Current filter and indexes are preserved.`
+
+Example workflow:
+
+1. Enter `filter sn/Soccer Stars` to show only Soccer Stars players.
+2. Enter `overview` to view availability across the whole club.
+3. Enter `main` to return to the same Soccer Stars players with the same indexes.
+4. Enter `list` if you want to show every registered player instead.
+
+### Viewing squad availability: `overview`
+
+Opens a scrollable card overview of every squad and the players available for selection.
+
+Format: `overview`
+
+* Shows the number of squads, total registered players, and club-wide available and unavailable counts.
+* Lists each squad's total, available and unavailable player counts in alphabetical order.
+* Flags squads with no available players with `No players available`.
+* Includes all registered players, even those hidden by `find` or `filter`. Your previous player list, filter,
+  and indexes are retained. Use `main` to return to that list, or `list` to show all players.
+* Squad names remain case-sensitive, as with `filter`. Legacy players with squad `Unassigned` appear under that name.
+* Squads are derived from registered players. A squad disappears from the overview when its last player is deleted.
+* Counts are recalculated each time you run the command. An empty club shows guidance to add players.
+* Extra arguments are rejected with usage guidance.
+* Cards wrap into fewer columns on narrow windows. Long squad names wrap, and the panel scrolls vertically.
+* Availability bars show the proportion of players available. Squads with nobody available show a red
+  border and a text warning.
+* `main` restores the player list shown before the `overview` command. `list` shows all players, while `find` and 
+  `filter` show matching players. Other successful player commands also display the player list.
+* Use `main` to check indexes before editing or deleting. Those commands use the retained player list.
+* `help` opens help while keeping the overview. Command errors return to the player list and show the error.
+
+Example summary (shown as totals and squad cards):
+
+```text
+Club overview: 3 squads, 30 players.
+Available: 18 | Unavailable: 12
+
+Squads:
+Football Fellas: 12 total | 10 available | 2 unavailable
+Soccer Stars: 10 total | 0 available | 10 unavailable (No players available)
+Youth United: 8 total | 8 available | 0 unavailable
+```
+
 ### Editing a player: `edit`
 
-Edits an existing player in the player roster.
+Edits an existing player in SquadLink.
 
-Format: `edit INDEX [n/NAME] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…​`
 
 * Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* Only name and tags can be edited with this command. Use `n/` for the name; `name/` is not supported by `edit`. Squad, position, guardian details and availability cannot be edited directly. To replace those fields, record the existing details, delete the player, then add the corrected profile.
+* Name, squad, position, guardian name, guardian contact, availability and tags can be edited with this command.
+  Use `sn/`, `pos/`, `g/`, `gc/` and `av/` as shorthand for their respective full prefixes.
+* Squad, position, guardian name, guardian contact and availability use the same validation as `add`. `Unassigned`
+  is not a valid edited position. Supply `guardian/` or `contact/` without a value to remove that optional detail.
+  Player phone number, email and address are no longer supported.
 * When editing tags, all of the player's existing tags are removed; adding tags is not cumulative.
 * To remove all of a player's tags, enter `t/` without a tag after it.
 
 Examples:
 *  `edit 1 n/John Doe` Edits the name of the 1st player to be `John Doe`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd player to be `Betsy Crower` and clears all existing tags.
+*  `edit 2 av/false` Marks the 2nd player as unavailable.
+*  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
 ### Locating players by name: `find`
 
@@ -146,7 +219,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Players matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
 Examples:
 * `find John` returns `john` and `John Doe`
@@ -186,7 +259,7 @@ Examples:
 
 ### Deleting players: `delete`
 
-Deletes one or more players from the player roster.
+Deletes one or more players from SquadLink.
 
 Formats:
 
@@ -225,7 +298,7 @@ Formats:
 
 Examples:
 
-* `list` followed by `delete 2` deletes the 2nd player in the player roster.
+* `list` followed by `delete 2` deletes the 2nd player in SquadLink.
 * `list` followed by `delete 2 4` deletes the players originally shown at indices 2 and 4.
 * `find Betsy` followed by `delete 1` deletes the 1st player in the results of the `find` command.
 * `delete 1 abc` reports a non-numeric index and deletes nobody.
@@ -235,7 +308,7 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the player roster.
+Removes all registered players from SquadLink.
 
 Format: `clear`
 
@@ -247,7 +320,7 @@ Format: `exit`
 
 ### Saving the data
 
-SquadLink automatically saves after successful commands that change player data. Read-only commands such as `list`, `find` and `filter` do not write the data file. If saving fails, the app reports an error and restores the player data in memory.
+SquadLink automatically saves after successful commands that change player data. Read-only commands such as `list`, `find` , `filter`, `main` and `overview` do not write the data file. If saving fails, the app reports an error and restores the player data in memory.
 
 Older data files containing player phone numbers, emails and addresses can still be loaded. Those legacy fields are
 ignored and omitted the next time the file is saved; player names and the remaining profile fields are retained.
@@ -258,7 +331,7 @@ Players in older files without squad or position receive the current `Unassigned
 SquadLink data is saved automatically as a JSON file `data/addressbook.json`, relative to the working directory from which you launch the application. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, SquadLink starts with an empty player roster at the next run. The invalid file remains on disk until a command changes player data and saves successfully. Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, SquadLink starts with an empty player list at the next run. The invalid file remains on disk until a command changes player data and saves successfully. Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause SquadLink to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -289,9 +362,11 @@ Action | Format, Examples
 **Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
+**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [t/TAG]…​`<br> e.g., `edit 2 sn/Soccer Stars pos/Defender`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
-**List** | `list`
+**List** | `list` (show all registered players and clear the current search or filter)
+**Main** | `main` (return to the main player list and preserve the current search or filter and indexes)
+**Overview** | `overview`
 **Help** | `help`
 **Exit** | `exit`

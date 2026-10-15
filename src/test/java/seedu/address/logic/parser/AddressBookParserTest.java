@@ -26,6 +26,8 @@ import seedu.address.logic.commands.FilterCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.MainCommand;
+import seedu.address.logic.commands.OverviewCommand;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
@@ -90,7 +92,7 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_edit() throws Exception {
-        Person person = new PersonBuilder().build();
+        Person person = new PersonBuilder().withSquadName("Soccer Stars").withPosition("Defender").build();
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder(person).build();
         EditCommand command = (EditCommand) parser.parseCommand(EditCommand.COMMAND_WORD + " "
                 + INDEX_FIRST_PERSON.getOneBased() + " " + PersonUtil.getEditPersonDescriptorDetails(descriptor));
@@ -125,7 +127,38 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_list() throws Exception {
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
-        assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof ListCommand);
+        assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + "  ") instanceof ListCommand);
+
+        assertThrows(ParseException.class, () ->
+                parser.parseCommand(ListCommand.COMMAND_WORD + " 3"));
+        assertThrows(ParseException.class, () ->
+                parser.parseCommand(ListCommand.COMMAND_WORD + " extra text"));
+    }
+
+    @Test
+    public void parseCommand_main_returnsMainCommand() throws Exception {
+        assertTrue(parser.parseCommand("main") instanceof MainCommand);
+        assertTrue(parser.parseCommand("  main \t ") instanceof MainCommand);
+    }
+
+    @Test
+    public void parseCommand_mainWithArguments_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, MainCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand("main 1"));
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand("main squad/Alpha"));
+    }
+
+    @Test
+    public void parseCommand_overview() throws Exception {
+        assertTrue(parser.parseCommand("overview") instanceof OverviewCommand);
+        assertTrue(parser.parseCommand("  overview \t ") instanceof OverviewCommand);
+    }
+
+    @Test
+    public void parseCommand_overviewWithArguments_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, OverviewCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview 1"));
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview squad/Alpha"));
     }
 
     @Test

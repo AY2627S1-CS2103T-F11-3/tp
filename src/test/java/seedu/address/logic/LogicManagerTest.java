@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
@@ -78,6 +79,92 @@ public class LogicManagerTest {
         expectedModel.addPerson(minimal);
         assertCommandSuccess("add n/Mike Ox sn/Football Fellas pos/Striker", "Player Mike Ox added!", expectedModel);
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editAvailability_savesUpdatedPlayerAndFilterUsesNewValue() throws Exception {
+        Person player = new PersonBuilder().withName("John Doe").withSquadName("Soccer Stars")
+                .withPosition("Goalkeeper").withAvailability("available").build();
+        model.addPerson(player);
+        Person updatedPlayer = new PersonBuilder(player).withAvailability("unavailable").build();
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.setPerson(player, updatedPlayer);
+
+        assertCommandSuccess("edit 1 av/false",
+                String.format("Edited person: %s", Messages.format(updatedPlayer)), expectedModel);
+
+        JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+
+        expectedModel.updateFilteredPersonList(person ->
+                person.getAvailability().equals(new Availability("unavailable")));
+        assertCommandSuccess("filter av/false", String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, 1),
+                expectedModel);
+    }
+
+    @Test
+    public void execute_editPlayerProfileFields_savesUpdatedPlayer() throws Exception {
+        Person player = new PersonBuilder().withName("John Doe").withSquadName("Soccer Stars")
+                .withPosition("Goalkeeper").withGuardianName("Jane Doe").withGuardianContact("81234567").build();
+        model.addPerson(player);
+        Person updatedPlayer = new PersonBuilder(player).withSquadName("Football Fellas").withPosition("Defender")
+                .withGuardianName("Mary Doe").withGuardianContact("87654321").build();
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.setPerson(player, updatedPlayer);
+
+        assertCommandSuccess("edit 1 sn/Football Fellas pos/Defender guardian/Mary Doe contact/8765-4321",
+                String.format("Edited person: %s", Messages.format(updatedPlayer)), expectedModel);
+
+        JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_overviewWithUnwritableStorage_succeedsAndPreservesFilter() throws Exception {
+        Person player = new PersonBuilder().withSquadName("Alpha").build();
+        model.addPerson(player);
+        model.updateFilteredPersonList(person -> false);
+        JsonAddressBookStorage failingStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("overview.json")) {
+                    @Override
+                    public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                        throw DUMMY_AD_EXCEPTION;
+                    }
+                };
+        logic = new LogicManager(model, new StorageManager(failingStorage,
+                new JsonUserPrefsStorage(temporaryFolder.resolve("overviewPrefs.json"))));
+
+        CommandResult result = logic.execute("overview");
+
+        assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable", result.getFeedbackToUser());
+        assertEquals(List.of(player), model.getAddressBook().getPersonList());
+        assertEquals(List.of(), model.getFilteredPersonList());
+        assertFalse(result.isExit());
+        assertFalse(result.isShowHelp());
+    }
+
+    @Test
+    public void execute_overviewAfterCommands_usesUpdatedDataAndPreservesDeleteIndexes() throws Exception {
+        logic.execute("add n/Alice sn/Alpha pos/Defender");
+        logic.execute("add n/Bob sn/Beta pos/Striker av/false");
+        logic.execute("filter sn/Beta");
+        List<Person> displayedPlayers = List.copyOf(model.getFilteredPersonList());
+        assertEquals("Club overview: 2 squads, 2 players.\nAvailable: 1 | Unavailable: 1\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable"
+                + "\nBeta: 1 total | 0 available | 1 unavailable (No players available)",
+                logic.execute("overview").getFeedbackToUser());
+        assertEquals(displayedPlayers, model.getFilteredPersonList());
+
+        logic.execute("edit 1 av/true");
+        assertEquals("Club overview: 2 squads, 2 players.\nAvailable: 2 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable"
+                + "\nBeta: 1 total | 1 available | 0 unavailable", logic.execute("overview").getFeedbackToUser());
+        logic.execute("filter sn/Beta");
+        logic.execute("overview");
+        logic.execute("delete 1");
+        assertEquals("Club overview: 1 squad, 1 player.\nAvailable: 1 | Unavailable: 0\n\nSquads:"
+                + "\nAlpha: 1 total | 1 available | 0 unavailable", logic.execute("overview").getFeedbackToUser());
     }
 
     @Test

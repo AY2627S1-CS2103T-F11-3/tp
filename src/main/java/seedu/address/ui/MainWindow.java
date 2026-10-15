@@ -171,16 +171,34 @@ public class MainWindow extends UiPart<Stage> {
         return personListPanel;
     }
 
+    private void showPlayerList() {
+        personListPanelPlaceholder.getChildren().setAll(personListPanel.getRoot());
+    }
+
+    private void showOverview(CommandResult result) {
+        OverviewPanel overviewPanel = new OverviewPanel(result.getOverview().orElseThrow());
+        personListPanelPlaceholder.getChildren().setAll(overviewPanel);
+    }
+
     /**
      * Executes the command and returns the result.
      *
      * @see seedu.address.logic.Logic#execute(String)
      */
-    private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
+    CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
-            resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+            if (commandResult.getOverview().isPresent()) {
+                showOverview(commandResult);
+                resultDisplay.setFeedbackToUser("Club overview displayed. Type main to return to your player list,"
+                        + " or list to show all players.");
+            } else {
+                if (!commandResult.isShowHelp() && !commandResult.isExit()) {
+                    showPlayerList();
+                }
+                resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+            }
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
@@ -193,6 +211,7 @@ public class MainWindow extends UiPart<Stage> {
             return commandResult;
         } catch (CommandException | ParseException e) {
             logger.info("An error occurred while executing command: " + commandText);
+            showPlayerList();
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }
