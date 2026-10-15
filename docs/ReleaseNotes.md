@@ -24,6 +24,8 @@ profiles, squad membership, and availability through a command-line interface.
 - Updated sample data with realistic squads, positions, guardians, contacts,
   player availability, and football-related tags.
 
+For full command instructions, see the [SquadLink User Guide](https://ay2627s1-cs2103t-f11-3.github.io/tp/UserGuide.html).
+
 ## Screenshots
 
 ### Indexed player table
