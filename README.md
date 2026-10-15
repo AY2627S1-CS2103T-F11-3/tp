@@ -19,6 +19,7 @@ SquadLink allows coaches to:
 - Search for players by name.
 - Filter players by squad and availability.
 - View club and squad availability counts with `overview`.
+- Return to the main player list with `main`, keeping the current filter.
 
 ## Getting Started
 
