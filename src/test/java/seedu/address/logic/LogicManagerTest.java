@@ -91,7 +91,7 @@ public class LogicManagerTest {
         expectedModel.setPerson(player, updatedPlayer);
 
         assertCommandSuccess("edit 1 av/false",
-                String.format("Edited person: %s", Messages.format(updatedPlayer)), expectedModel);
+                String.format("Player %s updated!", updatedPlayer.getName()), expectedModel);
 
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
@@ -113,7 +113,7 @@ public class LogicManagerTest {
         expectedModel.setPerson(player, updatedPlayer);
 
         assertCommandSuccess("edit 1 sn/Football Fellas pos/Defender guardian/Mary Doe contact/8765-4321",
-                String.format("Edited person: %s", Messages.format(updatedPlayer)), expectedModel);
+                String.format("Player %s updated!", updatedPlayer.getName()), expectedModel);
 
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
