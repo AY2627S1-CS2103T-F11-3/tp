@@ -26,7 +26,11 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
-   * `list` : Lists all contacts.
+   * `list` : Shows all players and clears any current search or filter.
+
+   * `overview` : Shows squad cards and club-wide player availability.
+
+   * `main` : Returns to the main player list, keeping the current search or filter.
 
    * `add n/John Doe sn/Soccer Stars pos/Goalkeeper` : Adds a player named `John Doe`.
 
@@ -60,8 +64,10 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME t/TAG`, `t/TAG n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for `help`, `list`, `exit`, and `clear` are ignored.<br>
   For example, `help 123` is interpreted as `help`.
+
+* `main` and `overview` accept no parameters. Extra arguments, such as `main 123`, are rejected with usage guidance.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
@@ -110,9 +116,10 @@ Examples:
 * `add name/John Doe squad/Soccer Stars position/Goalkeeper`
 * `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
 
-### Listing all persons: `list`
+### Listing all players: `list`
 
-Shows a list of all persons in the address book.
+Opens the main page and shows all registered players, clearing any current search or filter.
+To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
 
 Format: `list`
 
@@ -124,11 +131,19 @@ Format: `main`
 
 * Use `main` to return to the player list you were viewing before `overview`.
 * If already on the main page, the command keeps the current list and displays a confirmation.
-* An empty player list remains empty, including when a filter has no matches.
+* An empty player list remains empty, including when a search or filter has no matches.
+  Use `list` to show all registered players if the current results are empty.
 * The command does not change or save player data. Extra arguments are rejected with usage guidance.
 * Use `list` instead when you want to clear the current filter and show every registered player.
 
-Example: `filter sn/Soccer Stars`, then `overview`, then `main` returns to the filtered Soccer Stars player list.
+Success displays `Main page displayed. Current filter and indexes are preserved.`
+
+Example workflow:
+
+1. Enter `filter sn/Soccer Stars` to show only Soccer Stars players.
+2. Enter `overview` to view availability across the whole club.
+3. Enter `main` to return to the same Soccer Stars players with the same indexes.
+4. Enter `list` if you want to show every registered player instead.
 
 ### Viewing squad availability: `overview`
 
@@ -299,7 +314,8 @@ Format: `exit`
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+SquadLink automatically saves player data after commands that change it. You do not need to save manually.
+Read-only commands such as `main` and `overview` do not write player data.
 
 Older data files containing player phone numbers, emails and addresses can still be loaded. Those legacy fields are
 ignored and omitted the next time the file is saved; player names and the remaining profile fields are retained.
@@ -310,7 +326,7 @@ Players in older files without squad or position receive the current `Unassigned
 AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until a command changes player data and triggers a save. Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -344,7 +360,7 @@ Action | Format, Examples
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [t/TAG]…​`<br> e.g., `edit 2 sn/Soccer Stars pos/Defender`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true|false]` or `filter available/true|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
-**List** | `list`
-**Main** | `main` (return to the player list and preserve the current filter)
+**List** | `list` (show all registered players and clear the current search or filter)
+**Main** | `main` (return to the main player list and preserve the current search or filter and indexes)
 **Overview** | `overview`
 **Help** | `help`
