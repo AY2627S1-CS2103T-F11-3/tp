@@ -122,7 +122,6 @@ Examples:
 * `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
 
 ### Listing all players: `list`
-### Listing all players: `list`
 
 Opens the main page and shows all registered players, clearing any current search or filter.
 To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
