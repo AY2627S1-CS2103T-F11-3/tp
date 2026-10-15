@@ -1,48 +1,87 @@
 package seedu.address.ui;
 
-import java.util.logging.Logger;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.Region;
-import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.person.Person;
 
 /**
- * Panel containing the list of persons.
+ * Panel containing the player table.
  */
 public class PersonListPanel extends UiPart<Region> {
     private static final String FXML = "PersonListPanel.fxml";
-    private final Logger logger = LogsCenter.getLogger(PersonListPanel.class);
 
     @FXML
-    private ListView<Person> personListView;
+    private TableView<Person> personTableView;
+    @FXML
+    private TableColumn<Person, String> indexColumn;
+    @FXML
+    private TableColumn<Person, String> nameColumn;
+    @FXML
+    private TableColumn<Person, String> squadColumn;
+    @FXML
+    private TableColumn<Person, String> positionColumn;
+    @FXML
+    private TableColumn<Person, String> guardianNameColumn;
+    @FXML
+    private TableColumn<Person, String> guardianContactColumn;
+    @FXML
+    private TableColumn<Person, String> availabilityColumn;
+    @FXML
+    private TableColumn<Person, String> tagsColumn;
+    @FXML
+    private TableColumn<Person, String> remarkColumn;
 
     /**
      * Creates a {@code PersonListPanel} with the given {@code ObservableList}.
      */
     public PersonListPanel(ObservableList<Person> personList) {
         super(FXML);
-        personListView.setItems(personList);
-        personListView.setCellFactory(listView -> new PersonListViewCell());
+        configureColumns();
+        personTableView.setItems(personList);
     }
 
-    /**
-     * Custom {@code ListCell} that displays the graphics of a {@code Person} using a {@code PersonCard}.
-     */
-    class PersonListViewCell extends ListCell<Person> {
-        @Override
-        protected void updateItem(Person person, boolean empty) {
-            super.updateItem(person, empty);
+    private void configureColumns() {
+        indexColumn.setCellValueFactory(cell -> stringValue(personTableView.getItems().indexOf(cell.getValue()) + 1));
+        nameColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getName().fullName));
+        squadColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getSquadName().value));
+        positionColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getPosition().value));
+        guardianNameColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getGuardianName()));
+        guardianContactColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getGuardianContact()));
+        availabilityColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getAvailability().value));
+        availabilityColumn.setCellFactory(column -> new AvailabilityTableCell());
+        tagsColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getTags().stream()
+                .sorted(Comparator.comparing(tag -> tag.tagName))
+                .map(tag -> tag.tagName)
+                .collect(Collectors.joining(", "))));
+        remarkColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getRemark().value));
+    }
 
-            if (empty || person == null) {
-                setGraphic(null);
+    private static ReadOnlyStringWrapper stringValue(Object value) {
+        return new ReadOnlyStringWrapper(value == null ? "Not provided" : value.toString());
+    }
+
+    private static class AvailabilityTableCell extends TableCell<Person, String> {
+        @Override
+        protected void updateItem(String availability, boolean empty) {
+            super.updateItem(availability, empty);
+            getStyleClass().removeAll("availability-available", "availability-unavailable");
+
+            if (empty || availability == null) {
                 setText(null);
-            } else {
-                setGraphic(new PersonCard(person, getIndex() + 1).getRoot());
+                return;
             }
+
+            setText(availability);
+            getStyleClass().add("available".equals(availability)
+                    ? "availability-available" : "availability-unavailable");
         }
     }
 
