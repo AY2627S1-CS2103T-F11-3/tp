@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <ListView fx:id="personListView" VBox.vgrow="ALWAYS" />
+  <TableView fx:id="personTableView" styleClass="player-table" VBox.vgrow="ALWAYS">
+    <columns>
+      <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Name" />
+      <TableColumn fx:id="squadColumn" prefWidth="120.0" text="Squad" />
+      <TableColumn fx:id="positionColumn" prefWidth="120.0" text="Position" />
+      <TableColumn fx:id="guardianNameColumn" prefWidth="150.0" text="Guardian" />
+      <TableColumn fx:id="guardianContactColumn" prefWidth="130.0" text="Guardian contact" />
+      <TableColumn fx:id="availabilityColumn" prefWidth="110.0" text="Availability" />
+      <TableColumn fx:id="tagsColumn" prefWidth="130.0" text="Tags" />
+      <TableColumn fx:id="remarkColumn" prefWidth="180.0" text="Remark" />
+    </columns>
+  </TableView>
 </VBox>
