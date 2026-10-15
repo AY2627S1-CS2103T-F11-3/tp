@@ -176,10 +176,7 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showOverview(CommandResult result) {
-        OverviewPanel overviewPanel = new OverviewPanel(result.getOverview().orElseThrow(), () -> {
-            showPlayerList();
-            resultDisplay.setFeedbackToUser("Player list restored. Current filter and indexes are preserved.");
-        });
+        OverviewPanel overviewPanel = new OverviewPanel(result.getOverview().orElseThrow());
         personListPanelPlaceholder.getChildren().setAll(overviewPanel);
     }
 
@@ -194,7 +191,7 @@ public class MainWindow extends UiPart<Stage> {
             logger.info("Result: " + commandResult.getFeedbackToUser());
             if (commandResult.getOverview().isPresent()) {
                 showOverview(commandResult);
-                resultDisplay.setFeedbackToUser("Club overview displayed. Use View players to return to your list.");
+                resultDisplay.setFeedbackToUser("Club overview displayed. Use list, find, or filter to view players.");
             } else {
                 if (!commandResult.isShowHelp() && !commandResult.isExit()) {
                     showPlayerList();

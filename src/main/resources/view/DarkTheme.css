@@ -381,13 +381,3 @@
 .overview-availability-bar > .bar { -fx-background-radius: 5; -fx-background-insets: 0; }
 .overview-card-warning { -fx-border-color: #d97373; -fx-background-color: #683e3e; }
 .overview-warning { -fx-font-size: 13px; -fx-text-fill: #d46e6e; -fx-opacity: 1; }
-.overview-back {
-    -fx-background-color: #3e5168;
-    -fx-background-radius: 8;
-    -fx-text-fill: #f4f7fa;
-    -fx-padding: 10 16;
-    -fx-font-size: 13px;
-    -fx-cursor: hand;
-}
-.overview-back:hover { -fx-background-color: #506985; }
-.overview-back:focused { -fx-border-color: #73d9b0; -fx-border-radius: 8; }

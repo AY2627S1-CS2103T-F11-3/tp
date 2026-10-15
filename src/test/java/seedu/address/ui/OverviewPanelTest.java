@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
@@ -61,7 +60,7 @@ public class OverviewPanelTest {
             ClubOverview overview = new ClubOverview(List.of(new SquadSummary("Football Fellas", 12, 10),
                     new SquadSummary("Soccer Stars", 10, 0), new SquadSummary("Youth United", 8, 8),
                     new SquadSummary("Zulu Juniors with a very long name that must wrap across multiple lines", 5, 3)));
-            OverviewPanel panel = new OverviewPanel(overview, () -> {});
+            OverviewPanel panel = new OverviewPanel(overview);
             Scene scene = new Scene(panel, 960, 700);
             scene.getStylesheets().add(getClass().getResource("/view/DarkTheme.css").toExternalForm());
             panel.applyCss();
@@ -91,23 +90,21 @@ public class OverviewPanelTest {
     }
 
     @Test
-    public void render_emptyClub_showsGuidanceAndBackButton() throws Exception {
+    public void render_emptyClub_showsGuidanceWithoutButtons() throws Exception {
         onFxThread(() -> {
-            boolean[] returned = {false};
-            OverviewPanel panel = new OverviewPanel(new ClubOverview(List.of()), () -> returned[0] = true);
+            OverviewPanel panel = new OverviewPanel(new ClubOverview(List.of()));
             new Scene(panel, 450, 700);
             panel.applyCss();
             panel.layout();
             assertNull(panel.lookup("#squadCards"));
-            Button back = (Button) panel.lookup("#viewPlayersButton");
-            assertNotNull(back);
-            back.fire();
-            assertTrue(returned[0]);
+            assertTrue(panel.lookupAll(".button").isEmpty());
+            assertTrue(panel.lookupAll(".label").stream()
+                    .anyMatch(node -> ((Label) node).getText().equals("No players registered")));
         });
     }
 
     @Test
-    public void commands_overviewAndBack_preserveFilterAndSwitchViews() throws Exception {
+    public void commands_overviewAndPlayerCommands_preserveFilterAndSwitchViews() throws Exception {
         onFxThread(() -> {
             ModelManager model = new ModelManager();
             model.addPerson(new PersonBuilder().withName("Alice").withSquadName("Alpha").build());
@@ -121,12 +118,10 @@ public class OverviewPanelTest {
             assertEquals(displayed, model.getFilteredPersonList());
             stage.getScene().getRoot().applyCss();
             stage.getScene().getRoot().layout();
-            Button back = (Button) stage.getScene().lookup("#viewPlayersButton");
-            assertNotNull(back);
-            back.fire();
-            assertNull(stage.getScene().lookup(".overview-panel"));
+            var overviewPanel = stage.getScene().lookup(".overview-panel");
+            assertNotNull(overviewPanel);
+            assertTrue(overviewPanel.lookupAll(".button").isEmpty());
             assertEquals(displayed, model.getFilteredPersonList());
-            window.executeCommand("overview");
             window.executeCommand("filter sn/Alpha");
             assertNull(stage.getScene().lookup(".overview-panel"));
             assertEquals("Alpha", model.getFilteredPersonList().getFirst().getSquadName().value);

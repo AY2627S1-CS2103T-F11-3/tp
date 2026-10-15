@@ -126,7 +126,7 @@ Format: `overview`
 * Lists each squad's total, available and unavailable player counts in alphabetical order.
 * Flags squads with no available players with `No players available`.
 * Includes all registered players, even those hidden by `find` or `filter`. Your previous player list, filter,
-  and indexes are retained. Select **View players** to return to that list.
+  and indexes are retained. Use `list`, `find`, or `filter` to view players; `list` shows all players.
 * Squad names remain case-sensitive, as with `filter`. Legacy players with squad `Unassigned` appear under that name.
 * Squads are derived from registered players. A squad disappears from the overview when its last player is deleted.
 * Counts are recalculated each time you run the command. An empty club shows guidance to add players.
@@ -135,7 +135,7 @@ Format: `overview`
 * Availability bars show the proportion of players available. Squads with nobody available show a red
   border and a text warning.
 * `list`, `find`, and `filter` return to the player list. Other successful player commands also show that list.
-* Use **View players** to check indexes before editing or deleting. Those commands use the retained player list.
+* Use `list`, `find`, or `filter` to check indexes before editing or deleting. Those commands use the retained player list.
 * `help` opens help while keeping the overview. Command errors return to the player list and show the error.
 
 Example summary (shown as totals and squad cards):

@@ -4,15 +4,10 @@ import static java.util.Objects.requireNonNull;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.overview.ClubOverview;
 import seedu.address.model.overview.SquadSummary;
@@ -22,11 +17,10 @@ import seedu.address.model.overview.SquadSummary;
  */
 public class OverviewPanel extends ScrollPane {
     /**
-     * Creates an overview snapshot with a button that restores the existing player list.
+     * Creates an overview snapshot for command-based navigation.
      */
-    public OverviewPanel(ClubOverview overview, Runnable showPlayers) {
+    public OverviewPanel(ClubOverview overview) {
         requireNonNull(overview);
-        requireNonNull(showPlayers);
         getStyleClass().add("overview-panel");
         setFitToWidth(true);
         setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -35,16 +29,7 @@ public class OverviewPanel extends ScrollPane {
         content.getStyleClass().add("overview-content");
         setContent(content);
 
-        Label title = label("Club overview", "overview-title");
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        Button back = new Button("View players");
-        back.setId("viewPlayersButton");
-        back.getStyleClass().add("overview-back");
-        back.setOnAction(event -> showPlayers.run());
-        HBox header = new HBox(12, title, spacer, back);
-        header.setAlignment(Pos.CENTER_LEFT);
-        content.getChildren().add(header);
+        content.getChildren().add(label("Club overview", "overview-title"));
 
         FlowPane totals = new FlowPane(12, 12);
         totals.getChildren().addAll(metric(overview.squads().size(), "Squads"),
