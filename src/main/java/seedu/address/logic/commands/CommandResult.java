@@ -3,8 +3,10 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.overview.ClubOverview;
 
 /**
  * Represents the result of a command execution.
@@ -12,6 +14,7 @@ import seedu.address.commons.util.ToStringBuilder;
 public class CommandResult {
 
     private final String feedbackToUser;
+    private final ClubOverview overview;
 
     /** Help information should be shown to the user. */
     private final boolean showHelp;
@@ -26,6 +29,7 @@ public class CommandResult {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
+        this.overview = null;
     }
 
     /**
@@ -34,6 +38,20 @@ public class CommandResult {
      */
     public CommandResult(String feedbackToUser) {
         this(feedbackToUser, false, false);
+    }
+
+    /**
+     * Constructs an overview result carrying structured data for the card view.
+     */
+    public CommandResult(String feedbackToUser, ClubOverview overview) {
+        this.feedbackToUser = requireNonNull(feedbackToUser);
+        this.overview = requireNonNull(overview);
+        this.showHelp = false;
+        this.exit = false;
+    }
+
+    public Optional<ClubOverview> getOverview() {
+        return Optional.ofNullable(overview);
     }
 
     public String getFeedbackToUser() {
@@ -61,12 +79,13 @@ public class CommandResult {
 
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
-                && exit == otherCommandResult.exit;
+                && exit == otherCommandResult.exit
+                && Objects.equals(overview, otherCommandResult.overview);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit);
+        return Objects.hash(feedbackToUser, showHelp, exit, overview);
     }
 
     @Override
