@@ -3,7 +3,9 @@ layout: page
 title: User Guide
 ---
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+SquadLink is a **desktop application for coaches of small youth football clubs to manage players across multiple squads**.
+It combines a Command Line Interface (CLI) with a Graphical User Interface (GUI) so you can manage player profiles,
+check squad availability, and navigate views by typing commands.
 
 * Table of Contents
 {:toc}
@@ -15,9 +17,9 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-F11-3/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+1. Copy the file to the folder you want to use as the _home folder_ for SquadLink.
 
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
@@ -36,9 +38,9 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
      For `add`, you can use `name/John Doe` instead of `n/John Doe`.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+   * `delete 3` : Deletes the 3rd player shown in the current list.
 
-   * `clear` : Deletes all contacts.
+   * `clear` : Deletes all players.
 
    * `exit` : Exits the app.
 
@@ -103,7 +105,7 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
 * Choose one position: `Goalkeeper`, `Defender`, `Midfielder` or `Striker`. Case, whitespace and hyphens are ignored
   (for example, `goal-keeper` means `Goalkeeper`).
 * Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
-  values are rejected. Contacts must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
+  values are rejected. Guardian contact numbers must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
 * Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
 * Players with the same normalized name, squad and position are rejected as duplicates, regardless of other fields.
   The same name is allowed with a different squad or position.
@@ -180,13 +182,13 @@ Soccer Stars: 10 total | 0 available | 10 unavailable (No players available)
 Youth United: 8 total | 8 available | 0 unavailable
 ```
 
-### Editing a person: `edit`
+### Editing a player: `edit`
 
-Edits an existing person in the address book.
+Edits an existing player in SquadLink.
 
 Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…​`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Name, squad, position, guardian name, guardian contact, availability and tags can be edited with this command.
@@ -194,18 +196,18 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
 * Squad, position, guardian name, guardian contact and availability use the same validation as `add`. `Unassigned`
   is not a valid edited position. Supply `guardian/` or `contact/` without a value to remove that optional detail.
   Player phone number, email and address are no longer supported.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
+* When editing tags, all of the player's existing tags are removed; adding tags is not cumulative.
+* To remove all of a player's tags, enter `t/` without a tag after it.
 
 Examples:
-*  `edit 1 n/John Doe` Edits the name of the 1st person to be `John Doe`.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit 1 n/John Doe` Edits the name of the 1st player to be `John Doe`.
+*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd player to be `Betsy Crower` and clears all existing tags.
 *  `edit 2 av/false` Marks the 2nd player as unavailable.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
-### Locating persons by name: `find`
+### Locating players by name: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds players whose names contain any of the given keywords.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
@@ -213,7 +215,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Players matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
 Examples:
 * `find John` returns `john` and `John Doe`
@@ -253,7 +255,7 @@ Examples:
 
 ### Deleting players: `delete`
 
-Deletes one or more players from the address book.
+Deletes one or more players from SquadLink.
 
 Formats:
 
@@ -292,9 +294,9 @@ Formats:
 
 Examples:
 
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
+* `list` followed by `delete 2` deletes the 2nd player in SquadLink.
 * `list` followed by `delete 2 4` deletes the players originally shown at indices 2 and 4.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `find Betsy` followed by `delete 1` deletes the 1st player in the results of the `find` command.
 * `delete 1 abc` reports a non-numeric index and deletes nobody.
 * `delete n/John Doe, Amy Tan` deletes both players if each name identifies exactly one registered player.
 * `delete name/John Doe, Amy Tan` does the same using the full prefix.
@@ -302,7 +304,7 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Removes all registered players from SquadLink.
 
 Format: `clear`
 
@@ -323,11 +325,11 @@ Players in older files without squad or position receive the current `Unassigned
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+SquadLink data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until a command changes player data and triggers a save. Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes make the data file invalid, SquadLink starts with an empty player list at the next run. The invalid file remains on disk until a command changes player data and triggers a save. Still, we recommend backing up the file before editing it.<br>
+Furthermore, certain edits can cause SquadLink to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
 ### Archiving data files `[coming in v2.0]`
@@ -339,7 +341,7 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous SquadLink data folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
