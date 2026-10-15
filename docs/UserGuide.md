@@ -163,8 +163,8 @@ Format: `overview`
 * Cards wrap into fewer columns on narrow windows. Long squad names wrap, and the panel scrolls vertically.
 * Availability bars show the proportion of players available. Squads with nobody available show a red
   border and a text warning.
-* `main` returns to the previous player list. `list`, `find`, and `filter` also show the player list with their
-  respective results. Other successful player commands show that list too.
+* `main` restores the player list shown before the `overview` command. `list` shows all players, while `find` and 
+  `filter` show matching players. Other successful player commands also display the player list.
 * Use `main` to check indexes before editing or deleting. Those commands use the retained player list.
 * `help` opens help while keeping the overview. Command errors return to the player list and show the error.
 
