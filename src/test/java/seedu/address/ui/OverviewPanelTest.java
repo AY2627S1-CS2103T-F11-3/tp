@@ -206,6 +206,47 @@ public class OverviewPanelTest {
         });
     }
 
+    @Test
+    public void commands_mainFromOverview_restoresSamePlayerListAndFilter() throws Exception {
+        onFxThread(() -> {
+            for (boolean emptyFilter : List.of(false, true)) {
+                ModelManager model = new ModelManager();
+                model.addPerson(new PersonBuilder().withName("Alice").withSquadName("Alpha").build());
+                model.addPerson(new PersonBuilder().withName("Bob").withSquadName("Beta").build());
+                model.updateFilteredPersonList(player -> !emptyFilter && player.getSquadName().value.equals("Beta"));
+                var displayed = List.copyOf(model.getFilteredPersonList());
+                var registered = List.copyOf(model.getAddressBook().getPersonList());
+                Stage stage = new Stage();
+                try {
+                    MainWindow window = new MainWindow(stage, new LogicManager(model, null),
+                            Path.of("data/addressbook.json"));
+                    window.fillInnerParts();
+                    var playerList = window.getPersonListPanel().getRoot();
+                    assertNotNull(playerList.getParent());
+                    window.executeCommand("main");
+                    assertSame(playerList, window.getPersonListPanel().getRoot());
+                    window.executeCommand("overview");
+                    assertNull(playerList.getParent());
+                    assertNotNull(stage.getScene().lookup(".overview-panel"));
+                    window.executeCommand("main");
+                    assertNull(stage.getScene().lookup(".overview-panel"));
+                    assertSame(playerList, window.getPersonListPanel().getRoot());
+                    assertNotNull(playerList.getParent());
+                    assertEquals(displayed, model.getFilteredPersonList());
+                    assertEquals(registered, model.getAddressBook().getPersonList());
+                    window.executeCommand("main");
+                    assertEquals(displayed, model.getFilteredPersonList());
+                    var moved = new PersonBuilder(registered.getFirst()).withSquadName("Beta").build();
+                    model.setPerson(registered.getFirst(), moved);
+                    assertEquals(emptyFilter ? List.of() : List.of(moved, registered.get(1)),
+                            model.getFilteredPersonList());
+                } finally {
+                    stage.close();
+                }
+            }
+        });
+    }
+
     private void onFxThread(FxAction action) throws Exception {
         FutureTask<Void> task = new FutureTask<>(() -> {
             action.run();

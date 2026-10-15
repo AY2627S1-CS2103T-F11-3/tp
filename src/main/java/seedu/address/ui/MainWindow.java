@@ -191,7 +191,8 @@ public class MainWindow extends UiPart<Stage> {
             logger.info("Result: " + commandResult.getFeedbackToUser());
             if (commandResult.getOverview().isPresent()) {
                 showOverview(commandResult);
-                resultDisplay.setFeedbackToUser("Club overview displayed. Use list, find, or filter to view players.");
+                resultDisplay.setFeedbackToUser("Club overview displayed. Type main to return to your player list,"
+                        + " or list to show all players.");
             } else {
                 if (!commandResult.isShowHelp() && !commandResult.isExit()) {
                     showPlayerList();
