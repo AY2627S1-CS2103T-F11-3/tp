@@ -291,7 +291,7 @@ Action | Format, Examples
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> e.g., `filter squad/Soccer Stars av/true`
+**Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
 **List** | `list`
 **Help** | `help`
 **Exit** | `exit`
