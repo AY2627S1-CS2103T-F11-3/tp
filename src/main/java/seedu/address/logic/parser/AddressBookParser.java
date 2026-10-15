@@ -63,7 +63,6 @@ public class AddressBookParser {
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case FilterCommand.COMMAND_WORD -> new FilterCommandParser().parse(arguments);
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
-            case ListCommand.COMMAND_WORD -> new ListCommand();
             case MainCommand.COMMAND_WORD -> {
                 if (!arguments.isBlank()) {
                     throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
