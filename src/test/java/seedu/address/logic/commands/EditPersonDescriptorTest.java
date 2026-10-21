@@ -16,6 +16,19 @@ import seedu.address.testutil.EditPersonDescriptorBuilder;
 public class EditPersonDescriptorTest {
 
     @Test
+    public void feeAndConsentDescriptors_copyAndCompareIndependently() {
+        EditPersonDescriptor fee = new EditPersonDescriptorBuilder().withFeeStatus("paid").build();
+        EditPersonDescriptor consent = new EditPersonDescriptorBuilder().withConsentStatus("received").build();
+        assertTrue(fee.isAnyFieldEdited());
+        assertTrue(consent.isAnyFieldEdited());
+        assertTrue(fee.equals(new EditPersonDescriptor(fee)));
+        assertTrue(consent.equals(new EditPersonDescriptor(consent)));
+        assertFalse(fee.equals(new EditPersonDescriptorBuilder().withFeeStatus("unpaid").build()));
+        assertFalse(consent.equals(new EditPersonDescriptorBuilder().withConsentStatus("pending").build()));
+        assertFalse(fee.equals(consent));
+    }
+
+    @Test
     public void optionalGuardianClearing_countsAsAnEditAndDiffersFromOmission() {
         EditPersonDescriptor omitted = new EditPersonDescriptor();
         EditPersonDescriptor clearName = new EditPersonDescriptorBuilder().withGuardianName(null).build();
@@ -94,7 +107,9 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getGuardianName().orElse(null) + ", guardianContact="
                 + editPersonDescriptor.getGuardianContact().orElse(null) + ", availability="
                 + editPersonDescriptor.getAvailability().orElse(null) + ", injuryStatus="
-                + editPersonDescriptor.getInjuryStatus().orElse(null) + "}";
+                + editPersonDescriptor.getInjuryStatus().orElse(null) + ", feeStatus="
+                + editPersonDescriptor.getFeeStatus().orElse(null) + ", consentStatus="
+                + editPersonDescriptor.getConsentStatus().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }

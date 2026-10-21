@@ -1,6 +1,8 @@
 package seedu.address.testutil;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
@@ -44,6 +46,8 @@ public class PersonUtil {
         }
         sb.append(PREFIX_AVAILABILITY + Boolean.toString(person.getAvailability().value.equals("available")) + " ");
         sb.append(PREFIX_INJURY_FULL).append(person.getInjuryStatus().value).append(" ");
+        sb.append(PREFIX_FEE_FULL).append(person.getFeeStatus().value).append(" ");
+        sb.append(PREFIX_CONSENT_FULL).append(person.getConsentStatus().value).append(" ");
         person.getTags().stream().forEach(
             s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );
@@ -72,6 +76,9 @@ public class PersonUtil {
                 .append(availability.value.equals("available")).append(" "));
         descriptor.getInjuryStatus().ifPresent(injury -> sb.append(PREFIX_INJURY_FULL)
                 .append(injury.value).append(" "));
+        descriptor.getFeeStatus().ifPresent(fee -> sb.append(PREFIX_FEE_FULL).append(fee.value).append(" "));
+        descriptor.getConsentStatus().ifPresent(consent -> sb.append(PREFIX_CONSENT_FULL)
+                .append(consent.value).append(" "));
         if (descriptor.getTags().isPresent()) {
             Set<Tag> tags = descriptor.getTags().get();
             if (tags.isEmpty()) {

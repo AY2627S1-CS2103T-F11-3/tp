@@ -30,6 +30,74 @@ public class JsonAddressBookStorageTest {
     public Path testFolder;
 
     @Test
+    public void read_previouslyUnknownStatuses_migratesAndSavesTwoStateValues() throws Exception {
+        Person original = new PersonBuilder().withFeeStatus("paid").withConsentStatus("received")
+                .withInjuryStatus("injured").build();
+        AddressBook addressBook = new AddressBook();
+        addressBook.addPerson(original);
+        Path file = testFolder.resolve("previouslyUnknown.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(addressBook);
+        String json = Files.readString(file);
+        Files.writeString(file, json.replace("\"paid\"", "\" UNKNOWN \"")
+                .replace("\"received\"", "\"unknown\""));
+        ReadOnlyAddressBook migrated = storage.readAddressBook().orElseThrow();
+        Person expected = new PersonBuilder(original).withFeeStatus("unpaid").withConsentStatus("pending").build();
+        assertEquals(expected, migrated.getPersonList().getFirst());
+        storage.saveAddressBook(migrated);
+        assertFalse(Files.readString(file).contains("unknown"));
+        assertEquals(expected, storage.readAddressBook().orElseThrow().getPersonList().getFirst());
+    }
+
+    @Test
+    public void saveAndRead_feeAndConsentStatuses_preservesCombinationsAndRejectsInvalidData() throws Exception {
+        AddressBook original = new AddressBook();
+        for (String fee : new String[] {"paid", "unpaid"}) {
+            for (String consent : new String[] {"received", "pending"}) {
+                original.addPerson(new PersonBuilder().withName("Player " + fee + " " + consent)
+                        .withFeeStatus(fee).withConsentStatus(consent).withInjuryStatus("injured").build());
+            }
+        }
+        Path file = testFolder.resolve("feeConsent.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(original);
+        String json = Files.readString(file);
+        assertTrue(json.contains("\"feeStatus\""));
+        assertTrue(json.contains("\"consentStatus\""));
+        assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
+        for (String field : new String[] {"feeStatus", "consentStatus"}) {
+            for (String invalid : new String[] {"", "invalid", "PA\u0130D", "unpa\u0131d",
+                "RECE\u0130VED", "pend\u0131ng", "un\u212Anown"}) {
+                Files.writeString(file, json.replaceFirst("\"" + field + "\"\\s*:\\s*\"[^\"]*\"",
+                        "\"" + field + "\" : \"" + invalid + "\""));
+                assertThrows(DataLoadingException.class, storage::readAddressBook);
+            }
+        }
+    }
+
+    @Test
+    public void read_legacyFeeAndConsentStatuses_defaultToUnpaidAndPending() throws Exception {
+        ReadOnlyAddressBook legacy = readAddressBook("legacyContactFieldsAddressBook.json").orElseThrow();
+        legacy.getPersonList().forEach(person -> {
+            assertEquals("unpaid", person.getFeeStatus().value);
+            assertEquals("pending", person.getConsentStatus().value);
+        });
+        Person person = new PersonBuilder().withInjuryStatus("injured").withFeeStatus("paid")
+                .withConsentStatus("received").build();
+        AddressBook original = new AddressBook();
+        original.addPerson(person);
+        Path file = testFolder.resolve("nullableStatuses.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(original);
+        String json = Files.readString(file);
+        Files.writeString(file, json.replace("\"paid\"", "null").replace("\"received\"", "null"));
+        Person restored = storage.readAddressBook().orElseThrow().getPersonList().getFirst();
+        assertEquals("unpaid", restored.getFeeStatus().value);
+        assertEquals("pending", restored.getConsentStatus().value);
+        assertEquals(person.getInjuryStatus(), restored.getInjuryStatus());
+    }
+
+    @Test
     public void read_legacyUnknownOrMissingInjury_migratesToFitAndSavesCanonicalStatus() throws Exception {
         Person player = new PersonBuilder().withInjuryStatus("injured").build();
         AddressBook original = new AddressBook();

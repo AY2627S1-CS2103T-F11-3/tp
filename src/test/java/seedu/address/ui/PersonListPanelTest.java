@@ -21,7 +21,7 @@ import javafx.scene.layout.Region;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
-/** Exercises injury display alongside filtered player indexes and table updates. */
+/** Exercises player status display alongside filtered indexes and table updates. */
 public class PersonListPanelTest {
     @BeforeAll
     public static void startJavaFx() throws Exception {
@@ -35,6 +35,56 @@ public class PersonListPanelTest {
             Platform.runLater(startup);
         }
         startup.get(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void render_feeAndConsentStatuses_updatesDisplayedCellsAndRetainsFilteredIndexes() throws Exception {
+        FutureTask<Void> task = new FutureTask<>(() -> {
+            Person defaults = new PersonBuilder().withName("Default Player").build();
+            Person recorded = new PersonBuilder().withName("Recorded Player").withFeeStatus("paid")
+                    .withConsentStatus("received").withInjuryStatus("injured").build();
+            Person pending = new PersonBuilder().withName("Pending Player").withFeeStatus("unpaid")
+                    .withConsentStatus("pending").build();
+            var source = FXCollections.observableArrayList(defaults, recorded, pending);
+            FilteredList<Person> displayed = new FilteredList<>(source);
+            Region root = new PersonListPanel(displayed).getRoot();
+            new Scene(root, 1900, 300);
+            root.resize(1900, 300);
+            root.applyCss();
+            root.layout();
+            TableView<?> table = (TableView<?>) root.lookup("#personTableView");
+            var feeColumn = table.getColumns().stream().filter(column -> "Fee payment".equals(column.getText()))
+                    .findFirst().orElseThrow();
+            var consentColumn = table.getColumns().stream().filter(column -> "Consent".equals(column.getText()))
+                    .findFirst().orElseThrow();
+            assertFalse(feeColumn.isSortable());
+            assertFalse(consentColumn.isSortable());
+            assertEquals(List.of("unpaid", "paid", "unpaid"),
+                    List.of(feeColumn.getCellData(0), feeColumn.getCellData(1), feeColumn.getCellData(2)));
+            assertEquals(List.of("pending", "received", "pending"),
+                    List.of(consentColumn.getCellData(0), consentColumn.getCellData(1), consentColumn.getCellData(2)));
+            assertTrue(table.lookupAll(".table-cell").stream().anyMatch(node -> node instanceof TableCell<?, ?> cell
+                    && cell.getTableColumn() == consentColumn && "received".equals(cell.getText())));
+            displayed.setPredicate(player -> player.getName().equals(recorded.getName()));
+            root.layout();
+            assertEquals("1", table.getColumns().getFirst().getCellData(0));
+            assertEquals("paid", feeColumn.getCellData(0));
+            source.set(1, new PersonBuilder(recorded).withFeeStatus("unpaid").withConsentStatus("pending").build());
+            root.layout();
+            assertEquals("unpaid", feeColumn.getCellData(0));
+            assertEquals("pending", consentColumn.getCellData(0));
+            root.resize(450, 300);
+            table.scrollToColumnIndex(table.getColumns().indexOf(consentColumn));
+            root.layout();
+            assertTrue(consentColumn.isVisible());
+            assertTrue(table.getWidth() <= 450);
+            displayed.setPredicate(player -> false);
+            root.layout();
+            assertTrue(table.getItems().isEmpty());
+            return null;
+        });
+        Platform.runLater(task);
+        task.get(20, TimeUnit.SECONDS);
     }
 
     @Test

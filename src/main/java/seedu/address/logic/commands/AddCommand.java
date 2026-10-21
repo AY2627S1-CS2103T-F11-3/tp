@@ -3,6 +3,8 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
@@ -32,6 +34,8 @@ public class AddCommand extends Command {
             + PREFIX_NAME_FULL + "NAME " + PREFIX_SQUADNAME_FULL + "SQUAD " + PREFIX_POSITION_FULL + "POSITION "
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN] [" + PREFIX_GUARDIANCONTACT_FULL + "CONTACT] "
             + "[" + PREFIX_AVAILABILITY_FULL + "true/false] [" + PREFIX_INJURY_FULL + "fit|injured] "
+            + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
+            + "[" + PREFIX_CONSENT_FULL + "received|pending] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_NAME + ", " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", "
             + PREFIX_GUARDIANNAME + ", " + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ". "
