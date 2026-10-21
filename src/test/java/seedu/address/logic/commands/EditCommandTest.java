@@ -35,6 +35,27 @@ public class EditCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_clearGuardianDetailOnly_preservesInjuryAndOtherDetails() {
+        Person original = new PersonBuilder().withName("Player").withSquadName("U12")
+                .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567")
+                .withInjuryStatus("injured").withRemark("Left footed").build();
+        for (boolean clearName : new boolean[] {true, false}) {
+            Model actualModel = new ModelManager();
+            actualModel.addPerson(original);
+            Person expected = clearName ? new PersonBuilder(original).withGuardianName(null).build()
+                    : new PersonBuilder(original).withGuardianContact(null).build();
+            Model expectedModel = new ModelManager();
+            expectedModel.addPerson(expected);
+            EditPersonDescriptor descriptor = clearName
+                    ? new EditPersonDescriptorBuilder().withGuardianName(null).build()
+                    : new EditPersonDescriptorBuilder().withGuardianContact(null).build();
+            assertCommandSuccess(new EditCommand(INDEX_FIRST_PERSON, descriptor), actualModel,
+                    String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, original.getName()), expectedModel);
+            assertEquals(original.getRemark(), actualModel.getFilteredPersonList().getFirst().getRemark());
+        }
+    }
+
+    @Test
     public void execute_editInjuryFromFilteredList_updatesDisplayedPlayerAndPreservesOtherFields() throws Exception {
         Person target = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
         showPersonAtIndex(model, INDEX_SECOND_PERSON);
