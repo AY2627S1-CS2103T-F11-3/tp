@@ -11,30 +11,20 @@ import org.junit.jupiter.api.Test;
 
 public class InjuryStatusTest {
     @Test
-    public void constructor_unicodeCaseVariants_storesCanonicalReloadableValues() {
-        String[][] cases = {
-            {"F\u0130T", "fit"},
-            {"f\u0131t", "fit"},
-            {"\u0130NJURED", "injured"},
-            {"\u0131njured", "injured"}
-        };
-        for (String[] entry : cases) {
-            assertTrue(InjuryStatus.isValidInjuryStatus(entry[0]));
-            InjuryStatus status = new InjuryStatus(entry[0]);
-            assertEquals(entry[1], status.value);
-            assertEquals(new InjuryStatus(entry[1]), status);
-            assertEquals(new InjuryStatus(entry[1]).hashCode(), status.hashCode());
-            assertTrue(InjuryStatus.isValidInjuryStatus(status.value));
-            assertEquals(status, new InjuryStatus(status.value));
+    public void constructor_unicodeLookalikes_rejectsInput() {
+        for (String value : new String[] {"F\u0130T", "f\u0131t", "\u0130NJURED", "\u0131njured",
+            "f\u0456t", "\uff46\uff49\uff54", "fi\u0307t"}) {
+            assertFalse(InjuryStatus.isValidInjuryStatus(value));
+            assertThrows(IllegalArgumentException.class, () -> new InjuryStatus(value));
         }
     }
 
     @Test
     public void constructor_validValues_normalizesStatus() {
-        for (String value : new String[] {"fit", "injured"}) {
+        for (String value : new String[] {"fit", "FiT", "injured", "iNjUrEd"}) {
             InjuryStatus status = new InjuryStatus(" \t" + value.toUpperCase(Locale.ROOT) + "\n");
-            assertEquals(value, status.value);
-            assertEquals(value, status.toString());
+            assertEquals(value.toLowerCase(Locale.ROOT), status.value);
+            assertEquals(value.toLowerCase(Locale.ROOT), status.toString());
             assertEquals(new InjuryStatus(value), status);
             assertEquals(new InjuryStatus(value).hashCode(), status.hashCode());
         }

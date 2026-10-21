@@ -59,21 +59,25 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_unicodeInjuryInput_savesCanonicalValuesAndReloads() throws Exception {
+    public void execute_asciiInjuryInput_savesAndRejectsUnicodeWithoutWriting() throws Exception {
         JsonAddressBookStorage storage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        Person player = new PersonBuilder().withName("John Doe").withSquadName("U12").withPosition("Defender")
-                .withInjuryStatus("fit").build();
-        logic.execute("add n/John Doe sn/U12 pos/Defender injury/F\u0130T");
-        assertEquals(List.of(player), model.getAddressBook().getPersonList());
-        assertEquals(List.of(player), storage.readAddressBook().orElseThrow().getPersonList());
-
-        logic.execute("edit 1 injury/\u0130NJURED");
-        Person injured = new PersonBuilder(player).withInjuryStatus("injured").build();
-        assertEquals(List.of(injured), model.getAddressBook().getPersonList());
+        logic.execute("add n/John Doe sn/U12 pos/Defender injury/FiT");
+        logic.execute("edit 1 injury/iNjUrEd");
+        Person injured = model.getAddressBook().getPersonList().getFirst();
+        assertEquals("injured", injured.getInjuryStatus().value);
         assertEquals(List.of(injured), storage.readAddressBook().orElseThrow().getPersonList());
-
-        logic.execute("edit 1 injury/f\u0131t");
-        assertEquals(List.of(player), storage.readAddressBook().orElseThrow().getPersonList());
+        Path file = temporaryFolder.resolve("addressBook.json");
+        String before = Files.readString(file);
+        for (String value : new String[] {"F\u0130T", "f\u0131t", "\u0130NJURED", "\u0131njured",
+            "f\u0456t", "\uff46\uff49\uff54"}) {
+            assertParseException("edit 1 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertParseException("add n/Other Player sn/U12 pos/Defender injury/" + value,
+                    InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertEquals(List.of(injured), model.getAddressBook().getPersonList());
+            assertEquals(before, Files.readString(file));
+        }
+        logic.execute("edit 1 injury/fIt");
+        assertEquals("fit", storage.readAddressBook().orElseThrow().getPersonList().getFirst().getInjuryStatus().value);
     }
 
     @Test

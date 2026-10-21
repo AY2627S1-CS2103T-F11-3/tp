@@ -111,8 +111,9 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
 * Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
   values are rejected. Guardian contact numbers must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
 * Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
-* Injury status accepts `fit` or `injured`, ignoring case and surrounding whitespace, and defaults to
-  `fit`. Empty or unsupported values, including `unknown`, are rejected. The player table displays the value in the `Injury` column
+* Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace, and defaults to
+  `fit`. Empty or unsupported values, including `unknown` and Unicode look-alike letters, are rejected.
+  The player table displays the value in the `Injury` column
   next to `Availability`; scroll horizontally if the column is outside the visible area.
 * Injury status and availability are independent. Recording `injury/injured` does not mark a player unavailable;
   supply `av/false` as well if needed. Injury status does not affect the availability counts in `overview`.
@@ -200,7 +201,7 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
   Player phone number, email and address are no longer supported.
 * When editing tags, all of the player's existing tags are removed; adding tags is not cumulative.
 * To remove all of a player's tags, enter `t/` without a tag after it.
-* Use `injury/fit` or `injury/injured` to update the recorded injury status. Values ignore case and
+* Use `injury/fit` or `injury/injured` to update the recorded injury status. Values require ASCII letters, ignoring case and
   surrounding whitespace. Omit `injury/` to keep the existing status; use `injury/fit` to return to the default.
   Empty values and repeated `injury/` fields are rejected. Changing injury status does not change availability.
 

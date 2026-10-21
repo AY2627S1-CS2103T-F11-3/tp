@@ -62,7 +62,8 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_invalidOrRepeatedInjuryStatus_failure() {
-        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown", "recovering", "true", "in jured"}) {
+        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown",
+            "F\u0130T", "f\u0131t", "\u0130NJURED", "recovering", "true", "in jured"}) {
             assertParseFailure(parser, "2 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, "2 injury/fit injury/injured",

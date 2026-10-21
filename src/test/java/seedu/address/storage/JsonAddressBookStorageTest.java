@@ -38,7 +38,7 @@ public class JsonAddressBookStorageTest {
         JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
         storage.saveAddressBook(original);
         String json = Files.readString(file);
-        for (String legacyValue : new String[] {"null", "\" UNKNOWN \"", "\"un\u212Anown\""}) {
+        for (String legacyValue : new String[] {"null", "\" UNKNOWN \""}) {
             Files.writeString(file, json.replace("\"injured\"", legacyValue));
             ReadOnlyAddressBook migrated = storage.readAddressBook().orElseThrow();
             Person expected = new PersonBuilder(player).withInjuryStatus("fit").build();

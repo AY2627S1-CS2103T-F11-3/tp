@@ -3,6 +3,8 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import java.util.Locale;
+
 /**
  * Represents a player's recorded injury status.
  */
@@ -10,7 +12,7 @@ public final class InjuryStatus {
     public static final String FIT = "fit";
     public static final String INJURED = "injured";
     public static final String MESSAGE_CONSTRAINTS =
-            "Injury status must be fit or injured.";
+            "Injury status must be fit or injured using ASCII letters.";
 
     public final String value;
 
@@ -18,21 +20,15 @@ public final class InjuryStatus {
     public InjuryStatus(String injuryStatus) {
         requireNonNull(injuryStatus);
         checkArgument(isValidInjuryStatus(injuryStatus), MESSAGE_CONSTRAINTS);
-        String normalized = injuryStatus.strip();
-        // Case-insensitive Unicode matches must still be stored as one of the canonical values.
-        if (FIT.equalsIgnoreCase(normalized)) {
-            value = FIT;
-        } else {
-            value = INJURED;
-        }
+        value = injuryStatus.strip().toLowerCase(Locale.ROOT);
     }
 
     /** Returns whether the supplied value is a supported injury status. */
     public static boolean isValidInjuryStatus(String test) {
         requireNonNull(test);
         String normalized = test.strip();
-        return FIT.equalsIgnoreCase(normalized)
-                || INJURED.equalsIgnoreCase(normalized);
+        // Java's case-insensitive regex matching is ASCII-only without UNICODE_CASE.
+        return normalized.matches("(?i:fit|injured)");
     }
 
     @Override

@@ -47,7 +47,8 @@ public class JsonAdaptedPersonTest {
 
     @Test
     public void toModelType_invalidInjuryStatus_throwsIllegalValueException() {
-        for (String value : new String[] {"", " ", "recovering"}) {
+        for (String value : new String[] {"", " ", "recovering", "F\u0130T", "f\u0131t",
+            "\u0130NJURED", "un\u212Anown"}) {
             JsonAdaptedPerson adapted = new JsonAdaptedPerson(BENSON.getName().fullName, List.of(), "",
                     "U12", "Defender", null, null, "available", null, value);
             assertThrows(IllegalValueException.class, InjuryStatus.MESSAGE_CONSTRAINTS, adapted::toModelType);

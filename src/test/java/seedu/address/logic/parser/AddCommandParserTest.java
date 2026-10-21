@@ -40,7 +40,8 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_invalidOrRepeatedInjuryStatus_failure() {
-        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown", "recovering", "true", "in jured"}) {
+        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown",
+            "F\u0130T", "f\u0131t", "\u0130NJURED", "recovering", "true", "in jured"}) {
             assertParseFailure(parser, REQUIRED + " injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",
