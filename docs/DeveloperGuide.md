@@ -123,7 +123,9 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list.
+  A _sorted_ view is layered over it for the `sort` command. The model exposes this unmodifiable
+  `ObservableList<Person>` to the UI, so the UI updates when the filter or sort order changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -284,6 +286,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 | `***`    | coach | delete a player | remove players who are no longer relevant or were added by mistake |
 | `**`     | coach | filter players by squad | quickly find players belonging to a particular squad |
 | `**`     | coach | filter players by availability | quickly find players who are available or unavailable |
+| `**`     | coach | sort the displayed roster | organise the players currently relevant to me |
 | `**`     | first-time user | view help for the available commands | learn how to use the application without memorising every command |
 | `*`      | coach | edit a player's details | correct or update information without deleting and re-adding the player |
 | `*`      | coach | record additional player information such as skill level, injury status, consent status and fee status | keep more comprehensive information about each player |
@@ -424,6 +427,23 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
 * 3a. No players match the given criteria.
   * 3a1. SquadLink informs the coach that no matching players were found.
+
+    Use case ends.
+
+**Use case: Sort displayed players**
+
+**MSS**
+
+1. Coach requests to sort the displayed players by a supported field.
+2. SquadLink validates the selected field.
+3. SquadLink displays the current players in the requested order and updates their indexes.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The field is missing or unsupported.
+  * 1a1. SquadLink shows usage guidance.
 
     Use case ends.
 
