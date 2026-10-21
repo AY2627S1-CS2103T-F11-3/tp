@@ -74,10 +74,10 @@ public class OverviewPanelTest {
             Label unavailableCount = (Label) cards.getChildren().get(1).lookup(".overview-unavailable");
             assertNotNull(unavailableCount);
             assertEquals("0 available", unavailableCount.getText());
-            assertEquals(Color.web("#d46e6e"), unavailableCount.getTextFill());
+            assertEquals(Color.web("#ff9b8a"), unavailableCount.getTextFill());
             assertNull(cards.getChildren().get(1).lookup(".overview-available"));
             Label availableCount = (Label) cards.getChildren().get(0).lookup(".overview-available");
-            assertEquals(Color.web("#6ed489"), availableCount.getTextFill());
+            assertEquals(Color.web("#7bd389"), availableCount.getTextFill());
             saveSnapshot(panel, "wide");
             panel.resize(450, 700);
             panel.layout();

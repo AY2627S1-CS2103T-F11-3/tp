@@ -353,34 +353,34 @@
 
 /* Club overview */
 .overview-panel, .overview-panel > .viewport, .overview-content {
-    -fx-background-color: #000000;
+    -fx-background-color: #18212b;
 }
 .overview-panel { -fx-background-insets: 0; -fx-padding: 0; }
-.overview-title { -fx-font-size: 24px; -fx-text-fill: #f4f7fa; -fx-font-weight: bold; }
+.overview-title { -fx-font-size: 24px; -fx-text-fill: #f5f8fa; -fx-font-weight: bold; }
 .overview-muted { -fx-font-size: 13px; -fx-text-fill: #b6c2cf; -fx-opacity: 1; }
 .overview-metric, .overview-card {
-    -fx-background-color: #2c3542;
+    -fx-background-color: #202b36;
     -fx-background-radius: 12;
     -fx-padding: 18;
-    -fx-border-color: #435064;
+    -fx-border-color: #3b627d;
     -fx-border-radius: 12;
     -fx-alignment: center;
 }
 .overview-metric .overview-muted { -fx-alignment: center; }
 .overview-metric-value {
     -fx-font-size: 28px;
-    -fx-text-fill: #f4f7fa;
+    -fx-text-fill: #f5f8fa;
     -fx-font-weight: bold;
     -fx-alignment: center;
 }
-.overview-squad-name { -fx-font-size: 18px; -fx-text-fill: #f4f7fa; -fx-font-weight: bold; }
-.overview-available { -fx-font-size: 28px; -fx-text-fill: #6ed489; -fx-font-weight: bold; }
-.overview-unavailable { -fx-font-size: 28px; -fx-text-fill: #d46e6e; -fx-font-weight: bold; }
-.overview-availability-bar { -fx-accent: #6ed489; }
-.overview-availability-bar > .track { -fx-background-color: #18212b; -fx-background-radius: 5; }
+.overview-squad-name { -fx-font-size: 18px; -fx-text-fill: #f5f8fa; -fx-font-weight: bold; }
+.overview-available { -fx-font-size: 28px; -fx-text-fill: #7bd389; -fx-font-weight: bold; }
+.overview-unavailable { -fx-font-size: 28px; -fx-text-fill: #ff9b8a; -fx-font-weight: bold; }
+.overview-availability-bar { -fx-accent: #7bd389; }
+.overview-availability-bar > .track { -fx-background-color: #284b63; -fx-background-radius: 5; }
 .overview-availability-bar > .bar { -fx-background-radius: 5; -fx-background-insets: 0; }
-.overview-card-warning { -fx-border-color: #d97373; -fx-background-color: #683e3e; }
-.overview-warning { -fx-font-size: 13px; -fx-text-fill: #d46e6e; -fx-opacity: 1; }
+.overview-card-warning { -fx-border-color: #ff9b8a; -fx-background-color: #202b36; }
+.overview-warning { -fx-font-size: 13px; -fx-text-fill: #ff9b8a; -fx-opacity: 1; }
 .player-table {
     -fx-background-color: #18212b;
     -fx-padding: 0;
