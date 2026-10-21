@@ -16,6 +16,17 @@ import seedu.address.testutil.EditPersonDescriptorBuilder;
 public class EditPersonDescriptorTest {
 
     @Test
+    public void injuryStatus_isRecognizedAndCopied() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withInjuryStatus("injured").build();
+        assertTrue(descriptor.isAnyFieldEdited());
+        EditPersonDescriptor copied = new EditPersonDescriptor(descriptor);
+        assertEquals(descriptor, copied);
+        assertEquals(descriptor.getInjuryStatus(), copied.getInjuryStatus());
+        assertFalse(descriptor.equals(new EditPersonDescriptorBuilder().withInjuryStatus("fit").build()));
+        assertFalse(descriptor.equals(new EditPersonDescriptor()));
+    }
+
+    @Test
     public void equals() {
         // same values -> returns true
         EditPersonDescriptor descriptorWithSameValues = new EditPersonDescriptor(DESC_AMY);
@@ -56,7 +67,8 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getPosition().orElse(null) + ", guardianName="
                 + editPersonDescriptor.getGuardianName().orElse(null) + ", guardianContact="
                 + editPersonDescriptor.getGuardianContact().orElse(null) + ", availability="
-                + editPersonDescriptor.getAvailability().orElse(null) + "}";
+                + editPersonDescriptor.getAvailability().orElse(null) + ", injuryStatus="
+                + editPersonDescriptor.getInjuryStatus().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }

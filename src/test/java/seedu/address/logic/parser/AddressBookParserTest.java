@@ -43,7 +43,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_add() throws Exception {
-        Person person = new PersonBuilder().withSquadName("Soccer Stars").withPosition("Goalkeeper").build();
+        Person person = new PersonBuilder().withSquadName("Soccer Stars").withPosition("Goalkeeper")
+                .withInjuryStatus("injured").build();
         AddCommand command = (AddCommand) parser.parseCommand(PersonUtil.getAddCommand(person));
         assertEquals(new AddCommand(person), command);
     }
@@ -92,7 +93,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_edit() throws Exception {
-        Person person = new PersonBuilder().withSquadName("Soccer Stars").withPosition("Defender").build();
+        Person person = new PersonBuilder().withSquadName("Soccer Stars").withPosition("Defender")
+                .withInjuryStatus("injured").build();
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder(person).build();
         EditCommand command = (EditCommand) parser.parseCommand(EditCommand.COMMAND_WORD + " "
                 + INDEX_FIRST_PERSON.getOneBased() + " " + PersonUtil.getEditPersonDescriptorDetails(descriptor));

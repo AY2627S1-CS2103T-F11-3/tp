@@ -35,6 +35,35 @@ public class EditCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_editInjuryFromFilteredList_updatesDisplayedPlayerAndPreservesOtherFields() throws Exception {
+        Person target = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+        showPersonAtIndex(model, INDEX_SECOND_PERSON);
+        Person edited = new PersonBuilder(target).withInjuryStatus("injured").build();
+        Model expected = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expected.setPerson(target, edited);
+        EditCommand command = new EditCommand(INDEX_FIRST_PERSON,
+                new EditPersonDescriptorBuilder().withInjuryStatus("injured").build());
+        assertCommandSuccess(command, model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, target.getName()), expected);
+
+        new EditCommand(INDEX_SECOND_PERSON, new EditPersonDescriptorBuilder().withInjuryStatus("unknown").build())
+                .execute(model);
+        assertEquals(target, model.getAddressBook().getPersonList().get(INDEX_SECOND_PERSON.getZeroBased()));
+    }
+
+    @Test
+    public void execute_editInjuryInvalidIndex_changesNothing() {
+        Index invalid = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        EditCommand command = new EditCommand(invalid,
+                new EditPersonDescriptorBuilder().withInjuryStatus("injured").build());
+        assertCommandFailure(command, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        assertCommandFailure(new EditCommand(INDEX_SECOND_PERSON,
+                new EditPersonDescriptorBuilder().withInjuryStatus("injured").build()), model,
+                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
     public void execute_editName_preservesPlayerProfileFields() {
         Person original = new PersonBuilder().withName("Original Player").withTags("captain")
                 .withSquadName("U12 A").withPosition("Defender").withGuardianName("Jane Doe")

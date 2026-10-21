@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
@@ -31,6 +32,7 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Availability;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -55,6 +57,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
             + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
             + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
+            + "[" + PREFIX_INJURY_FULL + "unknown|fit|injured] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
             + PREFIX_GUARDIANCONTACT + ", and " + PREFIX_AVAILABILITY + " for their full prefixes\n"
@@ -118,10 +121,12 @@ public class EditCommand extends Command {
                 ? editPersonDescriptor.getGuardianContact().orElse(null) : personToEdit.getGuardianContact();
         Availability updatedAvailability =
                 editPersonDescriptor.getAvailability().orElse(personToEdit.getAvailability());
+        InjuryStatus updatedInjuryStatus =
+                editPersonDescriptor.getInjuryStatus().orElse(personToEdit.getInjuryStatus());
 
         return new Person(updatedName, updatedTags, updatedRemark,
                 updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianContact, updatedAvailability,
-                personToEdit.getInjuryStatus());
+                updatedInjuryStatus);
     }
 
     @Override
@@ -159,6 +164,7 @@ public class EditCommand extends Command {
         private GuardianName guardianName;
         private GuardianContact guardianContact;
         private Availability availability;
+        private InjuryStatus injuryStatus;
         private boolean guardianNameEdited;
         private boolean guardianContactEdited;
 
@@ -180,13 +186,14 @@ public class EditCommand extends Command {
                 setGuardianContact(toCopy.guardianContact);
             }
             setAvailability(toCopy.availability);
+            setInjuryStatus(toCopy.injuryStatus);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, tags, squadName, position, availability)
+            return CollectionUtil.isAnyNonNull(name, tags, squadName, position, availability, injuryStatus)
                     || guardianNameEdited || guardianContactEdited;
         }
 
@@ -265,6 +272,14 @@ public class EditCommand extends Command {
             return Optional.ofNullable(availability);
         }
 
+        public void setInjuryStatus(InjuryStatus injuryStatus) {
+            this.injuryStatus = injuryStatus;
+        }
+
+        public Optional<InjuryStatus> getInjuryStatus() {
+            return Optional.ofNullable(injuryStatus);
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -283,6 +298,7 @@ public class EditCommand extends Command {
                     && Objects.equals(guardianName, otherEditPersonDescriptor.guardianName)
                     && Objects.equals(guardianContact, otherEditPersonDescriptor.guardianContact)
                     && Objects.equals(availability, otherEditPersonDescriptor.availability)
+                    && Objects.equals(injuryStatus, otherEditPersonDescriptor.injuryStatus)
                     && guardianNameEdited == otherEditPersonDescriptor.guardianNameEdited
                     && guardianContactEdited == otherEditPersonDescriptor.guardianContactEdited;
         }
@@ -297,6 +313,7 @@ public class EditCommand extends Command {
                 .add("guardianName", guardianName)
                 .add("guardianContact", guardianContact)
                 .add("availability", availability)
+                .add("injuryStatus", injuryStatus)
                     .toString();
         }
     }

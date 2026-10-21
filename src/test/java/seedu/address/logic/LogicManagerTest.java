@@ -4,12 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +31,7 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.MatchesFilterCriteriaPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
@@ -53,6 +56,42 @@ public class LogicManagerTest {
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
         logic = new LogicManager(model, storage);
+    }
+
+    @Test
+    public void execute_injuryCommands_saveUpdatesAndRejectInvalidInputWithoutWriting() throws Exception {
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        Person player = new PersonBuilder().withName("John Doe").withSquadName("U12").withPosition("Defender")
+                .withInjuryStatus("injured").build();
+        logic.execute("add n/John Doe sn/U12 pos/Defender injury/INJURED");
+        assertEquals(List.of(player), storage.readAddressBook().orElseThrow().getPersonList());
+
+        Person updated = new PersonBuilder(player).withInjuryStatus("fit").withAvailability("unavailable").build();
+        logic.execute("edit 1 injury/fit av/false");
+        assertEquals(List.of(updated), model.getAddressBook().getPersonList());
+        assertEquals(List.of(updated), storage.readAddressBook().orElseThrow().getPersonList());
+
+        Path file = temporaryFolder.resolve("addressBook.json");
+        String before = Files.readString(file);
+        assertParseException("edit 1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseException("edit 1 injury/recovering", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseException("edit 1 injury/fit injury/injured",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_INJURY_FULL));
+        assertParseException("add n/Other Player sn/U12 pos/Defender injury/invalid", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertCommandException("edit 2 injury/injured", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandException("add n/John Doe sn/U12 pos/Defender injury/unknown",
+                "John Doe is already a registered player!");
+        assertEquals(before, Files.readString(file));
+        assertEquals(List.of(updated), model.getAddressBook().getPersonList());
+
+        logic.execute("edit 1 injury/unknown");
+        Person reset = new PersonBuilder(updated).withInjuryStatus("unknown").build();
+        assertEquals(List.of(reset), storage.readAddressBook().orElseThrow().getPersonList());
+        logic.execute("edit 1 injury/injured");
+        Person injured = new PersonBuilder(updated).withInjuryStatus("injured").build();
+        logic.execute("edit 1 av/true");
+        assertEquals(List.of(new PersonBuilder(injured).withAvailability("available").build()),
+                storage.readAddressBook().orElseThrow().getPersonList());
     }
 
     @Test

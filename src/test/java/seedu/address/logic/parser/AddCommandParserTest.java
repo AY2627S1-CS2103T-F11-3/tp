@@ -4,12 +4,15 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -19,6 +22,32 @@ import seedu.address.testutil.PersonBuilder;
 public class AddCommandParserTest {
     private static final String REQUIRED = " name/John Doe squad/Soccer Stars position/Goalkeeper";
     private final AddCommandParser parser = new AddCommandParser();
+
+    @Test
+    public void parse_injuryStatus_acceptsSupportedValuesAndDefaultsToUnknown() {
+        assertParseSuccess(parser, REQUIRED, new AddCommand(new PersonBuilder(player())
+                .withInjuryStatus("unknown").build()));
+        for (String value : new String[] {"unknown", "fit", "injured"}) {
+            AddCommand expected = new AddCommand(new PersonBuilder(player()).withInjuryStatus(value).build());
+            assertParseSuccess(parser, REQUIRED + " injury/" + value, expected);
+            assertParseSuccess(parser, " injury/ \t" + value.toUpperCase(Locale.ROOT) + " \n" + REQUIRED,
+                    expected);
+        }
+        Person expected = new PersonBuilder(player()).withInjuryStatus("injured")
+                .withAvailability("unavailable").withTags("captain").build();
+        assertParseSuccess(parser, REQUIRED + " injury/injured av/false t/captain", new AddCommand(expected));
+    }
+
+    @Test
+    public void parse_invalidOrRepeatedInjuryStatus_failure() {
+        for (String value : new String[] {"", " \t", "recovering", "true", "in jured"}) {
+            assertParseFailure(parser, REQUIRED + " injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+        }
+        assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
+        assertParseFailure(parser, " injury/recovering contact/abc" + REQUIRED, InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " contact/abc injury/recovering" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
+    }
 
     @Test
     public void parse_requiredFieldsAndAliases_success() {
