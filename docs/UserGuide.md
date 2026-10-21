@@ -200,6 +200,36 @@ Examples:
 *  `edit 2 av/false` Marks the 2nd player as unavailable.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
+### Updating availability for several players: `availability`
+
+Sets the same availability for one or more players in a single command.
+
+Format: `availability INDEX [INDEX]... available/true|false`
+
+Use `av/` as shorthand for `available/`.
+
+* Put the indexes before the availability prefix, separated by spaces or tabs. Each positive integer refers to
+  the currently displayed player list, including after `find` or `filter`. Use `main` to view that list from the overview.
+* `true` marks players as available; `false` marks them as unavailable. Values ignore case and surrounding whitespace.
+* Supply exactly one availability prefix. Repeated indexes update and report each player only once.
+* All indexes are checked before any player is updated. If an index is invalid, no players are changed.
+* Other player details remain unchanged. Setting an existing availability again is allowed.
+* The current search or filter stays active. Updated players disappear if they no longer match, and the remaining
+  players are renumbered. Check the displayed indexes before the next command; use `list` to see everyone.
+* Success reports the availability, the number of selected players and their names, including players already at
+  that availability. Changes are saved automatically. If saving fails, the player data is restored and an error is shown.
+
+Examples:
+
+* `availability 1 3 av/false` marks the first and third displayed players unavailable.
+* `availability 2 available/TRUE` marks the second displayed player available.
+
+Example workflow (with at least two available U12 players):
+
+1. Enter `filter sn/U12 av/true` and check the displayed player indexes.
+2. Enter `availability 1 2 av/false`. Both selected players are updated and disappear from the available-player list.
+3. Enter `list` to see all players, including those just marked unavailable.
+
 ### Locating players by name: `find`
 
 Finds players whose names contain any of the given keywords.
@@ -352,6 +382,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker`
 **Clear** | `clear`
+**Availability** | `availability INDEX [INDEX]... available/true\|false`<br> Alias: `av/` <br> e.g., `availability 1 3 av/false`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [t/TAG]…​`<br> e.g., `edit 2 sn/Soccer Stars pos/Defender`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`

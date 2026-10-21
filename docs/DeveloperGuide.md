@@ -155,6 +155,25 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Bulk availability updates
+
+`AddressBookParser` routes `availability` to `AvailabilityCommandParser`. The parser accepts displayed indexes
+followed by one `av/` or `available/` value. It reuses `ParserUtil.parsePlayerIndex` for index validation and rejects
+duplicate aliases and unknown prefixes before constructing `AvailabilityCommand`.
+
+The command first resolves every index against the displayed list, collecting distinct player objects in input order.
+Only after all targets are valid does it replace their availability through `Model.setPerson`. This separation prevents
+invalid later indexes from causing partial updates. It also prevents changing an availability filter from shifting the
+indexes used for subsequent targets. Player identity and other profile fields are preserved.
+
+The current filter remains active, so players may disappear as their availability changes. The result lists the selected
+players even if they are no longer visible. The command uses the existing mutating-command persistence path in
+`LogicManager`: save once after execution and restore the pre-command address book if saving throws an `IOException`.
+
+`AvailabilityCommandTest` covers target resolution and field preservation. `AvailabilityCommandParserTest` covers
+syntax and errors. `AvailabilityIntegrationTest` exercises command routing, shrinking filters, save/reload and rollback
+after a save failure.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation

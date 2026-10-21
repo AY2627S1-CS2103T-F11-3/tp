@@ -21,6 +21,11 @@ import seedu.address.model.person.Person;
 public class AvailabilityCommand extends Command {
 
     public static final String COMMAND_WORD = "availability";
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Sets availability for players in the displayed list.\n"
+            + "Parameters: INDEX [INDEX]... available/true|false\n"
+            + "Alias: av/ for available/\n"
+            + "Example: " + COMMAND_WORD + " 1 3 av/false";
     public static final String MESSAGE_NO_DISPLAYED_PLAYERS =
             "No players are currently displayed. Use list to show all players before updating availability.";
     public static final String MESSAGE_INDEX_OUT_OF_RANGE =
