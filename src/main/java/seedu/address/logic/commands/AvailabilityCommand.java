@@ -30,7 +30,6 @@ public class AvailabilityCommand extends Command {
             "No players are currently displayed. Use list to show all players before updating availability.";
     public static final String MESSAGE_INDEX_OUT_OF_RANGE =
             "Index %1$d is outside the displayed list. Choose an index from 1 to %2$d. No players updated.";
-    public static final String MESSAGE_SUCCESS = "Availability set to %1$s for %2$d player(s):\n%3$s";
 
     private final List<Index> targetIndices;
     private final Availability availability;
@@ -50,12 +49,34 @@ public class AvailabilityCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         List<Person> targets = resolveTargets(model.getFilteredPersonList());
-        for (Person target : targets) {
+        List<Person> changed = targets.stream()
+                .filter(player -> !player.getAvailability().equals(availability)).toList();
+        List<Person> unchanged = targets.stream()
+                .filter(player -> player.getAvailability().equals(availability)).toList();
+        for (Person target : changed) {
             model.setPerson(target, withAvailability(target));
         }
-        String names = targets.stream().map(player -> player.getName().fullName)
-                .collect(Collectors.joining("\n"));
-        return new CommandResult(String.format(MESSAGE_SUCCESS, availability, targets.size(), names));
+        return new CommandResult(formatFeedback(changed, unchanged));
+    }
+
+    private String formatFeedback(List<Person> changed, List<Person> unchanged) {
+        if (changed.isEmpty()) {
+            String selection = unchanged.size() == 1 ? "The selected player is"
+                    : String.format("All %d selected players are", unchanged.size());
+            return String.format("No changes needed. %s already %s.\n%s",
+                    selection, availability, formatNames(unchanged));
+        }
+        String message = String.format("Marked %d %s as %s:\n%s", changed.size(),
+                changed.size() == 1 ? "player" : "players", availability, formatNames(changed));
+        if (!unchanged.isEmpty()) {
+            message += String.format("\n\nAlready %s (unchanged, %d %s):\n%s", availability,
+                    unchanged.size(), unchanged.size() == 1 ? "player" : "players", formatNames(unchanged));
+        }
+        return message;
+    }
+
+    private String formatNames(List<Person> players) {
+        return players.stream().map(player -> player.getName().fullName).collect(Collectors.joining("\n"));
     }
 
     /**

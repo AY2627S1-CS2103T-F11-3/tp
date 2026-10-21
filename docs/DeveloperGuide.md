@@ -166,8 +166,10 @@ Only after all targets are valid does it replace their availability through `Mod
 invalid later indexes from causing partial updates. It also prevents changing an availability filter from shifting the
 indexes used for subsequent targets. Player identity and other profile fields are preserved.
 
-The current filter remains active, so players may disappear as their availability changes. The result lists the selected
-players even if they are no longer visible. The command uses the existing mutating-command persistence path in
+The current filter remains active, so players may disappear as their availability changes. Before updating, the command
+separates targets by whether their availability needs changing and only replaces players in the changed group.
+Feedback lists changed and unchanged players separately, or reports that no changes are needed when all targets
+already have the requested availability. The command uses the existing mutating-command persistence path in
 `LogicManager`: save once after execution and restore the pre-command address book if saving throws an `IOException`.
 
 `AvailabilityCommandTest` covers target resolution and field preservation. `AvailabilityCommandParserTest` covers

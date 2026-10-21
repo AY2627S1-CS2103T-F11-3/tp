@@ -216,8 +216,10 @@ Use `av/` as shorthand for `available/`.
 * Other player details remain unchanged. Setting an existing availability again is allowed.
 * The current search or filter stays active. Updated players disappear if they no longer match, and the remaining
   players are renumbered. Check the displayed indexes before the next command; use `list` to see everyone.
-* Success reports the availability, the number of selected players and their names, including players already at
-  that availability. Changes are saved automatically. If saving fails, the player data is restored and an error is shown.
+* Success lists changed players separately from those already at the requested availability, with a count for each
+  group. If everyone already has that availability, it reports `No changes needed` and lists the selected players.
+  Repeated indexes count only once. Changes are saved automatically. If saving fails, the player data is restored
+  and an error is shown.
 
 Examples:
 

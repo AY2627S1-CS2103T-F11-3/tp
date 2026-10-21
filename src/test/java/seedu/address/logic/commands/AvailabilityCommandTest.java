@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 
@@ -39,7 +40,7 @@ public class AvailabilityCommandTest {
         assertEquals(List.of(unavailable(amy), ben, unavailable(cal)), model.getAddressBook().getPersonList());
         // Person.equals does not compare remarks, so verify this field explicitly.
         assertEquals(amy.getRemark(), model.getAddressBook().getPersonList().getFirst().getRemark());
-        assertEquals("Availability set to unavailable for 2 player(s):\nAmy Tan\nCal Lee",
+        assertEquals("Marked 2 players as unavailable:\nAmy Tan\nCal Lee",
                 result.getFeedbackToUser());
     }
 
@@ -72,7 +73,7 @@ public class AvailabilityCommandTest {
         CommandResult result = command(UNAVAILABLE, 2, 1, 2).execute(model);
 
         assertEquals(List.of(unavailable(amy), unavailable(ben), cal), model.getAddressBook().getPersonList());
-        assertEquals("Availability set to unavailable for 2 player(s):\nBen Tan\nAmy Tan",
+        assertEquals("Marked 2 players as unavailable:\nBen Tan\nAmy Tan",
                 result.getFeedbackToUser());
     }
 
@@ -103,9 +104,74 @@ public class AvailabilityCommandTest {
         model.addPerson(unavailable(amy));
         model.addPerson(ben);
 
-        command(AVAILABLE, 1, 2).execute(model);
+        CommandResult result = command(AVAILABLE, 1, 2).execute(model);
 
         assertEquals(List.of(amy, ben), model.getAddressBook().getPersonList());
+        assertEquals("Marked 1 player as available:\nAmy Tan\n\n"
+                + "Already available (unchanged, 1 player):\nBen Tan", result.getFeedbackToUser());
+        assertSame(ben, model.getAddressBook().getPersonList().get(1));
+    }
+
+    @Test
+    public void execute_mixedUnavailableWithRepeatedIndexes_reportsDistinctGroups() throws Exception {
+        model.addPerson(amy);
+        model.addPerson(unavailable(ben));
+        model.addPerson(unavailable(cal));
+
+        CommandResult result = command(UNAVAILABLE, 2, 1, 3, 2, 1).execute(model);
+
+        assertEquals("Marked 1 player as unavailable:\nAmy Tan\n\n"
+                + "Already unavailable (unchanged, 2 players):\nBen Tan\nCal Lee", result.getFeedbackToUser());
+        assertEquals(List.of(unavailable(amy), unavailable(ben), unavailable(cal)),
+                model.getAddressBook().getPersonList());
+    }
+
+    @Test
+    public void execute_allAlreadyAvailable_preservesFilteredListAndReportsNoChanges() throws Exception {
+        addPlayers();
+        model.updateFilteredPersonList(player -> player.getSquadName().value.equals("U12"));
+
+        CommandResult result = command(AVAILABLE, 1, 2, 1).execute(model);
+
+        assertEquals("No changes needed. All 2 selected players are already available.\nAmy Tan\nBen Tan",
+                result.getFeedbackToUser());
+        assertEquals(List.of(amy, ben), model.getFilteredPersonList());
+        assertSame(amy, model.getFilteredPersonList().getFirst());
+        assertSame(ben, model.getFilteredPersonList().get(1));
+    }
+
+    @Test
+    public void execute_allAlreadyUnavailable_reportsNoChanges() throws Exception {
+        model.addPerson(unavailable(amy));
+        model.addPerson(unavailable(ben));
+
+        CommandResult result = command(UNAVAILABLE, 1, 2).execute(model);
+
+        assertEquals("No changes needed. All 2 selected players are already unavailable.\nAmy Tan\nBen Tan",
+                result.getFeedbackToUser());
+        assertEquals(List.of(unavailable(amy), unavailable(ben)), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_singleAlreadyAvailable_reportsSingularNoChanges() throws Exception {
+        model.addPerson(amy);
+
+        CommandResult result = command(AVAILABLE, 1, 1).execute(model);
+
+        assertEquals("No changes needed. The selected player is already available.\nAmy Tan",
+                result.getFeedbackToUser());
+        assertSame(amy, model.getFilteredPersonList().getFirst());
+    }
+
+    @Test
+    public void execute_allUnavailableToAvailable_reportsChangedPlayers() throws Exception {
+        model.addPerson(unavailable(amy));
+        model.addPerson(unavailable(ben));
+
+        CommandResult result = command(AVAILABLE, 1, 2).execute(model);
+
+        assertEquals("Marked 2 players as available:\nAmy Tan\nBen Tan", result.getFeedbackToUser());
+        assertEquals(List.of(amy, ben), model.getFilteredPersonList());
     }
 
     @Test
