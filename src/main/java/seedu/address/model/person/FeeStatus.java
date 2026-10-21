@@ -3,6 +3,8 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import java.util.Locale;
+
 /**
  * Represents a player's recorded fee payment status.
  */
@@ -10,7 +12,7 @@ public final class FeeStatus {
     public static final String PAID = "paid";
     public static final String UNPAID = "unpaid";
     public static final String MESSAGE_CONSTRAINTS =
-            "Fee payment status must be paid or unpaid.";
+            "Fee payment status must be paid or unpaid using ASCII letters.";
 
     public final String value;
 
@@ -18,21 +20,15 @@ public final class FeeStatus {
     public FeeStatus(String feeStatus) {
         requireNonNull(feeStatus);
         checkArgument(isValidFeeStatus(feeStatus), MESSAGE_CONSTRAINTS);
-        String normalized = feeStatus.strip();
-        // Case-insensitive Unicode matches must still be stored as one of the canonical values.
-        if (PAID.equalsIgnoreCase(normalized)) {
-            value = PAID;
-        } else {
-            value = UNPAID;
-        }
+        value = feeStatus.strip().toLowerCase(Locale.ROOT);
     }
 
     /** Returns whether the supplied value is a supported fee payment status. */
     public static boolean isValidFeeStatus(String test) {
         requireNonNull(test);
         String normalized = test.strip();
-        return PAID.equalsIgnoreCase(normalized)
-                || UNPAID.equalsIgnoreCase(normalized);
+        // Java's case-insensitive regex matching is ASCII-only without UNICODE_CASE.
+        return normalized.matches("(?i:paid|unpaid)");
     }
 
     @Override

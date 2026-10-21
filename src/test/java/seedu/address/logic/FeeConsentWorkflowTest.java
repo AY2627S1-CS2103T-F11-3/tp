@@ -57,8 +57,8 @@ public class FeeConsentWorkflowTest {
                 assertEquals(List.of(expected), storage.readAddressBook().orElseThrow().getPersonList());
             }
         }
-        logic.execute("edit 1 fee/ PA\u0130D ");
-        logic.execute("edit 1 consent/ RECE\u0130VED ");
+        logic.execute("edit 1 fee/ PaId ");
+        logic.execute("edit 1 consent/ ReCeIvEd ");
         Person recorded = new PersonBuilder(original).withFeeStatus("paid").withConsentStatus("received").build();
         assertEquals(List.of(recorded), storage.readAddressBook().orElseThrow().getPersonList());
         logic.execute("edit 1 fee/unpaid consent/pending");
@@ -71,6 +71,25 @@ public class FeeConsentWorkflowTest {
         logic.execute("add n/Consent Only sn/U14 pos/Striker consent/received");
         assertEquals("pending", model.getAddressBook().getPersonList().get(2).getConsentStatus().value);
         assertEquals("unpaid", model.getAddressBook().getPersonList().get(3).getFeeStatus().value);
+    }
+
+    @Test
+    public void execute_unicodeStatusLookalikes_rejectsWithoutMutationOrWriting() throws Exception {
+        ModelManager model = new ModelManager();
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(directory.resolve("players.json"));
+        LogicManager logic = logic(model, storage);
+        logic.execute("add n/Alex Tan sn/U12 pos/Defender fee/paid consent/received");
+        List<Person> before = List.copyOf(model.getAddressBook().getPersonList());
+        String json = Files.readString(storage.getAddressBookFilePath());
+        for (String fields : new String[] {"fee/PA\u0130D", "fee/pa\u0131d", "fee/UNPA\u0130D", "fee/unpa\u0131d",
+            "fee/p\u0430id", "fee/\uff50\uff41\uff49\uff44", "consent/RECE\u0130VED", "consent/rece\u0131ved",
+            "consent/PEND\u0130NG", "consent/pend\u0131ng", "consent/rec\u0435ived", "consent/\uff50ending"}) {
+            assertThrows(ParseException.class, () -> logic.execute("edit 1 " + fields));
+            assertThrows(ParseException.class, () ->
+                    logic.execute("add n/Other Player sn/U12 pos/Defender " + fields));
+            assertEquals(before, model.getAddressBook().getPersonList());
+            assertEquals(json, Files.readString(storage.getAddressBookFilePath()));
+        }
     }
 
     @Test

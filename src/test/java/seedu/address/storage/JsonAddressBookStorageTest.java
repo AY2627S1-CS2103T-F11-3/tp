@@ -66,7 +66,8 @@ public class JsonAddressBookStorageTest {
         assertTrue(json.contains("\"consentStatus\""));
         assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
         for (String field : new String[] {"feeStatus", "consentStatus"}) {
-            for (String invalid : new String[] {"", "invalid"}) {
+            for (String invalid : new String[] {"", "invalid", "PA\u0130D", "unpa\u0131d",
+                "RECE\u0130VED", "pend\u0131ng", "un\u212Anown"}) {
                 Files.writeString(file, json.replaceFirst("\"" + field + "\"\\s*:\\s*\"[^\"]*\"",
                         "\"" + field + "\" : \"" + invalid + "\""));
                 assertThrows(DataLoadingException.class, storage::readAddressBook);

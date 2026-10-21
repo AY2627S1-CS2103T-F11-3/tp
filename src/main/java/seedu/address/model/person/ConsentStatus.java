@@ -3,6 +3,8 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import java.util.Locale;
+
 /**
  * Represents a player's recorded consent status.
  */
@@ -10,7 +12,7 @@ public final class ConsentStatus {
     public static final String RECEIVED = "received";
     public static final String PENDING = "pending";
     public static final String MESSAGE_CONSTRAINTS =
-            "Consent status must be received or pending.";
+            "Consent status must be received or pending using ASCII letters.";
 
     public final String value;
 
@@ -18,21 +20,15 @@ public final class ConsentStatus {
     public ConsentStatus(String consentStatus) {
         requireNonNull(consentStatus);
         checkArgument(isValidConsentStatus(consentStatus), MESSAGE_CONSTRAINTS);
-        String normalized = consentStatus.strip();
-        // Case-insensitive Unicode matches must still be stored as one of the canonical values.
-        if (RECEIVED.equalsIgnoreCase(normalized)) {
-            value = RECEIVED;
-        } else {
-            value = PENDING;
-        }
+        value = consentStatus.strip().toLowerCase(Locale.ROOT);
     }
 
     /** Returns whether the supplied value is a supported consent status. */
     public static boolean isValidConsentStatus(String test) {
         requireNonNull(test);
         String normalized = test.strip();
-        return RECEIVED.equalsIgnoreCase(normalized)
-                || PENDING.equalsIgnoreCase(normalized);
+        // Java's case-insensitive regex matching is ASCII-only without UNICODE_CASE.
+        return normalized.matches("(?i:received|pending)");
     }
 
     @Override

@@ -12,6 +12,15 @@ import org.junit.jupiter.api.Test;
 
 public class FeeStatusTest {
     @Test
+    public void constructor_unicodeLookalikes_rejectsInput() {
+        for (String value : new String[] {"PA\u0130D", "pa\u0131d", "UNPA\u0130D",
+            "unpa\u0131d", "p\u0430id", "\uff50\uff41\uff49\uff44", "pai\u0307d"}) {
+            assertFalse(FeeStatus.isValidFeeStatus(value));
+            assertThrows(IllegalArgumentException.class, () -> new FeeStatus(value));
+        }
+    }
+
+    @Test
     public void constructor_supportedValues_normalizesAndCompares() {
         for (String value : new String[] {"paid", "unpaid"}) {
             FeeStatus status = new FeeStatus("  " + value.toUpperCase(Locale.ROOT) + "  ");
@@ -24,7 +33,6 @@ public class FeeStatusTest {
             assertNotEquals(value, status);
         }
         assertNotEquals(new FeeStatus("paid"), new FeeStatus("unpaid"));
-        assertEquals("paid", new FeeStatus("PAİD").value);
     }
 
     @Test

@@ -12,6 +12,15 @@ import org.junit.jupiter.api.Test;
 
 public class ConsentStatusTest {
     @Test
+    public void constructor_unicodeLookalikes_rejectsInput() {
+        for (String value : new String[] {"RECE\u0130VED", "rece\u0131ved", "PEND\u0130NG",
+            "pend\u0131ng", "rec\u0435ived", "\uff50ending", "recei\u0307ved"}) {
+            assertFalse(ConsentStatus.isValidConsentStatus(value));
+            assertThrows(IllegalArgumentException.class, () -> new ConsentStatus(value));
+        }
+    }
+
+    @Test
     public void constructor_supportedValues_normalizesAndCompares() {
         for (String value : new String[] {"received", "pending"}) {
             ConsentStatus status = new ConsentStatus("  " + value.toUpperCase(Locale.ROOT) + "  ");
@@ -24,7 +33,6 @@ public class ConsentStatusTest {
             assertNotEquals(value, status);
         }
         assertNotEquals(new ConsentStatus("received"), new ConsentStatus("pending"));
-        assertEquals("received", new ConsentStatus("RECEİVED").value);
     }
 
     @Test

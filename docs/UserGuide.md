@@ -119,9 +119,9 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
   next to `Availability`; scroll horizontally if the column is outside the visible area.
 * Injury status and availability are independent. Recording `injury/injured` does not mark a player unavailable;
   supply `av/false` as well if needed. Injury status does not affect the availability counts in `overview`.
-* Fee payment accepts `paid` or `unpaid` and defaults to `unpaid`; consent accepts `received` or `pending`
+* Fee payment accepts ASCII `paid` or `unpaid` and defaults to `unpaid`; consent accepts ASCII `received` or `pending`
   and defaults to `pending`. Both ignore case and surrounding whitespace, and reject empty or unsupported
-  values, including `unknown`.
+  values, including `unknown` and Unicode look-alike letters.
   Specify each prefix once. They record the current fee payment and consent status, without amounts,
   payment periods or consent documents.
 * Fee payment and consent appear as text in the `Fee payment` and `Consent` columns. Scroll horizontally
@@ -217,7 +217,7 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
   surrounding whitespace. Omit `injury/` to keep the existing status; use `injury/fit` to return to the default.
   Empty values and repeated `injury/` fields are rejected. Changing injury status does not change availability.
 * Use `fee/paid|unpaid` and `consent/received|pending` to update either or both statuses.
-  Values use the same validation as `add`. Omitted fields retain their current values; explicitly use
+  Values require ASCII letters and use the same validation as `add`. Omitted fields retain their current values; explicitly use
   `fee/unpaid` or `consent/pending` to return to the default statuses. Empty values and repeated prefixes are rejected.
   Updates preserve all other fields, including availability and injury status.
 
