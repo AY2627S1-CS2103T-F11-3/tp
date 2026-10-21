@@ -21,6 +21,11 @@ import seedu.address.model.person.PlayerStatusField;
  */
 public class MarkCommand extends Command {
     public static final String COMMAND_WORD = "mark";
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Sets one status for displayed players.\n"
+            + "Parameters: INDEX [INDEX]... STATUS/VALUE\n"
+            + "Choose one: av/true|false (or available/), injury/fit|injured, "
+            + "fee/paid|unpaid, consent/received|pending\n"
+            + "Example: mark 1 3 fee/paid";
     public static final String MESSAGE_EMPTY_LIST =
             "No players are currently displayed. Use list to show all players before marking a status.";
     public static final String MESSAGE_INVALID_INDEX =

@@ -155,6 +155,21 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Bulk player status updates
+
+`MarkCommandParser` parses displayed indexes and exactly one status prefix into a `MarkCommand`. It reuses
+`ParserUtil.parsePlayerIndex` and the existing status types for validation. CLI availability values (`true`/`false`)
+are mapped to domain values (`available`/`unavailable`).
+
+`MarkCommand` resolves all indexes to distinct player objects before preparing replacements through
+`PlayerStatusField.withValue`. All targets and replacements are validated before model updates begin, preventing
+partial changes from invalid input and index shifts when a filter shrinks. Only changed records are replaced;
+feedback separates changed and unchanged players. The active filter remains in place.
+
+`PlayerStatusField` copies every other profile field unchanged, keeping injury independent of availability.
+The command uses `LogicManager`'s existing save-and-rollback mechanism. Parser and command tests cover input and
+selection behavior; `MarkIntegrationTest` verifies command routing, all four statuses, save/reload and rollback.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation
