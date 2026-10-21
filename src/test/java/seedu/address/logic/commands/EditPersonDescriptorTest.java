@@ -16,6 +16,43 @@ import seedu.address.testutil.EditPersonDescriptorBuilder;
 public class EditPersonDescriptorTest {
 
     @Test
+    public void optionalGuardianClearing_countsAsAnEditAndDiffersFromOmission() {
+        EditPersonDescriptor omitted = new EditPersonDescriptor();
+        EditPersonDescriptor clearName = new EditPersonDescriptorBuilder().withGuardianName(null).build();
+        EditPersonDescriptor clearContact = new EditPersonDescriptorBuilder().withGuardianContact(null).build();
+
+        assertFalse(omitted.isAnyFieldEdited());
+        assertTrue(clearName.isAnyFieldEdited());
+        assertTrue(clearContact.isAnyFieldEdited());
+        assertTrue(clearName.getGuardianName().isEmpty());
+        assertTrue(clearContact.getGuardianContact().isEmpty());
+        assertFalse(omitted.equals(clearName));
+        assertFalse(clearName.equals(omitted));
+        assertFalse(omitted.equals(clearContact));
+        assertFalse(clearContact.equals(omitted));
+        assertFalse(clearName.equals(clearContact));
+        assertFalse(clearContact.equals(clearName));
+
+        EditPersonDescriptor copiedName = new EditPersonDescriptor(clearName);
+        EditPersonDescriptor copiedContact = new EditPersonDescriptor(clearContact);
+        assertEquals(clearName, copiedName);
+        assertEquals(clearContact, copiedContact);
+        assertTrue(copiedName.isGuardianNameEdited());
+        assertTrue(copiedContact.isGuardianContactEdited());
+    }
+
+    @Test
+    public void injuryStatus_isRecognizedAndCopied() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withInjuryStatus("injured").build();
+        assertTrue(descriptor.isAnyFieldEdited());
+        EditPersonDescriptor copied = new EditPersonDescriptor(descriptor);
+        assertEquals(descriptor, copied);
+        assertEquals(descriptor.getInjuryStatus(), copied.getInjuryStatus());
+        assertFalse(descriptor.equals(new EditPersonDescriptorBuilder().withInjuryStatus("fit").build()));
+        assertFalse(descriptor.equals(new EditPersonDescriptor()));
+    }
+
+    @Test
     public void equals() {
         // same values -> returns true
         EditPersonDescriptor descriptorWithSameValues = new EditPersonDescriptor(DESC_AMY);
@@ -56,7 +93,8 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getPosition().orElse(null) + ", guardianName="
                 + editPersonDescriptor.getGuardianName().orElse(null) + ", guardianContact="
                 + editPersonDescriptor.getGuardianContact().orElse(null) + ", availability="
-                + editPersonDescriptor.getAvailability().orElse(null) + "}";
+                + editPersonDescriptor.getAvailability().orElse(null) + ", injuryStatus="
+                + editPersonDescriptor.getInjuryStatus().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }

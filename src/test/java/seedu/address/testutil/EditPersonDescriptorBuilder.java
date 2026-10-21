@@ -8,6 +8,7 @@ import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.model.person.Availability;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -41,6 +42,7 @@ public class EditPersonDescriptorBuilder {
         descriptor.setGuardianName(person.getGuardianName());
         descriptor.setGuardianContact(person.getGuardianContact());
         descriptor.setAvailability(person.getAvailability());
+        descriptor.setInjuryStatus(person.getInjuryStatus());
     }
 
     /**
@@ -95,5 +97,11 @@ public class EditPersonDescriptorBuilder {
 
     public EditPersonDescriptor build() {
         return descriptor;
+    }
+
+    /** Sets the injury status. */
+    public EditPersonDescriptorBuilder withInjuryStatus(String injuryStatus) {
+        descriptor.setInjuryStatus(new InjuryStatus(injuryStatus));
+        return this;
     }
 }

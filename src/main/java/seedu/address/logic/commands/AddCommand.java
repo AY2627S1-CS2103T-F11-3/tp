@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
@@ -30,7 +31,8 @@ public class AddCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a player profile.\nParameters: "
             + PREFIX_NAME_FULL + "NAME " + PREFIX_SQUADNAME_FULL + "SQUAD " + PREFIX_POSITION_FULL + "POSITION "
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN] [" + PREFIX_GUARDIANCONTACT_FULL + "CONTACT] "
-            + "[" + PREFIX_AVAILABILITY_FULL + "true/false] [" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_AVAILABILITY_FULL + "true/false] [" + PREFIX_INJURY_FULL + "fit|injured] "
+            + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_NAME + ", " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", "
             + PREFIX_GUARDIANNAME + ", " + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ". "
             + "Specify each field only once, except tags.\n"

@@ -25,16 +25,25 @@ public class Person {
     private final GuardianName guardianName;
     private final GuardianContact guardianContact;
     private final Availability availability;
+    private final InjuryStatus injuryStatus;
     private final Set<Tag> tags = new HashSet<>();
     private final Remark remark;
+
+    /** Constructs a player with the default fit injury status. */
+    public Person(Name name, Set<Tag> tags, Remark remark,
+                  SquadName squadName, Position position, GuardianName guardianName,
+                  GuardianContact guardianContact, Availability availability) {
+        this(name, tags, remark, squadName, position, guardianName, guardianContact,
+                availability, new InjuryStatus(InjuryStatus.FIT));
+    }
 
     /**
      * Every field except the optional guardian name and contact must be present and not null.
      */
     public Person(Name name, Set<Tag> tags, Remark remark,
                   SquadName squadName, Position position, GuardianName guardianName,
-                  GuardianContact guardianContact, Availability availability) {
-        requireAllNonNull(name, tags, remark, squadName, position, availability);
+                  GuardianContact guardianContact, Availability availability, InjuryStatus injuryStatus) {
+        requireAllNonNull(name, tags, remark, squadName, position, availability, injuryStatus);
         this.name = name;
         this.tags.addAll(tags);
         this.remark = remark;
@@ -43,6 +52,7 @@ public class Person {
         this.guardianName = guardianName;
         this.guardianContact = guardianContact;
         this.availability = availability;
+        this.injuryStatus = injuryStatus;
     }
 
     public Name getName() {
@@ -79,6 +89,10 @@ public class Person {
 
     public Availability getAvailability() {
         return availability;
+    }
+
+    public InjuryStatus getInjuryStatus() {
+        return injuryStatus;
     }
 
     /**
@@ -131,14 +145,15 @@ public class Person {
                 && position.equals(otherPerson.position)
                 && Objects.equals(guardianName, otherPerson.guardianName)
                 && Objects.equals(guardianContact, otherPerson.guardianContact)
-                && availability.equals(otherPerson.availability);
+                && availability.equals(otherPerson.availability)
+                && injuryStatus.equals(otherPerson.injuryStatus);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, tags, squadName, position, guardianName,
-                guardianContact, availability);
+                guardianContact, availability, injuryStatus);
     }
 
     @Override
@@ -151,6 +166,7 @@ public class Person {
                 .add("guardianName", guardianName)
                 .add("guardianContact", guardianContact)
                 .add("availability", availability)
+                .add("injuryStatus", injuryStatus)
                 .toString();
     }
 

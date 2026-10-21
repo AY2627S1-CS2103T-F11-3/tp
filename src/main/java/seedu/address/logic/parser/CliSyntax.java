@@ -21,6 +21,7 @@ public class CliSyntax {
     public static final Prefix PREFIX_GUARDIANNAME_FULL = new Prefix("guardian/");
     public static final Prefix PREFIX_GUARDIANCONTACT_FULL = new Prefix("contact/");
     public static final Prefix PREFIX_AVAILABILITY_FULL = new Prefix("available/");
+    public static final Prefix PREFIX_INJURY_FULL = new Prefix("injury/");
 
     public static final Prefix PREFIX_TAG = new Prefix("t/");
     public static final Prefix PREFIX_REMARK = new Prefix("r/");

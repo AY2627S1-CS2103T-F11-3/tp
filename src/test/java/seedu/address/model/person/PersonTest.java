@@ -18,6 +18,28 @@ import seedu.address.testutil.PersonBuilder;
 public class PersonTest {
 
     @Test
+    public void injuryStatus_affectsEqualityButNotIdentity() {
+        Person fit = new PersonBuilder().build();
+        Person injured = new PersonBuilder(fit).withInjuryStatus("injured").build();
+        assertEquals("fit", fit.getInjuryStatus().value);
+        assertTrue(fit.isSamePerson(injured));
+        assertFalse(fit.equals(injured));
+        Person copied = new PersonBuilder(injured).build();
+        assertEquals(injured, copied);
+        assertEquals(injured.hashCode(), copied.hashCode());
+        assertEquals(injured.getAvailability(), fit.getAvailability());
+        assertTrue(injured.toString().contains("injuryStatus=injured"));
+    }
+
+    @Test
+    public void constructor_nullInjuryStatus_throwsNullPointerException() {
+        Person person = new PersonBuilder().build();
+        assertThrows(NullPointerException.class, () -> new Person(person.getName(), person.getTags(),
+                person.getRemark(), person.getSquadName(), person.getPosition(), person.getGuardianName(),
+                person.getGuardianContact(), person.getAvailability(), null));
+    }
+
+    @Test
     public void asObservableList_modifyList_throwsUnsupportedOperationException() {
         Person person = new PersonBuilder().build();
         assertThrows(UnsupportedOperationException.class, () -> person.getTags().remove(0));
@@ -125,7 +147,8 @@ public class PersonTest {
         String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", tags=" + ALICE.getTags()
                 + ", squadName=" + ALICE.getSquadName() + ", position=" + ALICE.getPosition()
                 + ", guardianName=" + ALICE.getGuardianName() + ", guardianContact="
-                + ALICE.getGuardianContact() + ", availability=" + ALICE.getAvailability() + "}";
+                + ALICE.getGuardianContact() + ", availability=" + ALICE.getAvailability()
+                + ", injuryStatus=" + ALICE.getInjuryStatus() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

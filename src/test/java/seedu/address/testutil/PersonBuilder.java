@@ -6,6 +6,7 @@ import java.util.Set;
 import seedu.address.model.person.Availability;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -26,6 +27,7 @@ public class PersonBuilder {
     public static final String DEFAULT_GUARDIAN_NAME = null;
     public static final String DEFAULT_GUARDIAN_CONTACT = null;
     public static final String DEFAULT_AVAILABILITY = Availability.AVAILABLE;
+    public static final String DEFAULT_INJURY_STATUS = InjuryStatus.FIT;
 
     private Name name;
     private Set<Tag> tags;
@@ -35,6 +37,7 @@ public class PersonBuilder {
     private GuardianName guardianName;
     private GuardianContact guardianContact;
     private Availability availability;
+    private InjuryStatus injuryStatus;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -48,6 +51,7 @@ public class PersonBuilder {
         guardianName = null;
         guardianContact = null;
         availability = new Availability(DEFAULT_AVAILABILITY);
+        injuryStatus = new InjuryStatus(DEFAULT_INJURY_STATUS);
     }
 
     /**
@@ -62,6 +66,7 @@ public class PersonBuilder {
         guardianName = personToCopy.getGuardianName();
         guardianContact = personToCopy.getGuardianContact();
         availability = personToCopy.getAvailability();
+        injuryStatus = personToCopy.getInjuryStatus();
     }
 
     /**
@@ -128,12 +133,18 @@ public class PersonBuilder {
         return this;
     }
 
+    /** Sets the injury status of the player being built. */
+    public PersonBuilder withInjuryStatus(String injuryStatus) {
+        this.injuryStatus = new InjuryStatus(injuryStatus);
+        return this;
+    }
+
     /**
      * Builds a {@code Person} with the configured details.
      */
     public Person build() {
         return new Person(name, tags, remark, squadName, position, guardianName,
-                guardianContact, availability);
+                guardianContact, availability, injuryStatus);
     }
 
 }

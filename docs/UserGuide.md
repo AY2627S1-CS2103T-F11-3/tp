@@ -90,7 +90,7 @@ Format: `help`
 
 Adds a player. Name, squad and position are required; the other fields are optional.
 
-Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…`
+Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/fit|injured] [t/TAG]…`
 
 | Field | Full prefix | Shorthand |
 | --- | --- | --- |
@@ -100,6 +100,7 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
 | Guardian name | `guardian/` | `g/` |
 | Guardian contact | `contact/` | `gc/` |
 | Availability | `available/` | `av/` |
+| Injury status | `injury/` | None |
 
 * Fields can appear in any order. Specify each once using either prefix; mixing aliases for the same field is rejected.
   Tags (`t/`) may be repeated.
@@ -110,6 +111,12 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
 * Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
   values are rejected. Guardian contact numbers must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
 * Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
+* Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace, and defaults to
+  `fit`. Empty or unsupported values, including `unknown` and Unicode look-alike letters, are rejected.
+  The player table displays the value in the `Injury` column
+  next to `Availability`; scroll horizontally if the column is outside the visible area.
+* Injury status and availability are independent. Recording `injury/injured` does not mark a player unavailable;
+  supply `av/false` as well if needed. Injury status does not affect the availability counts in `overview`.
 * Players with the same normalized name, squad and position are rejected as duplicates, regardless of other fields.
   The same name is allowed with a different squad or position.
 
@@ -120,6 +127,7 @@ Examples:
 
 * `add name/John Doe squad/Soccer Stars position/Goalkeeper`
 * `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
+* `add n/Alex Tan sn/U12 pos/Defender injury/injured av/false`
 
 ### Listing all players: `list`
 
@@ -181,23 +189,28 @@ Example overview showing club totals and squad cards:
 
 Edits an existing player in SquadLink.
 
-Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/fit|injured] [t/TAG]…​`
 
 * Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* Name, squad, position, guardian name, guardian contact, availability and tags can be edited with this command.
+* Name, squad, position, guardian name, guardian contact, availability, injury status and tags can be edited with this command.
   Use `sn/`, `pos/`, `g/`, `gc/` and `av/` as shorthand for their respective full prefixes.
 * Squad, position, guardian name, guardian contact and availability use the same validation as `add`. `Unassigned`
   is not a valid edited position. Supply `guardian/` or `contact/` without a value to remove that optional detail.
   Player phone number, email and address are no longer supported.
 * When editing tags, all of the player's existing tags are removed; adding tags is not cumulative.
 * To remove all of a player's tags, enter `t/` without a tag after it.
+* Use `injury/fit` or `injury/injured` to update the recorded injury status. Values require ASCII letters, ignoring case and
+  surrounding whitespace. Omit `injury/` to keep the existing status; use `injury/fit` to return to the default.
+  Empty values and repeated `injury/` fields are rejected. Changing injury status does not change availability.
 
 Examples:
 *  `edit 1 n/John Doe` Edits the name of the 1st player to be `John Doe`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd player to be `Betsy Crower` and clears all existing tags.
 *  `edit 2 av/false` Marks the 2nd player as unavailable.
+*  `edit 2 injury/fit` Records the 2nd player as fit, keeping their current availability.
+*  `edit 2 injury/injured` Records the 2nd player as injured without changing availability.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
 ### Locating players by name: `find`
@@ -316,6 +329,9 @@ SquadLink automatically saves after successful commands that change player data.
 Older data files containing player phone numbers, emails and addresses can still be loaded. Those legacy fields are
 ignored and omitted the next time the file is saved; player names and the remaining profile fields are retained.
 Players in older files without squad or position receive the current `Unassigned` defaults.
+Players in older files without an injury status receive `fit`. Previously saved `unknown` values are also
+migrated to `fit`. Other invalid stored injury values are rejected. Injury status is saved automatically with
+the other player details and retained when the application restarts.
 
 ### Editing the data file
 
@@ -350,10 +366,10 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker`
+**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [injury/fit\|injured] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker injury/fit`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [t/TAG]…​`<br> e.g., `edit 2 sn/Soccer Stars pos/Defender`
+**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
 **List** | `list` (show all registered players and clear the current search or filter)
