@@ -20,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
 public class JsonAddressBookStorageTest {
@@ -27,6 +28,53 @@ public class JsonAddressBookStorageTest {
 
     @TempDir
     public Path testFolder;
+
+    @Test
+    public void saveAndRead_feeAndConsentStatuses_preservesCombinationsAndRejectsInvalidData() throws Exception {
+        AddressBook original = new AddressBook();
+        for (String fee : new String[] {"unknown", "paid", "unpaid"}) {
+            for (String consent : new String[] {"unknown", "received", "pending"}) {
+                original.addPerson(new PersonBuilder().withName("Player " + fee + " " + consent)
+                        .withFeeStatus(fee).withConsentStatus(consent).withInjuryStatus("injured").build());
+            }
+        }
+        Path file = testFolder.resolve("feeConsent.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(original);
+        String json = Files.readString(file);
+        assertTrue(json.contains("\"feeStatus\""));
+        assertTrue(json.contains("\"consentStatus\""));
+        assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
+        for (String field : new String[] {"feeStatus", "consentStatus"}) {
+            for (String invalid : new String[] {"", "invalid"}) {
+                Files.writeString(file, json.replaceFirst("\"" + field + "\"\\s*:\\s*\"unknown\"",
+                        "\"" + field + "\" : \"" + invalid + "\""));
+                assertThrows(DataLoadingException.class, storage::readAddressBook);
+            }
+        }
+    }
+
+    @Test
+    public void read_legacyFeeAndConsentStatuses_defaultToUnknown() throws Exception {
+        ReadOnlyAddressBook legacy = readAddressBook("legacyContactFieldsAddressBook.json").orElseThrow();
+        legacy.getPersonList().forEach(person -> {
+            assertEquals("unknown", person.getFeeStatus().value);
+            assertEquals("unknown", person.getConsentStatus().value);
+        });
+        Person person = new PersonBuilder().withInjuryStatus("injured").withFeeStatus("paid")
+                .withConsentStatus("received").build();
+        AddressBook original = new AddressBook();
+        original.addPerson(person);
+        Path file = testFolder.resolve("nullableStatuses.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(original);
+        String json = Files.readString(file);
+        Files.writeString(file, json.replace("\"paid\"", "null").replace("\"received\"", "null"));
+        Person restored = storage.readAddressBook().orElseThrow().getPersonList().getFirst();
+        assertEquals("unknown", restored.getFeeStatus().value);
+        assertEquals("unknown", restored.getConsentStatus().value);
+        assertEquals(person.getInjuryStatus(), restored.getInjuryStatus());
+    }
 
     @Test
     public void saveAndRead_injuryStatuses_preservesAllValues() throws Exception {

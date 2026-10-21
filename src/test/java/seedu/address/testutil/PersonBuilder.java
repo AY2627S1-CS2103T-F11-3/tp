@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.InjuryStatus;
@@ -38,6 +40,8 @@ public class PersonBuilder {
     private GuardianContact guardianContact;
     private Availability availability;
     private InjuryStatus injuryStatus;
+    private FeeStatus feeStatus;
+    private ConsentStatus consentStatus;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -52,6 +56,8 @@ public class PersonBuilder {
         guardianContact = null;
         availability = new Availability(DEFAULT_AVAILABILITY);
         injuryStatus = new InjuryStatus(DEFAULT_INJURY_STATUS);
+        feeStatus = new FeeStatus(FeeStatus.UNKNOWN);
+        consentStatus = new ConsentStatus(ConsentStatus.UNKNOWN);
     }
 
     /**
@@ -67,6 +73,8 @@ public class PersonBuilder {
         guardianContact = personToCopy.getGuardianContact();
         availability = personToCopy.getAvailability();
         injuryStatus = personToCopy.getInjuryStatus();
+        feeStatus = personToCopy.getFeeStatus();
+        consentStatus = personToCopy.getConsentStatus();
     }
 
     /**
@@ -133,6 +141,18 @@ public class PersonBuilder {
         return this;
     }
 
+    /** Sets the recorded fee payment status. */
+    public PersonBuilder withFeeStatus(String feeStatus) {
+        this.feeStatus = new FeeStatus(feeStatus);
+        return this;
+    }
+
+    /** Sets the recorded consent status. */
+    public PersonBuilder withConsentStatus(String consentStatus) {
+        this.consentStatus = new ConsentStatus(consentStatus);
+        return this;
+    }
+
     /** Sets the injury status of the player being built. */
     public PersonBuilder withInjuryStatus(String injuryStatus) {
         this.injuryStatus = new InjuryStatus(injuryStatus);
@@ -144,7 +164,7 @@ public class PersonBuilder {
      */
     public Person build() {
         return new Person(name, tags, remark, squadName, position, guardianName,
-                guardianContact, availability, injuryStatus);
+                guardianContact, availability, injuryStatus, feeStatus, consentStatus);
     }
 
 }

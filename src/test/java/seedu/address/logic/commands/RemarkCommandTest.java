@@ -34,7 +34,8 @@ public class RemarkCommandTest {
     public void execute_changeRemark_preservesPlayerProfileFields() {
         Person original = new PersonBuilder().withName("Original Player").withTags("captain")
                 .withSquadName("U12 A").withPosition("Defender").withGuardianName("Jane Doe")
-                .withGuardianContact("81234567").withAvailability("unavailable").withInjuryStatus("injured").build();
+                .withGuardianContact("81234567").withAvailability("unavailable").withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
         Model profileModel = new ModelManager();
         profileModel.addPerson(original);
         Person edited = new PersonBuilder(original).withRemark(REMARK_STUB).build();

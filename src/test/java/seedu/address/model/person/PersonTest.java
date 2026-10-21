@@ -18,6 +18,29 @@ import seedu.address.testutil.PersonBuilder;
 public class PersonTest {
 
     @Test
+    public void feeAndConsent_affectEqualityButNotIdentityAndSurviveCopies() {
+        Person unknown = new PersonBuilder().build();
+        Person paid = new PersonBuilder(unknown).withFeeStatus("paid").build();
+        Person consented = new PersonBuilder(unknown).withConsentStatus("received").build();
+        assertEquals("unknown", unknown.getFeeStatus().value);
+        assertEquals("unknown", unknown.getConsentStatus().value);
+        assertTrue(unknown.isSamePerson(paid));
+        assertTrue(unknown.isSamePerson(consented));
+        assertFalse(unknown.equals(paid));
+        assertFalse(unknown.equals(consented));
+        Person both = new PersonBuilder(paid).withConsentStatus("received").build();
+        assertEquals(both, new PersonBuilder(both).build());
+        assertEquals(both.hashCode(), new PersonBuilder(both).build().hashCode());
+        assertThrows(NullPointerException.class, () -> new Person(both.getName(), both.getTags(),
+                both.getRemark(), both.getSquadName(), both.getPosition(), both.getGuardianName(),
+                both.getGuardianContact(), both.getAvailability(), both.getInjuryStatus(),
+                null, both.getConsentStatus()));
+        assertThrows(NullPointerException.class, () -> new Person(both.getName(), both.getTags(),
+                both.getRemark(), both.getSquadName(), both.getPosition(), both.getGuardianName(),
+                both.getGuardianContact(), both.getAvailability(), both.getInjuryStatus(), both.getFeeStatus(), null));
+    }
+
+    @Test
     public void injuryStatus_affectsEqualityButNotIdentity() {
         Person unknown = new PersonBuilder().build();
         Person injured = new PersonBuilder(unknown).withInjuryStatus("injured").build();
@@ -148,7 +171,8 @@ public class PersonTest {
                 + ", squadName=" + ALICE.getSquadName() + ", position=" + ALICE.getPosition()
                 + ", guardianName=" + ALICE.getGuardianName() + ", guardianContact="
                 + ALICE.getGuardianContact() + ", availability=" + ALICE.getAvailability()
-                + ", injuryStatus=" + ALICE.getInjuryStatus() + "}";
+                + ", injuryStatus=" + ALICE.getInjuryStatus()
+                + ", feeStatus=" + ALICE.getFeeStatus() + ", consentStatus=" + ALICE.getConsentStatus() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

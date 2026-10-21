@@ -126,7 +126,7 @@ public class EditCommand extends Command {
 
         return new Person(updatedName, updatedTags, updatedRemark,
                 updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianContact, updatedAvailability,
-                updatedInjuryStatus);
+                updatedInjuryStatus, personToEdit.getFeeStatus(), personToEdit.getConsentStatus());
     }
 
     @Override

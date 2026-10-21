@@ -57,9 +57,12 @@ public class EditCommandTest {
 
     @Test
     public void execute_editInjuryFromFilteredList_updatesDisplayedPlayerAndPreservesOtherFields() throws Exception {
-        Person target = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+        Person previous = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+        Person target = new PersonBuilder(previous).withFeeStatus("paid").withConsentStatus("received").build();
+        model.setPerson(previous, target);
         showPersonAtIndex(model, INDEX_SECOND_PERSON);
-        Person edited = new PersonBuilder(target).withInjuryStatus("injured").build();
+        Person edited = new PersonBuilder(target).withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
         Model expected = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expected.setPerson(target, edited);
         EditCommand command = new EditCommand(INDEX_FIRST_PERSON,
@@ -89,7 +92,8 @@ public class EditCommandTest {
         Person original = new PersonBuilder().withName("Original Player").withTags("captain")
                 .withSquadName("U12 A").withPosition("Defender").withGuardianName("Jane Doe")
                 .withGuardianContact("81234567").withAvailability("unavailable").withRemark("Left footed")
-                .withInjuryStatus("injured").build();
+                .withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
         Model profileModel = new ModelManager();
         profileModel.addPerson(original);
         Person edited = new PersonBuilder(original).withName("Updated Player").build();
