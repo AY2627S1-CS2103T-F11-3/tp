@@ -90,7 +90,7 @@ Format: `help`
 
 Adds a player. Name, squad and position are required; the other fields are optional.
 
-Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/unknown|fit|injured] [fee/unknown|paid|unpaid] [consent/unknown|received|pending] [t/TAG]…`
+Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/unknown|fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…`
 
 | Field | Full prefix | Shorthand |
 | --- | --- | --- |
@@ -118,8 +118,9 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
   next to `Availability`; scroll horizontally if the column is outside the visible area.
 * Injury status and availability are independent. Recording `injury/injured` does not mark a player unavailable;
   supply `av/false` as well if needed. Injury status does not affect the availability counts in `overview`.
-* Fee payment accepts `unknown`, `paid` or `unpaid`; consent accepts `unknown`, `received` or `pending`.
-  Both default to `unknown`, ignore case and surrounding whitespace, and reject empty or unsupported values.
+* Fee payment accepts `paid` or `unpaid` and defaults to `unpaid`; consent accepts `received` or `pending`
+  and defaults to `pending`. Both ignore case and surrounding whitespace, and reject empty or unsupported
+  values, including `unknown`.
   Specify each prefix once. They record the current fee payment and consent status, without amounts,
   payment periods or consent documents.
 * Fee payment and consent appear as text in the `Fee payment` and `Consent` columns. Scroll horizontally
@@ -198,7 +199,7 @@ Example overview showing club totals and squad cards:
 
 Edits an existing player in SquadLink.
 
-Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/unknown|fit|injured] [fee/unknown|paid|unpaid] [consent/unknown|received|pending] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/unknown|fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…​`
 
 * Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
@@ -214,9 +215,9 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
 * Use `injury/unknown`, `injury/fit` or `injury/injured` to update the recorded injury status. Values ignore case and
   surrounding whitespace. Omit `injury/` to keep the existing status; use `injury/unknown` to reset it.
   Empty values and repeated `injury/` fields are rejected. Changing injury status does not change availability.
-* Use `fee/unknown|paid|unpaid` and `consent/unknown|received|pending` to update either or both statuses.
+* Use `fee/paid|unpaid` and `consent/received|pending` to update either or both statuses.
   Values use the same validation as `add`. Omitted fields retain their current values; explicitly use
-  `fee/unknown` or `consent/unknown` to reset a recorded status. Empty values and repeated prefixes are rejected.
+  `fee/unpaid` or `consent/pending` to return to the default statuses. Empty values and repeated prefixes are rejected.
   Updates preserve all other fields, including availability and injury status.
 
 Examples:
@@ -226,7 +227,7 @@ Examples:
 *  `edit 2 injury/fit` Records the 2nd player as fit, keeping their current availability.
 *  `edit 2 injury/unknown` Resets the 2nd player's injury status to unknown.
 *  `edit 2 fee/paid consent/received` Records payment and consent for the 2nd player.
-*  `edit 2 fee/unknown` Resets only the 2nd player's fee payment status.
+*  `edit 2 fee/unpaid` Marks only the 2nd player's fee payment as unpaid.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
 ### Locating players by name: `find`
@@ -347,9 +348,9 @@ ignored and omitted the next time the file is saved; player names and the remain
 Players in older files without squad or position receive the current `Unassigned` defaults.
 Players in older files without an injury status receive `unknown`. Injury status is saved automatically with
 the other player details and retained when the application restarts.
-Older files without fee payment or consent status receive `unknown` for those fields. Both statuses
-are saved with the player profile and retained across restarts. Explicit invalid stored status values
-are rejected as invalid data.
+Older files without fee payment or consent status default to `unpaid` and `pending`, respectively.
+Previously saved `unknown` values are also migrated to these defaults. Both statuses are saved with the player
+profile and retained across restarts. Other invalid stored status values are rejected as invalid data.
 
 ### Editing the data file
 
@@ -384,10 +385,10 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [injury/unknown\|fit\|injured] [fee/unknown\|paid\|unpaid] [consent/unknown\|received\|pending] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker injury/fit`
+**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [injury/unknown\|fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker injury/fit`
 **Clear** | `clear`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/unknown\|fit\|injured] [fee/unknown\|paid\|unpaid] [consent/unknown\|received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
+**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/unknown\|fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
 **List** | `list` (show all registered players and clear the current search or filter)

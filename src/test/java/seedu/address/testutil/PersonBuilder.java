@@ -56,8 +56,8 @@ public class PersonBuilder {
         guardianContact = null;
         availability = new Availability(DEFAULT_AVAILABILITY);
         injuryStatus = new InjuryStatus(DEFAULT_INJURY_STATUS);
-        feeStatus = new FeeStatus(FeeStatus.UNKNOWN);
-        consentStatus = new ConsentStatus(ConsentStatus.UNKNOWN);
+        feeStatus = new FeeStatus(FeeStatus.UNPAID);
+        consentStatus = new ConsentStatus(ConsentStatus.PENDING);
     }
 
     /**

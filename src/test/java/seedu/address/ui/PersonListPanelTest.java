@@ -40,12 +40,12 @@ public class PersonListPanelTest {
     @Test
     public void render_feeAndConsentStatuses_updatesDisplayedCellsAndRetainsFilteredIndexes() throws Exception {
         FutureTask<Void> task = new FutureTask<>(() -> {
-            Person unknown = new PersonBuilder().withName("Unknown Player").build();
+            Person defaults = new PersonBuilder().withName("Default Player").build();
             Person recorded = new PersonBuilder().withName("Recorded Player").withFeeStatus("paid")
                     .withConsentStatus("received").withInjuryStatus("injured").build();
             Person pending = new PersonBuilder().withName("Pending Player").withFeeStatus("unpaid")
                     .withConsentStatus("pending").build();
-            var source = FXCollections.observableArrayList(unknown, recorded, pending);
+            var source = FXCollections.observableArrayList(defaults, recorded, pending);
             FilteredList<Person> displayed = new FilteredList<>(source);
             Region root = new PersonListPanel(displayed).getRoot();
             new Scene(root, 1900, 300);
@@ -59,9 +59,9 @@ public class PersonListPanelTest {
                     .findFirst().orElseThrow();
             assertFalse(feeColumn.isSortable());
             assertFalse(consentColumn.isSortable());
-            assertEquals(List.of("unknown", "paid", "unpaid"),
+            assertEquals(List.of("unpaid", "paid", "unpaid"),
                     List.of(feeColumn.getCellData(0), feeColumn.getCellData(1), feeColumn.getCellData(2)));
-            assertEquals(List.of("unknown", "received", "pending"),
+            assertEquals(List.of("pending", "received", "pending"),
                     List.of(consentColumn.getCellData(0), consentColumn.getCellData(1), consentColumn.getCellData(2)));
             assertTrue(table.lookupAll(".table-cell").stream().anyMatch(node -> node instanceof TableCell<?, ?> cell
                     && cell.getTableColumn() == consentColumn && "received".equals(cell.getText())));
@@ -69,9 +69,9 @@ public class PersonListPanelTest {
             root.layout();
             assertEquals("1", table.getColumns().getFirst().getCellData(0));
             assertEquals("paid", feeColumn.getCellData(0));
-            source.set(1, new PersonBuilder(recorded).withFeeStatus("unknown").withConsentStatus("pending").build());
+            source.set(1, new PersonBuilder(recorded).withFeeStatus("unpaid").withConsentStatus("pending").build());
             root.layout();
-            assertEquals("unknown", feeColumn.getCellData(0));
+            assertEquals("unpaid", feeColumn.getCellData(0));
             assertEquals("pending", consentColumn.getCellData(0));
             root.resize(450, 300);
             table.scrollToColumnIndex(table.getColumns().indexOf(consentColumn));

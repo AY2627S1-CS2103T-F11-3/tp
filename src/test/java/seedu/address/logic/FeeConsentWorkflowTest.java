@@ -47,10 +47,10 @@ public class FeeConsentWorkflowTest {
         LogicManager logic = logic(model, storage);
         logic.execute("add n/Alex Tan sn/U12 pos/Defender injury/injured av/false");
         Person original = model.getAddressBook().getPersonList().getFirst();
-        assertEquals("unknown", original.getFeeStatus().value);
-        assertEquals("unknown", original.getConsentStatus().value);
-        for (String fee : new String[] {"unknown", "paid", "unpaid"}) {
-            for (String consent : new String[] {"unknown", "received", "pending"}) {
+        assertEquals("unpaid", original.getFeeStatus().value);
+        assertEquals("pending", original.getConsentStatus().value);
+        for (String fee : new String[] {"paid", "unpaid"}) {
+            for (String consent : new String[] {"received", "pending"}) {
                 logic.execute("edit 1 fee/ " + fee + " consent/ " + consent);
                 Person expected = new PersonBuilder(original).withFeeStatus(fee).withConsentStatus(consent).build();
                 assertEquals(List.of(expected), model.getAddressBook().getPersonList());
@@ -61,7 +61,7 @@ public class FeeConsentWorkflowTest {
         logic.execute("edit 1 consent/ RECE\u0130VED ");
         Person recorded = new PersonBuilder(original).withFeeStatus("paid").withConsentStatus("received").build();
         assertEquals(List.of(recorded), storage.readAddressBook().orElseThrow().getPersonList());
-        logic.execute("edit 1 fee/unknown consent/unknown");
+        logic.execute("edit 1 fee/unpaid consent/pending");
         assertEquals(List.of(original), storage.readAddressBook().orElseThrow().getPersonList());
         logic.execute("add n/Other Player sn/U14 pos/Striker fee/ UNPAID consent/ PENDING");
         Person added = model.getAddressBook().getPersonList().get(1);
@@ -69,8 +69,8 @@ public class FeeConsentWorkflowTest {
         assertEquals("pending", added.getConsentStatus().value);
         logic.execute("add n/Fee Only sn/U14 pos/Striker fee/paid");
         logic.execute("add n/Consent Only sn/U14 pos/Striker consent/received");
-        assertEquals("unknown", model.getAddressBook().getPersonList().get(2).getConsentStatus().value);
-        assertEquals("unknown", model.getAddressBook().getPersonList().get(3).getFeeStatus().value);
+        assertEquals("pending", model.getAddressBook().getPersonList().get(2).getConsentStatus().value);
+        assertEquals("unpaid", model.getAddressBook().getPersonList().get(3).getFeeStatus().value);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class FeeConsentWorkflowTest {
         List<Person> before = List.copyOf(model.getAddressBook().getPersonList());
         String json = Files.readString(storage.getAddressBookFilePath());
         for (String field : new String[] {"fee/", "consent/"}) {
-            for (String value : new String[] {"", "  ", "true", "invalid", "pa id"}) {
+            for (String value : new String[] {"", "  ", "unknown", "true", "invalid", "pa id"}) {
                 assertThrows(ParseException.class, () -> logic.execute("edit 1 " + field + value));
                 assertThrows(ParseException.class, () ->
                         logic.execute("add n/Other Player sn/U12 pos/Defender " + field + value));
@@ -113,7 +113,7 @@ public class FeeConsentWorkflowTest {
         logic.execute("edit 1 fee/paid consent/received");
         Person recorded = new PersonBuilder(original).withFeeStatus("paid").withConsentStatus("received").build();
         assertEquals(recorded, model.getAddressBook().getPersonList().get(1));
-        assertEquals("unknown", model.getAddressBook().getPersonList().getFirst().getFeeStatus().value);
+        assertEquals("unpaid", model.getAddressBook().getPersonList().getFirst().getFeeStatus().value);
         for (String edit : new String[] {"n/New Name", "av/true", "injury/fit", "g/", "gc/", "t/leader"}) {
             logic.execute("edit 2 " + edit);
             Person updated = model.getAddressBook().getPersonList().get(1);

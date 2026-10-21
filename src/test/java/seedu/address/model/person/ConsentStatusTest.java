@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class ConsentStatusTest {
     @Test
     public void constructor_supportedValues_normalizesAndCompares() {
-        for (String value : new String[] {"unknown", "received", "pending"}) {
+        for (String value : new String[] {"received", "pending"}) {
             ConsentStatus status = new ConsentStatus("  " + value.toUpperCase(Locale.ROOT) + "  ");
             assertEquals(value, status.value);
             assertEquals(value, status.toString());
@@ -31,7 +31,7 @@ public class ConsentStatusTest {
     public void constructor_invalidValues_rejectsInput() {
         assertThrows(NullPointerException.class, () -> new ConsentStatus(null));
         assertThrows(NullPointerException.class, () -> ConsentStatus.isValidConsentStatus(null));
-        for (String value : new String[] {"", "  ", "true", "other", "received extra"}) {
+        for (String value : new String[] {"", "  ", "unknown", "true", "other", "received extra"}) {
             assertFalse(ConsentStatus.isValidConsentStatus(value));
             assertThrows(IllegalArgumentException.class, () -> new ConsentStatus(value));
         }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class FeeStatusTest {
     @Test
     public void constructor_supportedValues_normalizesAndCompares() {
-        for (String value : new String[] {"unknown", "paid", "unpaid"}) {
+        for (String value : new String[] {"paid", "unpaid"}) {
             FeeStatus status = new FeeStatus("  " + value.toUpperCase(Locale.ROOT) + "  ");
             assertEquals(value, status.value);
             assertEquals(value, status.toString());
@@ -31,7 +31,7 @@ public class FeeStatusTest {
     public void constructor_invalidValues_rejectsInput() {
         assertThrows(NullPointerException.class, () -> new FeeStatus(null));
         assertThrows(NullPointerException.class, () -> FeeStatus.isValidFeeStatus(null));
-        for (String value : new String[] {"", "  ", "true", "other", "paid extra"}) {
+        for (String value : new String[] {"", "  ", "unknown", "true", "other", "paid extra"}) {
             assertFalse(FeeStatus.isValidFeeStatus(value));
             assertThrows(IllegalArgumentException.class, () -> new FeeStatus(value));
         }

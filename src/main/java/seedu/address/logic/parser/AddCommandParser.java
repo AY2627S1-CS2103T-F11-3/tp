@@ -69,8 +69,8 @@ public class AddCommandParser implements Parser<AddCommand> {
         GuardianContact contact = null;
         Availability availability = new Availability(Availability.AVAILABLE);
         InjuryStatus injuryStatus = new InjuryStatus(InjuryStatus.UNKNOWN);
-        FeeStatus feeStatus = new FeeStatus(FeeStatus.UNKNOWN);
-        ConsentStatus consentStatus = new ConsentStatus(ConsentStatus.UNKNOWN);
+        FeeStatus feeStatus = new FeeStatus(FeeStatus.UNPAID);
+        ConsentStatus consentStatus = new ConsentStatus(ConsentStatus.PENDING);
         Set<Tag> tags = new HashSet<>();
         Set<Field> seen = new HashSet<>();
         for (Argument argument : arguments) {

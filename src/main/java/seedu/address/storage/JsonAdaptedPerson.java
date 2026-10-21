@@ -199,7 +199,8 @@ class JsonAdaptedPerson {
     }
 
     private FeeStatus createFeeStatus() throws IllegalValueException {
-        String value = feeStatus == null ? FeeStatus.UNKNOWN : feeStatus;
+        String value = feeStatus == null || "unknown".equalsIgnoreCase(feeStatus.strip())
+                ? FeeStatus.UNPAID : feeStatus;
         if (!FeeStatus.isValidFeeStatus(value)) {
             throw new IllegalValueException(FeeStatus.MESSAGE_CONSTRAINTS);
         }
@@ -207,7 +208,8 @@ class JsonAdaptedPerson {
     }
 
     private ConsentStatus createConsentStatus() throws IllegalValueException {
-        String value = consentStatus == null ? ConsentStatus.UNKNOWN : consentStatus;
+        String value = consentStatus == null || "unknown".equalsIgnoreCase(consentStatus.strip())
+                ? ConsentStatus.PENDING : consentStatus;
         if (!ConsentStatus.isValidConsentStatus(value)) {
             throw new IllegalValueException(ConsentStatus.MESSAGE_CONSTRAINTS);
         }

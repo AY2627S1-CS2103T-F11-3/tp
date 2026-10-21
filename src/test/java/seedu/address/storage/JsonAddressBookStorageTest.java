@@ -30,10 +30,30 @@ public class JsonAddressBookStorageTest {
     public Path testFolder;
 
     @Test
+    public void read_previouslyUnknownStatuses_migratesAndSavesTwoStateValues() throws Exception {
+        Person original = new PersonBuilder().withFeeStatus("paid").withConsentStatus("received")
+                .withInjuryStatus("injured").build();
+        AddressBook addressBook = new AddressBook();
+        addressBook.addPerson(original);
+        Path file = testFolder.resolve("previouslyUnknown.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(addressBook);
+        String json = Files.readString(file);
+        Files.writeString(file, json.replace("\"paid\"", "\" UNKNOWN \"")
+                .replace("\"received\"", "\"unknown\""));
+        ReadOnlyAddressBook migrated = storage.readAddressBook().orElseThrow();
+        Person expected = new PersonBuilder(original).withFeeStatus("unpaid").withConsentStatus("pending").build();
+        assertEquals(expected, migrated.getPersonList().getFirst());
+        storage.saveAddressBook(migrated);
+        assertFalse(Files.readString(file).contains("unknown"));
+        assertEquals(expected, storage.readAddressBook().orElseThrow().getPersonList().getFirst());
+    }
+
+    @Test
     public void saveAndRead_feeAndConsentStatuses_preservesCombinationsAndRejectsInvalidData() throws Exception {
         AddressBook original = new AddressBook();
-        for (String fee : new String[] {"unknown", "paid", "unpaid"}) {
-            for (String consent : new String[] {"unknown", "received", "pending"}) {
+        for (String fee : new String[] {"paid", "unpaid"}) {
+            for (String consent : new String[] {"received", "pending"}) {
                 original.addPerson(new PersonBuilder().withName("Player " + fee + " " + consent)
                         .withFeeStatus(fee).withConsentStatus(consent).withInjuryStatus("injured").build());
             }
@@ -47,7 +67,7 @@ public class JsonAddressBookStorageTest {
         assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
         for (String field : new String[] {"feeStatus", "consentStatus"}) {
             for (String invalid : new String[] {"", "invalid"}) {
-                Files.writeString(file, json.replaceFirst("\"" + field + "\"\\s*:\\s*\"unknown\"",
+                Files.writeString(file, json.replaceFirst("\"" + field + "\"\\s*:\\s*\"[^\"]*\"",
                         "\"" + field + "\" : \"" + invalid + "\""));
                 assertThrows(DataLoadingException.class, storage::readAddressBook);
             }
@@ -55,11 +75,11 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
-    public void read_legacyFeeAndConsentStatuses_defaultToUnknown() throws Exception {
+    public void read_legacyFeeAndConsentStatuses_defaultToUnpaidAndPending() throws Exception {
         ReadOnlyAddressBook legacy = readAddressBook("legacyContactFieldsAddressBook.json").orElseThrow();
         legacy.getPersonList().forEach(person -> {
-            assertEquals("unknown", person.getFeeStatus().value);
-            assertEquals("unknown", person.getConsentStatus().value);
+            assertEquals("unpaid", person.getFeeStatus().value);
+            assertEquals("pending", person.getConsentStatus().value);
         });
         Person person = new PersonBuilder().withInjuryStatus("injured").withFeeStatus("paid")
                 .withConsentStatus("received").build();
@@ -71,8 +91,8 @@ public class JsonAddressBookStorageTest {
         String json = Files.readString(file);
         Files.writeString(file, json.replace("\"paid\"", "null").replace("\"received\"", "null"));
         Person restored = storage.readAddressBook().orElseThrow().getPersonList().getFirst();
-        assertEquals("unknown", restored.getFeeStatus().value);
-        assertEquals("unknown", restored.getConsentStatus().value);
+        assertEquals("unpaid", restored.getFeeStatus().value);
+        assertEquals("pending", restored.getConsentStatus().value);
         assertEquals(person.getInjuryStatus(), restored.getInjuryStatus());
     }
 

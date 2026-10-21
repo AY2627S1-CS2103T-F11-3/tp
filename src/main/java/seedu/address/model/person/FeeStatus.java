@@ -7,11 +7,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  * Represents a player's recorded fee payment status.
  */
 public final class FeeStatus {
-    public static final String UNKNOWN = "unknown";
     public static final String PAID = "paid";
     public static final String UNPAID = "unpaid";
     public static final String MESSAGE_CONSTRAINTS =
-            "Fee payment status must be unknown, paid or unpaid.";
+            "Fee payment status must be paid or unpaid.";
 
     public final String value;
 
@@ -23,10 +22,8 @@ public final class FeeStatus {
         // Case-insensitive Unicode matches must still be stored as one of the canonical values.
         if (PAID.equalsIgnoreCase(normalized)) {
             value = PAID;
-        } else if (UNPAID.equalsIgnoreCase(normalized)) {
-            value = UNPAID;
         } else {
-            value = UNKNOWN;
+            value = UNPAID;
         }
     }
 
@@ -34,8 +31,7 @@ public final class FeeStatus {
     public static boolean isValidFeeStatus(String test) {
         requireNonNull(test);
         String normalized = test.strip();
-        return UNKNOWN.equalsIgnoreCase(normalized)
-                || PAID.equalsIgnoreCase(normalized)
+        return PAID.equalsIgnoreCase(normalized)
                 || UNPAID.equalsIgnoreCase(normalized);
     }
 

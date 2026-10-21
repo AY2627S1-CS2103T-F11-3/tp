@@ -7,11 +7,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  * Represents a player's recorded consent status.
  */
 public final class ConsentStatus {
-    public static final String UNKNOWN = "unknown";
     public static final String RECEIVED = "received";
     public static final String PENDING = "pending";
     public static final String MESSAGE_CONSTRAINTS =
-            "Consent status must be unknown, received or pending.";
+            "Consent status must be received or pending.";
 
     public final String value;
 
@@ -23,10 +22,8 @@ public final class ConsentStatus {
         // Case-insensitive Unicode matches must still be stored as one of the canonical values.
         if (RECEIVED.equalsIgnoreCase(normalized)) {
             value = RECEIVED;
-        } else if (PENDING.equalsIgnoreCase(normalized)) {
-            value = PENDING;
         } else {
-            value = UNKNOWN;
+            value = PENDING;
         }
     }
 
@@ -34,8 +31,7 @@ public final class ConsentStatus {
     public static boolean isValidConsentStatus(String test) {
         requireNonNull(test);
         String normalized = test.strip();
-        return UNKNOWN.equalsIgnoreCase(normalized)
-                || RECEIVED.equalsIgnoreCase(normalized)
+        return RECEIVED.equalsIgnoreCase(normalized)
                 || PENDING.equalsIgnoreCase(normalized);
     }
 

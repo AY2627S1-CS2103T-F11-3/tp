@@ -46,7 +46,7 @@ public class Person {
                   SquadName squadName, Position position, GuardianName guardianName,
                   GuardianContact guardianContact, Availability availability, InjuryStatus injuryStatus) {
         this(name, tags, remark, squadName, position, guardianName, guardianContact,
-                availability, injuryStatus, new FeeStatus(FeeStatus.UNKNOWN), new ConsentStatus(ConsentStatus.UNKNOWN));
+                availability, injuryStatus, new FeeStatus(FeeStatus.UNPAID), new ConsentStatus(ConsentStatus.PENDING));
     }
 
     /** Constructs a player with validated profile and recorded status fields. */

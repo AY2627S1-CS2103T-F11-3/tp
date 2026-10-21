@@ -19,15 +19,15 @@ public class PersonTest {
 
     @Test
     public void feeAndConsent_affectEqualityButNotIdentityAndSurviveCopies() {
-        Person unknown = new PersonBuilder().build();
-        Person paid = new PersonBuilder(unknown).withFeeStatus("paid").build();
-        Person consented = new PersonBuilder(unknown).withConsentStatus("received").build();
-        assertEquals("unknown", unknown.getFeeStatus().value);
-        assertEquals("unknown", unknown.getConsentStatus().value);
-        assertTrue(unknown.isSamePerson(paid));
-        assertTrue(unknown.isSamePerson(consented));
-        assertFalse(unknown.equals(paid));
-        assertFalse(unknown.equals(consented));
+        Person defaults = new PersonBuilder().build();
+        Person paid = new PersonBuilder(defaults).withFeeStatus("paid").build();
+        Person consented = new PersonBuilder(defaults).withConsentStatus("received").build();
+        assertEquals("unpaid", defaults.getFeeStatus().value);
+        assertEquals("pending", defaults.getConsentStatus().value);
+        assertTrue(defaults.isSamePerson(paid));
+        assertTrue(defaults.isSamePerson(consented));
+        assertFalse(defaults.equals(paid));
+        assertFalse(defaults.equals(consented));
         Person both = new PersonBuilder(paid).withConsentStatus("received").build();
         assertEquals(both, new PersonBuilder(both).build());
         assertEquals(both.hashCode(), new PersonBuilder(both).build().hashCode());
