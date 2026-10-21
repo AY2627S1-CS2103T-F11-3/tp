@@ -93,17 +93,20 @@ public class LogicManagerTest {
         String before = Files.readString(file);
         assertParseException("edit 1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseException("edit 1 injury/recovering", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseException("edit 1 injury/unknown", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseException("add n/Other Player sn/U12 pos/Defender injury/unknown",
+                InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseException("edit 1 injury/fit injury/injured",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_INJURY_FULL));
         assertParseException("add n/Other Player sn/U12 pos/Defender injury/invalid", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertCommandException("edit 2 injury/injured", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
-        assertCommandException("add n/John Doe sn/U12 pos/Defender injury/unknown",
+        assertCommandException("add n/John Doe sn/U12 pos/Defender injury/fit",
                 "John Doe is already a registered player!");
         assertEquals(before, Files.readString(file));
         assertEquals(List.of(updated), model.getAddressBook().getPersonList());
 
-        logic.execute("edit 1 injury/unknown");
-        Person reset = new PersonBuilder(updated).withInjuryStatus("unknown").build();
+        logic.execute("edit 1 injury/fit");
+        Person reset = new PersonBuilder(updated).withInjuryStatus("fit").build();
         assertEquals(List.of(reset), storage.readAddressBook().orElseThrow().getPersonList());
         logic.execute("edit 1 injury/injured");
         Person injured = new PersonBuilder(updated).withInjuryStatus("injured").build();

@@ -67,7 +67,7 @@ public class EditCommandTest {
         assertCommandSuccess(command, model,
                 String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, target.getName()), expected);
 
-        new EditCommand(INDEX_SECOND_PERSON, new EditPersonDescriptorBuilder().withInjuryStatus("unknown").build())
+        new EditCommand(INDEX_SECOND_PERSON, new EditPersonDescriptorBuilder().withInjuryStatus("fit").build())
                 .execute(model);
         assertEquals(target, model.getAddressBook().getPersonList().get(INDEX_SECOND_PERSON.getZeroBased()));
     }

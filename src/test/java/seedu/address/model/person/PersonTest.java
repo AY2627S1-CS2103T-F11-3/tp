@@ -19,15 +19,15 @@ public class PersonTest {
 
     @Test
     public void injuryStatus_affectsEqualityButNotIdentity() {
-        Person unknown = new PersonBuilder().build();
-        Person injured = new PersonBuilder(unknown).withInjuryStatus("injured").build();
-        assertEquals("unknown", unknown.getInjuryStatus().value);
-        assertTrue(unknown.isSamePerson(injured));
-        assertFalse(unknown.equals(injured));
+        Person fit = new PersonBuilder().build();
+        Person injured = new PersonBuilder(fit).withInjuryStatus("injured").build();
+        assertEquals("fit", fit.getInjuryStatus().value);
+        assertTrue(fit.isSamePerson(injured));
+        assertFalse(fit.equals(injured));
         Person copied = new PersonBuilder(injured).build();
         assertEquals(injured, copied);
         assertEquals(injured.hashCode(), copied.hashCode());
-        assertEquals(injured.getAvailability(), unknown.getAvailability());
+        assertEquals(injured.getAvailability(), fit.getAvailability());
         assertTrue(injured.toString().contains("injuryStatus=injured"));
     }
 

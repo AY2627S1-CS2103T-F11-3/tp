@@ -40,10 +40,10 @@ public class PersonListPanelTest {
     @Test
     public void render_injuryStatuses_preservesIndexesAndUpdatesWithPlayers() throws Exception {
         FutureTask<Void> task = new FutureTask<>(() -> {
-            Person unknown = new PersonBuilder().withName("Unknown Player").build();
+            Person defaultFit = new PersonBuilder().withName("Default Player").build();
             Person fit = new PersonBuilder().withName("Fit Player").withInjuryStatus("fit").build();
             Person injured = new PersonBuilder().withName("Injured Player").withInjuryStatus("injured").build();
-            var source = FXCollections.observableArrayList(unknown, fit, injured);
+            var source = FXCollections.observableArrayList(defaultFit, fit, injured);
             FilteredList<Person> displayed = new FilteredList<>(source);
             Region root = new PersonListPanel(displayed).getRoot();
             new Scene(root, 1600, 300);
@@ -54,7 +54,7 @@ public class PersonListPanelTest {
             var injuryColumn = table.getColumns().stream().filter(column -> "Injury".equals(column.getText()))
                     .findFirst().orElseThrow();
             assertFalse(injuryColumn.isSortable());
-            assertEquals(List.of("unknown", "fit", "injured"),
+            assertEquals(List.of("fit", "fit", "injured"),
                     List.of(injuryColumn.getCellData(0), injuryColumn.getCellData(1), injuryColumn.getCellData(2)));
             assertTrue(table.lookupAll(".table-cell").stream().anyMatch(node -> node instanceof TableCell<?, ?> cell
                     && cell.getTableColumn() == injuryColumn && "injured".equals(cell.getText())));

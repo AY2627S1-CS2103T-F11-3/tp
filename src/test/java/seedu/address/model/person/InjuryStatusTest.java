@@ -16,8 +16,7 @@ public class InjuryStatusTest {
             {"F\u0130T", "fit"},
             {"f\u0131t", "fit"},
             {"\u0130NJURED", "injured"},
-            {"\u0131njured", "injured"},
-            {"un\u212Anown", "unknown"}
+            {"\u0131njured", "injured"}
         };
         for (String[] entry : cases) {
             assertTrue(InjuryStatus.isValidInjuryStatus(entry[0]));
@@ -32,7 +31,7 @@ public class InjuryStatusTest {
 
     @Test
     public void constructor_validValues_normalizesStatus() {
-        for (String value : new String[] {"unknown", "fit", "injured"}) {
+        for (String value : new String[] {"fit", "injured"}) {
             InjuryStatus status = new InjuryStatus(" \t" + value.toUpperCase(Locale.ROOT) + "\n");
             assertEquals(value, status.value);
             assertEquals(value, status.toString());
@@ -48,7 +47,7 @@ public class InjuryStatusTest {
     public void constructor_invalidValues_throws() {
         assertThrows(NullPointerException.class, () -> new InjuryStatus(null));
         assertThrows(NullPointerException.class, () -> InjuryStatus.isValidInjuryStatus(null));
-        for (String value : new String[] {"", " \t", "recovering", "true", "in jured"}) {
+        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown", "recovering", "true", "in jured"}) {
             assertFalse(InjuryStatus.isValidInjuryStatus(value));
             assertThrows(IllegalArgumentException.class, () -> new InjuryStatus(value));
         }

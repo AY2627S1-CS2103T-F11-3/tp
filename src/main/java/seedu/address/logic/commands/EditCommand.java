@@ -57,7 +57,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
             + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
             + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
-            + "[" + PREFIX_INJURY_FULL + "unknown|fit|injured] "
+            + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
             + PREFIX_GUARDIANCONTACT + ", and " + PREFIX_AVAILABILITY + " for their full prefixes\n"

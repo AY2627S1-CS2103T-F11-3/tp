@@ -32,12 +32,12 @@ public class JsonAdaptedPersonTest {
 
     @Test
     public void toModelType_injuryStatus_roundTripsAndDefaultsLegacyValues() throws Exception {
-        for (String value : new String[] {"unknown", "fit", "injured"}) {
+        for (String value : new String[] {"fit", "injured"}) {
             Person person = new PersonBuilder().withInjuryStatus(value).build();
             assertEquals(person, new JsonAdaptedPerson(person).toModelType());
         }
         Person legacy = new JsonAdaptedPerson(BENSON.getName().fullName, List.of(), "").toModelType();
-        assertEquals(new InjuryStatus("unknown"), legacy.getInjuryStatus());
+        assertEquals(new InjuryStatus("fit"), legacy.getInjuryStatus());
         JsonAdaptedPerson normalized = new JsonAdaptedPerson(BENSON.getName().fullName, List.of(), "",
                 "U12", "Defender", null, null, "available", "81234567", " INJURED ");
         Person person = normalized.toModelType();

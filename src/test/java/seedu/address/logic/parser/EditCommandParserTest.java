@@ -48,7 +48,7 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_injuryStatusAloneAndCombined_success() {
-        for (String value : new String[] {"unknown", "fit", "injured"}) {
+        for (String value : new String[] {"fit", "injured"}) {
             EditCommand expected = new EditCommand(INDEX_SECOND_PERSON,
                     new EditPersonDescriptorBuilder().withInjuryStatus(value).build());
             assertParseSuccess(parser, "2 injury/" + value, expected);
@@ -62,7 +62,7 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_invalidOrRepeatedInjuryStatus_failure() {
-        for (String value : new String[] {"", " \t", "recovering", "true", "in jured"}) {
+        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown", "recovering", "true", "in jured"}) {
             assertParseFailure(parser, "2 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, "2 injury/fit injury/injured",

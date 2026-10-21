@@ -7,11 +7,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  * Represents a player's recorded injury status.
  */
 public final class InjuryStatus {
-    public static final String UNKNOWN = "unknown";
     public static final String FIT = "fit";
     public static final String INJURED = "injured";
     public static final String MESSAGE_CONSTRAINTS =
-            "Injury status must be unknown, fit or injured.";
+            "Injury status must be fit or injured.";
 
     public final String value;
 
@@ -23,10 +22,8 @@ public final class InjuryStatus {
         // Case-insensitive Unicode matches must still be stored as one of the canonical values.
         if (FIT.equalsIgnoreCase(normalized)) {
             value = FIT;
-        } else if (INJURED.equalsIgnoreCase(normalized)) {
-            value = INJURED;
         } else {
-            value = UNKNOWN;
+            value = INJURED;
         }
     }
 
@@ -34,8 +31,7 @@ public final class InjuryStatus {
     public static boolean isValidInjuryStatus(String test) {
         requireNonNull(test);
         String normalized = test.strip();
-        return UNKNOWN.equalsIgnoreCase(normalized)
-                || FIT.equalsIgnoreCase(normalized)
+        return FIT.equalsIgnoreCase(normalized)
                 || INJURED.equalsIgnoreCase(normalized);
     }
 
