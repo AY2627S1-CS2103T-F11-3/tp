@@ -38,7 +38,8 @@ public class EditCommandTest {
     public void execute_editName_preservesPlayerProfileFields() {
         Person original = new PersonBuilder().withName("Original Player").withTags("captain")
                 .withSquadName("U12 A").withPosition("Defender").withGuardianName("Jane Doe")
-                .withGuardianContact("81234567").withAvailability("unavailable").withRemark("Left footed").build();
+                .withGuardianContact("81234567").withAvailability("unavailable").withRemark("Left footed")
+                .withInjuryStatus("injured").build();
         Model profileModel = new ModelManager();
         profileModel.addPerson(original);
         Person edited = new PersonBuilder(original).withName("Updated Player").build();

@@ -120,7 +120,8 @@ public class EditCommand extends Command {
                 editPersonDescriptor.getAvailability().orElse(personToEdit.getAvailability());
 
         return new Person(updatedName, updatedTags, updatedRemark,
-                updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianContact, updatedAvailability);
+                updatedSquadName, updatedPosition, updatedGuardianName, updatedGuardianContact, updatedAvailability,
+                personToEdit.getInjuryStatus());
     }
 
     @Override

@@ -29,6 +29,29 @@ public class JsonAddressBookStorageTest {
     public Path testFolder;
 
     @Test
+    public void saveAndRead_injuryStatuses_preservesAllValues() throws Exception {
+        AddressBook original = new AddressBook();
+        for (String status : new String[] {"unknown", "fit", "injured"}) {
+            original.addPerson(new PersonBuilder().withName("Player " + status).withInjuryStatus(status).build());
+        }
+        Path file = testFolder.resolve("injuryStatuses.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(original);
+        assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
+        String json = Files.readString(file);
+        assertTrue(json.contains("\"injuryStatus\""));
+
+        Files.writeString(file, json.replace("\"injured\"", "\"recovering\""));
+        assertThrows(DataLoadingException.class, () -> storage.readAddressBook());
+    }
+
+    @Test
+    public void read_legacyFileWithoutInjuryStatus_defaultsToUnknown() throws Exception {
+        ReadOnlyAddressBook legacy = readAddressBook("legacyContactFieldsAddressBook.json").orElseThrow();
+        legacy.getPersonList().forEach(person -> assertEquals("unknown", person.getInjuryStatus().value));
+    }
+
+    @Test
     public void readAddressBook_nullFilePath_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> readAddressBook(null));
     }

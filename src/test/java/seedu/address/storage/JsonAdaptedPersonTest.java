@@ -14,9 +14,11 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.SquadName;
+import seedu.address.testutil.PersonBuilder;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -27,6 +29,30 @@ public class JsonAdaptedPersonTest {
     private static final List<JsonAdaptedTag> VALID_TAGS = BENSON.getTags().stream()
             .map(JsonAdaptedTag::new)
             .collect(Collectors.toList());
+
+    @Test
+    public void toModelType_injuryStatus_roundTripsAndDefaultsLegacyValues() throws Exception {
+        for (String value : new String[] {"unknown", "fit", "injured"}) {
+            Person person = new PersonBuilder().withInjuryStatus(value).build();
+            assertEquals(person, new JsonAdaptedPerson(person).toModelType());
+        }
+        Person legacy = new JsonAdaptedPerson(BENSON.getName().fullName, List.of(), "").toModelType();
+        assertEquals(new InjuryStatus("unknown"), legacy.getInjuryStatus());
+        JsonAdaptedPerson normalized = new JsonAdaptedPerson(BENSON.getName().fullName, List.of(), "",
+                "U12", "Defender", null, null, "available", "81234567", " INJURED ");
+        Person person = normalized.toModelType();
+        assertEquals(new InjuryStatus("injured"), person.getInjuryStatus());
+        assertEquals("81234567", person.getGuardianContact().value);
+    }
+
+    @Test
+    public void toModelType_invalidInjuryStatus_throwsIllegalValueException() {
+        for (String value : new String[] {"", " ", "recovering"}) {
+            JsonAdaptedPerson adapted = new JsonAdaptedPerson(BENSON.getName().fullName, List.of(), "",
+                    "U12", "Defender", null, null, "available", null, value);
+            assertThrows(IllegalValueException.class, InjuryStatus.MESSAGE_CONSTRAINTS, adapted::toModelType);
+        }
+    }
 
     @Test
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
