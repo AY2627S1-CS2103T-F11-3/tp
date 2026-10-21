@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
@@ -27,6 +29,8 @@ import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.InjuryStatus;
@@ -53,7 +57,8 @@ public class EditCommandParser implements Parser<EditCommand> {
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_AVAILABILITY,
                         PREFIX_AVAILABILITY_FULL, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL,
                         PREFIX_POSITION, PREFIX_POSITION_FULL, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL,
-                        PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL, PREFIX_INJURY_FULL, PREFIX_TAG);
+                        PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL, PREFIX_INJURY_FULL,
+                        PREFIX_FEE_FULL, PREFIX_CONSENT_FULL, PREFIX_TAG);
 
         Index index;
 
@@ -66,7 +71,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
                 PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL, PREFIX_POSITION, PREFIX_POSITION_FULL,
                 PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL,
-                PREFIX_INJURY_FULL);
+                PREFIX_INJURY_FULL, PREFIX_FEE_FULL, PREFIX_CONSENT_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_POSITION, PREFIX_POSITION_FULL);
@@ -85,6 +90,10 @@ public class EditCommandParser implements Parser<EditCommand> {
         parseAvailability(argMultimap).ifPresent(editPersonDescriptor::setAvailability);
         parseValue(argMultimap.getValue(PREFIX_INJURY_FULL), InjuryStatus::new)
                 .ifPresent(editPersonDescriptor::setInjuryStatus);
+        parseValue(argMultimap.getValue(PREFIX_FEE_FULL), FeeStatus::new)
+                .ifPresent(editPersonDescriptor::setFeeStatus);
+        parseValue(argMultimap.getValue(PREFIX_CONSENT_FULL), ConsentStatus::new)
+                .ifPresent(editPersonDescriptor::setConsentStatus);
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
