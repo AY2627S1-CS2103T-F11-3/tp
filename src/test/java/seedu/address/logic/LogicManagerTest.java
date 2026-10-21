@@ -59,21 +59,25 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_unicodeInjuryInput_savesCanonicalValuesAndReloads() throws Exception {
+    public void execute_asciiInjuryInput_savesAndRejectsUnicodeWithoutWriting() throws Exception {
         JsonAddressBookStorage storage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        Person player = new PersonBuilder().withName("John Doe").withSquadName("U12").withPosition("Defender")
-                .withInjuryStatus("fit").build();
-        logic.execute("add n/John Doe sn/U12 pos/Defender injury/F\u0130T");
-        assertEquals(List.of(player), model.getAddressBook().getPersonList());
-        assertEquals(List.of(player), storage.readAddressBook().orElseThrow().getPersonList());
-
-        logic.execute("edit 1 injury/\u0130NJURED");
-        Person injured = new PersonBuilder(player).withInjuryStatus("injured").build();
-        assertEquals(List.of(injured), model.getAddressBook().getPersonList());
+        logic.execute("add n/John Doe sn/U12 pos/Defender injury/FiT");
+        logic.execute("edit 1 injury/iNjUrEd");
+        Person injured = model.getAddressBook().getPersonList().getFirst();
+        assertEquals("injured", injured.getInjuryStatus().value);
         assertEquals(List.of(injured), storage.readAddressBook().orElseThrow().getPersonList());
-
-        logic.execute("edit 1 injury/f\u0131t");
-        assertEquals(List.of(player), storage.readAddressBook().orElseThrow().getPersonList());
+        Path file = temporaryFolder.resolve("addressBook.json");
+        String before = Files.readString(file);
+        for (String value : new String[] {"F\u0130T", "f\u0131t", "\u0130NJURED", "\u0131njured",
+            "f\u0456t", "\uff46\uff49\uff54"}) {
+            assertParseException("edit 1 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertParseException("add n/Other Player sn/U12 pos/Defender injury/" + value,
+                    InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertEquals(List.of(injured), model.getAddressBook().getPersonList());
+            assertEquals(before, Files.readString(file));
+        }
+        logic.execute("edit 1 injury/fIt");
+        assertEquals("fit", storage.readAddressBook().orElseThrow().getPersonList().getFirst().getInjuryStatus().value);
     }
 
     @Test
@@ -93,17 +97,20 @@ public class LogicManagerTest {
         String before = Files.readString(file);
         assertParseException("edit 1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseException("edit 1 injury/recovering", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseException("edit 1 injury/unknown", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertParseException("add n/Other Player sn/U12 pos/Defender injury/unknown",
+                InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseException("edit 1 injury/fit injury/injured",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_INJURY_FULL));
         assertParseException("add n/Other Player sn/U12 pos/Defender injury/invalid", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertCommandException("edit 2 injury/injured", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
-        assertCommandException("add n/John Doe sn/U12 pos/Defender injury/unknown",
+        assertCommandException("add n/John Doe sn/U12 pos/Defender injury/fit",
                 "John Doe is already a registered player!");
         assertEquals(before, Files.readString(file));
         assertEquals(List.of(updated), model.getAddressBook().getPersonList());
 
-        logic.execute("edit 1 injury/unknown");
-        Person reset = new PersonBuilder(updated).withInjuryStatus("unknown").build();
+        logic.execute("edit 1 injury/fit");
+        Person reset = new PersonBuilder(updated).withInjuryStatus("fit").build();
         assertEquals(List.of(reset), storage.readAddressBook().orElseThrow().getPersonList());
         logic.execute("edit 1 injury/injured");
         Person injured = new PersonBuilder(updated).withInjuryStatus("injured").build();

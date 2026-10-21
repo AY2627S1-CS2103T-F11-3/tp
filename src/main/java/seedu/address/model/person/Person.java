@@ -31,12 +31,12 @@ public class Person {
     private final Set<Tag> tags = new HashSet<>();
     private final Remark remark;
 
-    /** Constructs a player whose injury status has not been recorded. */
+    /** Constructs a player with the default fit injury status. */
     public Person(Name name, Set<Tag> tags, Remark remark,
                   SquadName squadName, Position position, GuardianName guardianName,
                   GuardianContact guardianContact, Availability availability) {
         this(name, tags, remark, squadName, position, guardianName, guardianContact,
-                availability, new InjuryStatus(InjuryStatus.UNKNOWN));
+                availability, new InjuryStatus(InjuryStatus.FIT));
     }
 
     /**

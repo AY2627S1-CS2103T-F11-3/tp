@@ -24,10 +24,10 @@ public class AddCommandParserTest {
     private final AddCommandParser parser = new AddCommandParser();
 
     @Test
-    public void parse_injuryStatus_acceptsSupportedValuesAndDefaultsToUnknown() {
+    public void parse_injuryStatus_acceptsSupportedValuesAndDefaultsToFit() {
         assertParseSuccess(parser, REQUIRED, new AddCommand(new PersonBuilder(player())
-                .withInjuryStatus("unknown").build()));
-        for (String value : new String[] {"unknown", "fit", "injured"}) {
+                .withInjuryStatus("fit").build()));
+        for (String value : new String[] {"fit", "injured"}) {
             AddCommand expected = new AddCommand(new PersonBuilder(player()).withInjuryStatus(value).build());
             assertParseSuccess(parser, REQUIRED + " injury/" + value, expected);
             assertParseSuccess(parser, " injury/ \t" + value.toUpperCase(Locale.ROOT) + " \n" + REQUIRED,
@@ -40,7 +40,8 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_invalidOrRepeatedInjuryStatus_failure() {
-        for (String value : new String[] {"", " \t", "recovering", "true", "in jured"}) {
+        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown",
+            "F\u0130T", "f\u0131t", "\u0130NJURED", "recovering", "true", "in jured"}) {
             assertParseFailure(parser, REQUIRED + " injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",

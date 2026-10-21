@@ -97,9 +97,29 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void read_legacyUnknownOrMissingInjury_migratesToFitAndSavesCanonicalStatus() throws Exception {
+        Person player = new PersonBuilder().withInjuryStatus("injured").build();
+        AddressBook original = new AddressBook();
+        original.addPerson(player);
+        Path file = testFolder.resolve("legacyInjury.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(file);
+        storage.saveAddressBook(original);
+        String json = Files.readString(file);
+        for (String legacyValue : new String[] {"null", "\" UNKNOWN \""}) {
+            Files.writeString(file, json.replace("\"injured\"", legacyValue));
+            ReadOnlyAddressBook migrated = storage.readAddressBook().orElseThrow();
+            Person expected = new PersonBuilder(player).withInjuryStatus("fit").build();
+            assertEquals(expected, migrated.getPersonList().getFirst());
+            storage.saveAddressBook(migrated);
+            assertEquals(expected, storage.readAddressBook().orElseThrow().getPersonList().getFirst());
+            assertFalse(Files.readString(file).contains("unknown"));
+        }
+    }
+
+    @Test
     public void saveAndRead_injuryStatuses_preservesAllValues() throws Exception {
         AddressBook original = new AddressBook();
-        for (String status : new String[] {"unknown", "fit", "injured"}) {
+        for (String status : new String[] {"fit", "injured"}) {
             original.addPerson(new PersonBuilder().withName("Player " + status).withInjuryStatus(status).build());
         }
         Path file = testFolder.resolve("injuryStatuses.json");
@@ -114,9 +134,9 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
-    public void read_legacyFileWithoutInjuryStatus_defaultsToUnknown() throws Exception {
+    public void read_legacyFileWithoutInjuryStatus_defaultsToFit() throws Exception {
         ReadOnlyAddressBook legacy = readAddressBook("legacyContactFieldsAddressBook.json").orElseThrow();
-        legacy.getPersonList().forEach(person -> assertEquals("unknown", person.getInjuryStatus().value));
+        legacy.getPersonList().forEach(person -> assertEquals("fit", person.getInjuryStatus().value));
     }
 
     @Test

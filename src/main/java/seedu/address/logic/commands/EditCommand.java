@@ -63,7 +63,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
             + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
             + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
-            + "[" + PREFIX_INJURY_FULL + "unknown|fit|injured] "
+            + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
             + "[" + PREFIX_TAG + "TAG]...\n"

@@ -68,7 +68,7 @@ public class AddCommandParser implements Parser<AddCommand> {
         GuardianName guardian = null;
         GuardianContact contact = null;
         Availability availability = new Availability(Availability.AVAILABLE);
-        InjuryStatus injuryStatus = new InjuryStatus(InjuryStatus.UNKNOWN);
+        InjuryStatus injuryStatus = new InjuryStatus(InjuryStatus.FIT);
         FeeStatus feeStatus = new FeeStatus(FeeStatus.UNPAID);
         ConsentStatus consentStatus = new ConsentStatus(ConsentStatus.PENDING);
         Set<Tag> tags = new HashSet<>();

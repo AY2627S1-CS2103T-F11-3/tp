@@ -29,7 +29,7 @@ public class PersonBuilder {
     public static final String DEFAULT_GUARDIAN_NAME = null;
     public static final String DEFAULT_GUARDIAN_CONTACT = null;
     public static final String DEFAULT_AVAILABILITY = Availability.AVAILABLE;
-    public static final String DEFAULT_INJURY_STATUS = InjuryStatus.UNKNOWN;
+    public static final String DEFAULT_INJURY_STATUS = InjuryStatus.FIT;
 
     private Name name;
     private Set<Tag> tags;

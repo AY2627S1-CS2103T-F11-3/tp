@@ -217,7 +217,8 @@ class JsonAdaptedPerson {
     }
 
     private InjuryStatus createInjuryStatus() throws IllegalValueException {
-        String value = injuryStatus == null ? InjuryStatus.UNKNOWN : injuryStatus;
+        String value = injuryStatus == null || injuryStatus.strip().matches("(?i:unknown)")
+                ? InjuryStatus.FIT : injuryStatus;
         if (!InjuryStatus.isValidInjuryStatus(value)) {
             throw new IllegalValueException(InjuryStatus.MESSAGE_CONSTRAINTS);
         }
