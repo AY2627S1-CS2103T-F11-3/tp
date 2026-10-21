@@ -13,7 +13,7 @@ We are a team based in the [School of Computing, National University of Singapor
 
 [[github](https://github.com/zhikai-koh)]
 
-* Role: 
+* Role:
 * Responsibilities:
 
 ### Kong Xin Yang
@@ -22,8 +22,8 @@ We are a team based in the [School of Computing, National University of Singapor
 
 [[github](http://github.com/kong-xin-yang)]
 
-* Role: 
-* Responsibilities: 
+* Role:
+* Responsibilities:
 
 ### Ang Eng Sheng
 
@@ -31,8 +31,8 @@ We are a team based in the [School of Computing, National University of Singapor
 
 [[github](http://github.com/engsheng)]
 
-* Role: 
-* Responsibilities: 
+* Role:
+* Responsibilities:
 
 ### Quah Xuen Yin
 
@@ -40,8 +40,8 @@ We are a team based in the [School of Computing, National University of Singapor
 
 [[github](http://github.com/Xuenyin)]
 
-* Role: 
-* Responsibilities: 
+* Role:
+* Responsibilities:
 
 ### Hoang Trung Hai
 
