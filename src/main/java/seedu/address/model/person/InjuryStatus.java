@@ -3,8 +3,6 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
-import java.util.Locale;
-
 /**
  * Represents a player's recorded injury status.
  */
@@ -21,7 +19,15 @@ public final class InjuryStatus {
     public InjuryStatus(String injuryStatus) {
         requireNonNull(injuryStatus);
         checkArgument(isValidInjuryStatus(injuryStatus), MESSAGE_CONSTRAINTS);
-        value = injuryStatus.strip().toLowerCase(Locale.ROOT);
+        String normalized = injuryStatus.strip();
+        // Case-insensitive Unicode matches must still be stored as one of the canonical values.
+        if (FIT.equalsIgnoreCase(normalized)) {
+            value = FIT;
+        } else if (INJURED.equalsIgnoreCase(normalized)) {
+            value = INJURED;
+        } else {
+            value = UNKNOWN;
+        }
     }
 
     /** Returns whether the supplied value is a supported injury status. */
