@@ -447,8 +447,6 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
     Use case ends.
 
-
-
 ### Non-Functional Requirements
 
 1. Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
