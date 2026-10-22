@@ -409,8 +409,12 @@ public class LogicManagerTest {
     public void execute_filterWithFailingStorage_succeeds() throws Exception {
         model.setAddressBook(getTypicalAddressBook());
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        MatchesFilterCriteriaPredicate predicate = new MatchesFilterCriteriaPredicate(Optional.empty(),
-                Optional.of(new Availability(Availability.AVAILABLE)));
+        MatchesFilterCriteriaPredicate predicate = new MatchesFilterCriteriaPredicate(
+                Optional.empty(),
+                Optional.of(new Availability(Availability.AVAILABLE)),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty());
         expectedModel.updateFilteredPersonList(predicate);
         JsonAddressBookStorage addressBookStorage = new
                 JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")) {

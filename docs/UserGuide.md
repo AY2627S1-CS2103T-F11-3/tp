@@ -295,36 +295,41 @@ Examples:
 
 ### Filtering players: `filter`
 
-Displays registered players that match a squad, availability, or both.
+Displays registered players that match squad, availability, injury, fee payment, or consent criteria.
 
-Formats:
+Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending]`
 
-* `filter squad/SQUAD_NAME [available/true|false]`
-* `filter available/true|false [squad/SQUAD_NAME]`
+| Criterion | Full prefix | Shorthand | Supported values |
+| --- | --- | --- | --- |
+| Squad name | `squad/` | `sn/` | Non-blank text (letters, digits, hyphens, spaces) |
+| Availability | `available/` | `av/` | `true`, `false` |
+| Injury status | `injury/` | None | `fit`, `injured` |
+| Fee payment status | `fee/` | None | `paid`, `unpaid` |
+| Consent status | `consent/` | None | `received`, `pending` |
 
-Short forms are also accepted: `sn/SQUAD_NAME` for `squad/SQUAD_NAME`, and `av/true` or `av/false`
-for `available/true|false`.
-
-* Supply at least one criterion. Criteria can appear in either order, but each criterion can appear only once.
-  Long and short forms count as the same criterion.
-* Squad names must not be blank and may contain only letters, digits, hyphens and whitespace. Squad matching is
-  case-sensitive; surrounding whitespace is ignored and repeated whitespace is treated as a single space.
-* Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
+- Supply at least one criterion. Criteria can appear in any order, but each criterion can appear only once.
+  Specifying both long and shorthand forms for the same criterion (such as `squad/` and `sn/`) is rejected.
+- Squad names must not be blank and may contain only letters, digits, hyphens, and whitespace. Squad matching is
+  case-sensitive; surrounding whitespace is trimmed, and repeated internal whitespace is treated as a single space.
+- Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
   as `available`; `false` matches players stored as `unavailable`.
-* When both criteria are supplied, a player must satisfy both. If no players match, the result is
-  `No matching players found`, with guidance to change the search or filter or use `list` to show all players.
-  If the club has no registered players, the response instead suggests adding the first player.
-* Results replace the currently displayed list and use its normal consecutive indexes. Those indexes can be used
-  immediately with `delete`.
-* Unknown filter prefixes and text before the first criterion are rejected as an invalid command format.
-* A current sort order is retained; `filter` changes which players are shown, not how they are ordered.
+- Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace.
+- Fee payment accepts ASCII `paid` or `unpaid`, ignoring case and surrounding whitespace.
+- Consent accepts ASCII `received` or `pending`, ignoring case and surrounding whitespace.
+- When multiple criteria are supplied, a player must satisfy all of them (AND logic). If no players match, the result is
+  `No matching players found!`.
+- Results replace the currently displayed list and use consecutive indexes starting from 1. Those indexes can be used
+  immediately with commands like `edit`, `mark`, and `delete`.
+- Unknown filter prefixes, empty values, and any text preceding the first prefix are rejected as invalid command format.
+- A current sort order is retained; `filter` changes which players are shown, not how they are ordered.
 
 Examples:
 
-* `filter squad/Soccer Stars`
-* `filter available/true`
-* `filter available/true squad/Football Fellas`
-* `filter sn/Soccer Stars av/false`
+- `filter squad/Soccer Stars`
+- `filter available/true`
+- `filter injury/injured fee/unpaid`
+- `filter sn/Soccer Stars av/true fee/paid consent/received`
+- `filter sn/Football Fellas injury/fit av/false`
 
 ### Sorting displayed players: `sort`
 
@@ -463,7 +468,7 @@ Action | Format, Examples
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
+**Filter** | `filter [squad/SQUAD_NAME] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true injury/fit fee/paid`
 **Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`
 **List** | `list` (show all registered players, clear the current search or filter, and retain the sort order)
 **Main** | `main` (return to the main player list and preserve the current search, filter, sort order, and indexes)
