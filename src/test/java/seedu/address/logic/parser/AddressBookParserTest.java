@@ -175,8 +175,10 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_mainWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, MainCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("main 1"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("main squad/Alpha"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(MainCommand.COMMAND_WORD + " 1"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(MainCommand.COMMAND_WORD + " squad/Alpha"));
     }
 
     @Test
@@ -188,8 +190,10 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_overviewWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, OverviewCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview 1"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview squad/Alpha"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(OverviewCommand.COMMAND_WORD + " 1"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(OverviewCommand.COMMAND_WORD + " squad/Alpha"));
     }
 
     @Test

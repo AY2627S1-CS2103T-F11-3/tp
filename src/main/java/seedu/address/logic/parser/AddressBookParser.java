@@ -70,17 +70,11 @@ public class AddressBookParser {
                 yield new ListCommand();
             }
             case MainCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            MainCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, MainCommand.MESSAGE_USAGE);
                 yield new MainCommand();
             }
             case OverviewCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            OverviewCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, OverviewCommand.MESSAGE_USAGE);
                 yield new OverviewCommand();
             }
             case ExitCommand.COMMAND_WORD -> {
