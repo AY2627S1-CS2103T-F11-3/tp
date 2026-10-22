@@ -194,11 +194,21 @@ public class MarkCommandTest {
     }
 
     @Test
+    public void equals_deferredErrors_comparesErrorMessages() {
+        List<Index> indices = List.of(Index.fromOneBased(1));
+        MarkCommand command = MarkCommand.withDeferredError(indices, PlayerStatusField.FEE, "Invalid index");
+
+        assertEquals(command, MarkCommand.withDeferredError(indices, PlayerStatusField.FEE, "Invalid index"));
+        assertFalse(command.equals(MarkCommand.withDeferredError(indices, PlayerStatusField.FEE, "Invalid value")));
+        assertFalse(command.equals(new MarkCommand(indices, PlayerStatusField.FEE, "")));
+    }
+
+    @Test
     public void toStringMethod() {
         MarkCommand markCommand = command(PlayerStatusField.FEE, "paid", 1, 2);
         String expected = MarkCommand.class.getCanonicalName()
                 + "{targetIndices=" + List.of(Index.fromOneBased(1), Index.fromOneBased(2))
-                + ", field=FEE, value=paid}";
+                + ", field=FEE, value=paid, deferredError=null}";
         assertEquals(expected, markCommand.toString());
     }
 

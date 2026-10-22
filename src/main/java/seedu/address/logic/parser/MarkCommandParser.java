@@ -54,16 +54,23 @@ public class MarkCommandParser implements Parser<MarkCommand> {
         if (matcher.find()) {
             throw new ParseException(MESSAGE_ONE_STATUS);
         }
-        List<Index> indexes = parseIndexes(indexText);
-        return new MarkCommand(indexes, field, parseValue(field, value));
+        return parseTargetsAndValue(indexText, field, value);
     }
 
-    private List<Index> parseIndexes(String text) throws ParseException {
+    private MarkCommand parseTargetsAndValue(String text, PlayerStatusField field, String value) throws ParseException {
         List<Index> indexes = new ArrayList<>();
-        for (String index : text.split("\\s+")) {
-            indexes.add(ParserUtil.parsePlayerIndex(index));
+        try {
+            for (String index : text.split("\\s+")) {
+                indexes.add(ParserUtil.parsePlayerIndex(index));
+            }
+            return new MarkCommand(indexes, field, parseValue(field, value));
+        } catch (ParseException exception) {
+            if (indexes.isEmpty()) {
+                throw exception;
+            }
+            // Bounds checks need the model, so earlier indexes must be resolved during execution first.
+            return MarkCommand.withDeferredError(indexes, field, exception.getMessage());
         }
-        return indexes;
     }
 
     private String parseValue(PlayerStatusField field, String value) throws ParseException {

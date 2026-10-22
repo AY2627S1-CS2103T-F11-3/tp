@@ -1,10 +1,12 @@
 package seedu.address.logic.parser;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_TOO_LARGE;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
+import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
@@ -14,10 +16,13 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.MarkCommand;
+import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
 import seedu.address.model.person.ConsentStatus;
 import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.PlayerStatusField;
+import seedu.address.testutil.PersonBuilder;
 
 /** Tests status selection, domain validation and bulk index syntax. */
 public class MarkCommandParserTest {
@@ -62,9 +67,9 @@ public class MarkCommandParserTest {
     public void parse_invalidIndexes_showsSpecificCause() {
         assertParseFailure(parser, "fee/paid", MESSAGE_MISSING_INDEX);
         assertParseFailure(parser, "0 fee/paid", MESSAGE_INDEX_BELOW_ONE);
-        assertParseFailure(parser, "1 -2 fee/paid", MESSAGE_NON_NUMERIC_INDEX);
+        assertDeferredFailure("1 -2 fee/paid", MESSAGE_NON_NUMERIC_INDEX);
         assertParseFailure(parser, "1,3 fee/paid", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1 abc fee/paid", MESSAGE_NON_NUMERIC_INDEX);
+        assertDeferredFailure("1 abc fee/paid", MESSAGE_NON_NUMERIC_INDEX);
         assertParseFailure(parser, "999999999999 fee/paid", MESSAGE_INDEX_TOO_LARGE);
     }
 
@@ -78,17 +83,67 @@ public class MarkCommandParserTest {
 
     @Test
     public void parse_invalidOrMissingValues_usesDomainConstraints() {
-        assertParseFailure(parser, "1 av/", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, "1 av/available", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, "1 av/t rue", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/available", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/t rue", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         for (String value : List.of("", "yes", "paid extra", "pa\u0131d")) {
-            assertParseFailure(parser, "1 fee/" + value, FeeStatus.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("1 fee/" + value, FeeStatus.MESSAGE_CONSTRAINTS);
         }
-        assertParseFailure(parser, "1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "1 injury/f\u0131t", InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "1 consent/", ConsentStatus.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "1 consent/true", ConsentStatus.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "1 consent/rece\u0131ved", ConsentStatus.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1 injury/f\u0131t", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1 consent/", ConsentStatus.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1 consent/true", ConsentStatus.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1 consent/rece\u0131ved", ConsentStatus.MESSAGE_CONSTRAINTS);
+    }
+
+    @Test
+    public void execute_outOfBoundsBeforeInvalidIndex_reportsEarlierBoundsError() {
+        for (String invalid : List.of("0", "-2", "abc", "999999999999")) {
+            assertDeferredFailure("1 4 " + invalid + " av/true",
+                    String.format(MarkCommand.MESSAGE_INVALID_INDEX, 4, 2));
+        }
+    }
+
+    @Test
+    public void execute_invalidIndexBeforeOutOfBounds_reportsEarlierSyntaxError() {
+        assertDeferredFailure("1 0 4 av/true", MESSAGE_INDEX_BELOW_ONE);
+        assertDeferredFailure("1 abc 4 av/true", MESSAGE_NON_NUMERIC_INDEX);
+        assertDeferredFailure("1 999999999999 4 av/true", MESSAGE_INDEX_TOO_LARGE);
+        assertParseFailure(parser, "0 4 av/true", MESSAGE_INDEX_BELOW_ONE);
+    }
+
+    @Test
+    public void execute_outOfBoundsBeforeInvalidValue_reportsBoundsError() {
+        assertDeferredFailure("1 4 fee/unknown", String.format(MarkCommand.MESSAGE_INVALID_INDEX, 4, 2));
+        assertDeferredFailure("1 0 fee/unknown", MESSAGE_INDEX_BELOW_ONE);
+    }
+
+    @Test
+    public void execute_filteredList_checksDisplayedBoundsBeforeLaterError() {
+        Model model = createModel();
+        model.updateFilteredPersonList(player -> player.getName().fullName.equals("Amy Tan"));
+
+        MarkCommand command = assertDoesNotThrow(() -> parser.parse("1 2 0 fee/paid"));
+
+        assertCommandFailure(command, model, String.format(MarkCommand.MESSAGE_INVALID_INDEX, 2, 1));
+    }
+
+    @Test
+    public void execute_emptyListWithLaterError_showsRecoveryGuidance() {
+        MarkCommand command = assertDoesNotThrow(() -> parser.parse("1 0 fee/paid"));
+        assertCommandFailure(command, new ModelManager(), MarkCommand.MESSAGE_EMPTY_LIST);
+    }
+
+    private void assertDeferredFailure(String input, String expectedMessage) {
+        MarkCommand command = assertDoesNotThrow(() -> parser.parse(input));
+        assertCommandFailure(command, createModel(), expectedMessage);
+    }
+
+    private Model createModel() {
+        Model model = new ModelManager();
+        model.addPerson(new PersonBuilder().withName("Amy Tan").build());
+        model.addPerson(new PersonBuilder().withName("Ben Lee").build());
+        return model;
     }
 
     private void assertStatus(String argument, PlayerStatusField field, String value) {

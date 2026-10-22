@@ -6,6 +6,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,23 +35,40 @@ public class MarkCommand extends Command {
     private final List<Index> targetIndices;
     private final PlayerStatusField field;
     private final String value;
+    private final String deferredError;
 
     /**
      * Creates a bulk status command using a domain value such as available, injured, paid or received.
      * Repeated indexes select a player only once. Status values are validated before any model updates.
      */
     public MarkCommand(List<Index> targetIndices, PlayerStatusField field, String value) {
+        this(targetIndices, field, value, null);
+    }
+
+    private MarkCommand(List<Index> targetIndices, PlayerStatusField field, String value, String deferredError) {
         requireNonNull(targetIndices);
         checkArgument(!targetIndices.isEmpty(), "Supply at least one player index.");
         this.targetIndices = List.copyOf(targetIndices);
         this.field = requireNonNull(field);
         this.value = requireNonNull(value);
+        this.deferredError = deferredError;
+    }
+
+    /**
+     * Creates a command that checks preceding indexes before reporting a later input error.
+     * No players are updated when the command executes.
+     */
+    public static MarkCommand withDeferredError(List<Index> precedingIndices, PlayerStatusField field, String message) {
+        return new MarkCommand(precedingIndices, field, "", requireNonNull(message));
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         List<Person> targets = resolveTargets(model.getFilteredPersonList());
+        if (deferredError != null) {
+            throw new CommandException(deferredError);
+        }
         List<Person> replacements = prepareReplacements(targets);
         List<Person> changed = new ArrayList<>();
         List<Person> unchanged = new ArrayList<>();
@@ -114,12 +132,13 @@ public class MarkCommand extends Command {
     public boolean equals(Object other) {
         return other == this || (other instanceof MarkCommand otherCommand
                 && targetIndices.equals(otherCommand.targetIndices)
-                && field == otherCommand.field && value.equals(otherCommand.value));
+                && field == otherCommand.field && value.equals(otherCommand.value)
+                && Objects.equals(deferredError, otherCommand.deferredError));
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this).add("targetIndices", targetIndices)
-                .add("field", field).add("value", value).toString();
+                .add("field", field).add("value", value).add("deferredError", deferredError).toString();
     }
 }

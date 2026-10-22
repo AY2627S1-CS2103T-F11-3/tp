@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.logic.commands.MarkCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
@@ -89,8 +90,25 @@ public class MarkIntegrationTest {
 
         assertThrows(CommandException.class, () -> logic.execute("mark 1 3 fee/paid"));
         assertThrows(ParseException.class, () -> logic.execute("mark 1 fee/paid consent/received"));
-        assertThrows(ParseException.class, () -> logic.execute("mark 1 injury/unknown"));
+        assertThrows(CommandException.class, () -> logic.execute("mark 1 injury/unknown"));
         assertThrows(ParseException.class, () -> logic.execute("mark 1 wrong/paid"));
+
+        assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
+        assertEquals(List.of(amy, ben), model.getFilteredPersonList());
+        assertEquals(savedData, Files.readString(storage.getAddressBookFilePath()));
+    }
+
+    @Test
+    public void execute_mixedIndexErrors_reportsFirstAndPreservesFile() throws Exception {
+        logic.execute("filter sn/U12");
+        String savedData = Files.readString(storage.getAddressBookFilePath());
+
+        CommandException boundsError = assertThrows(CommandException.class, () ->
+                logic.execute("mark 1 4 0 av/true"));
+        assertEquals(String.format(MarkCommand.MESSAGE_INVALID_INDEX, 4, 2), boundsError.getMessage());
+        CommandException zeroError = assertThrows(CommandException.class, () ->
+                logic.execute("mark 1 0 4 av/true"));
+        assertEquals(Messages.MESSAGE_INDEX_BELOW_ONE, zeroError.getMessage());
 
         assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
         assertEquals(List.of(amy, ben), model.getFilteredPersonList());
