@@ -31,6 +31,12 @@ public class MatchesFilterCriteriaPredicate implements Predicate<Person> {
             Optional<String> injury,
             Optional<String> fee,
             Optional<String> consent) {
+        assert squadName != null : "squadName Optional should not be null";
+        assert availability != null : "availability Optional should not be null";
+        assert injury != null : "injury Optional should not be null";
+        assert fee != null : "fee Optional should not be null";
+        assert consent != null : "consent Optional should not be null";
+
         this.squadName = squadName;
         this.availability = availability;
         this.injury = injury;
@@ -40,6 +46,7 @@ public class MatchesFilterCriteriaPredicate implements Predicate<Person> {
 
     @Override
     public boolean test(Person person) {
+        assert person != null : "Target person for predicate check cannot be null";
         boolean squadMatches = squadName.map(s -> s.equals(person.getSquadName())).orElse(true);
         boolean availabilityMatches = availability.map(a -> a.equals(person.getAvailability())).orElse(true);
         boolean injuryMatches = injury.map(i -> i.equalsIgnoreCase(person.getInjuryStatus().value)).orElse(true);

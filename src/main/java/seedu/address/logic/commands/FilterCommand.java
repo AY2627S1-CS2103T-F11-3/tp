@@ -51,6 +51,8 @@ public class FilterCommand extends Command {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
+        assert model != null : "Model cannot be null when executing FilterCommand";
+        assert predicate != null : "Predicate cannot be null when executing FilterCommand";
         model.updateFilteredPersonList(predicate);
         int numberOfMatches = model.getFilteredPersonList().size();
         String message = numberOfMatches == 0 ? MESSAGE_NO_MATCHING_PLAYERS
