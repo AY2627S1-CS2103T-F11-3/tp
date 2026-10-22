@@ -112,6 +112,9 @@ public class ParserUtil {
      * @throws ParseException If {@code args} contains any non-whitespace characters.
      */
     public static void requireNoArguments(String args, String usageMessage) throws ParseException {
+        assert !usageMessage.isBlank() : "Usage message must not be blank";
+        requireNonNull(usageMessage);
+
         if (!args.trim().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, usageMessage));
         }
