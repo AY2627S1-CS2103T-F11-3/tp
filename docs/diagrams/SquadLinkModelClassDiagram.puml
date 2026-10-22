@@ -1,0 +1,62 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor MODEL_COLOR
+skinparam classBackgroundColor MODEL_COLOR
+
+package Model <<Rectangle>> {
+    class "<<interface>>\nModel" as Model
+    class "<<interface>>\nReadOnlyAddressBook" as ReadOnlyAddressBook
+    class "<<interface>>\nReadOnlyUserPrefs" as ReadOnlyUserPrefs
+    class ModelManager
+    class AddressBook
+    class UserPrefs
+    class GuiSettings
+
+    class UniquePersonList
+    class Person
+    class Name
+    class SquadName
+    class Position
+    class GuardianName
+    class GuardianContact
+    class Availability
+    class Remark
+    class Tag
+
+    class "FilteredList<Person>" as FilteredPersons
+    class "SortedList<Person>" as SortedPersons
+
+    class ClubOverview
+    class SquadSummary
+}
+
+ModelManager ..|> Model
+AddressBook ..|> ReadOnlyAddressBook
+UserPrefs ..|> ReadOnlyUserPrefs
+Model ..> ReadOnlyAddressBook
+Model ..> ReadOnlyUserPrefs
+
+ModelManager *--> "1" AddressBook
+ModelManager *--> "1" UserPrefs
+UserPrefs *--> "1" GuiSettings
+
+AddressBook *--> "1" UniquePersonList
+UniquePersonList --> "*" Person : stores
+
+AddressBook ..> FilteredPersons : supplies players
+FilteredPersons --> SortedPersons : source
+SortedPersons --> "* displayed" Person
+
+Person *--> "1" Name
+Person *--> "1" SquadName
+Person *--> "1" Position
+Person o--> "0..1" GuardianName
+Person o--> "0..1" GuardianContact
+Person *--> "1" Availability
+Person *--> "1" Remark
+Person *--> "*" Tag
+
+ClubOverview ..> Person : creates summary from
+ClubOverview *--> "*" SquadSummary
+@enduml

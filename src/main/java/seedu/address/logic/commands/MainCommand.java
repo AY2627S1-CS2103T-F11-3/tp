@@ -5,14 +5,15 @@ import static java.util.Objects.requireNonNull;
 import seedu.address.model.Model;
 
 /**
- * Returns to the main player list without changing its filter or indexes.
+ * Returns to the main player list without changing its filter, sort order, or indexes.
  */
 public class MainCommand extends Command {
     public static final String COMMAND_WORD = "main";
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Returns to the main player list, preserving the current filter and indexes.\n"
+            + ": Returns to the main player list, preserving the current filter, sort order, and indexes.\n"
             + "Parameters: none\nExample: " + COMMAND_WORD;
-    public static final String MESSAGE_SUCCESS = "Main page displayed. Current filter and indexes are preserved.";
+    public static final String MESSAGE_SUCCESS =
+            "Main page displayed. Current filter, sort order, and indexes are preserved.";
 
     @Override
     public boolean isAddressBookMutating() {

@@ -18,8 +18,9 @@ SquadLink allows coaches to:
 - Remove players who are no longer in the club.
 - Search for players by name.
 - Filter players by squad and availability.
+- Sort the displayed roster by name, squad, position, or availability.
 - View club and squad availability counts with `overview`.
-- Return to the main player list with `main`, keeping the current filter.
+- Return to the main player list with `main`, keeping the current filter and sort order.
 
 ## Getting Started
 
