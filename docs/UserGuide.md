@@ -32,7 +32,9 @@ check squad availability, and navigate views by typing commands.
 
    * `overview` : Shows squad cards and club-wide player availability.
 
-   * `main` : Returns to the main player list, keeping the current search or filter.
+   * `main` : Returns to the main player list, keeping the current search, filter, and sort order.
+
+   * `sort squad` : Sorts the displayed players by squad.
 
    * `add n/John Doe sn/Soccer Stars pos/Goalkeeper` : Adds a player named `John Doe`.
 
@@ -140,14 +142,14 @@ Examples:
 
 ### Listing all players: `list`
 
-Opens the main page and shows all registered players, clearing any current search or filter.
+Opens the main page and shows all registered players, clearing any current search or filter while keeping the current sort order.
 To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
 
 Format: `list`
 
 ### Returning to the main page: `main`
 
-Returns to the main player list from the overview without changing the current filter, player order, or indexes.
+Returns to the main player list from the overview without changing the current filter, sort order, or indexes.
 
 Format: `main`
 
@@ -158,7 +160,7 @@ Format: `main`
 * The command does not change or save player data. Extra arguments are rejected with usage guidance.
 * Use `list` instead when you want to clear the current filter and show every registered player.
 
-Success displays `Main page displayed. Current filter and indexes are preserved.`
+Success displays `Main page displayed. Current filter, sort order, and indexes are preserved.`
 
 Example workflow:
 
@@ -176,8 +178,8 @@ Format: `overview`
 * Shows the number of squads, total registered players, and club-wide available and unavailable counts.
 * Lists each squad's total, available and unavailable player counts in alphabetical order.
 * Flags squads with no available players with `No players available`.
-* Includes all registered players, even those hidden by `find` or `filter`. Your previous player list, filter,
-  and indexes are retained. Use `main` to return to that list, or `list` to show all players.
+* Includes all registered players, even those hidden by `find` or `filter`. Your previous player list, filter, sort
+  order, and indexes are retained. Use `main` to return to that list, or `list` to show all players.
 * Squad names remain case-sensitive, as with `filter`. Legacy players with squad `Unassigned` appear under that name.
 * Squads are derived from registered players. A squad disappears from the overview when its last player is deleted.
 * Counts are recalculated each time you run the command. An empty club shows guidance to add players.
@@ -229,6 +231,41 @@ Examples:
 *  `edit 2 fee/unpaid` Marks only the 2nd player's fee payment as unpaid.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
+### Updating player statuses in bulk: `mark`
+
+Sets one status for one or more displayed players.
+
+Format: `mark INDEX [INDEX]... STATUS/VALUE`
+
+| Status | Prefix | Values |
+| --- | --- | --- |
+| Availability | `available/` or `av/` | `true`, `false` |
+| Injury | `injury/` | `fit`, `injured` |
+| Fees | `fee/` | `paid`, `unpaid` |
+| Consent | `consent/` | `received`, `pending` |
+
+* Put positive player indexes first, separated by spaces or tabs, followed by exactly one status prefix and value.
+  Indexes refer to the currently displayed list, including after `find` or `filter`. From the overview, use `main`
+  to check the retained player list before marking.
+* Prefixes are lowercase. Values ignore case and surrounding whitespace. Repeated indexes count only once.
+* Only the selected status changes. For example, marking a player injured does not change their recorded availability.
+* All indexes and the value are validated before any player changes. Invalid input leaves every player unchanged.
+* The current search or filter remains active. Players who no longer match disappear, and remaining players are
+  renumbered. Check the displayed indexes before the next command; use `list` to show everyone.
+* Feedback lists updated players separately from players already at the requested status. If every selected player
+  already has that status, it reports `No changes needed`.
+* The command saves through the normal automatic-save process. If saving fails, player data is restored and an
+  error is shown.
+
+Examples:
+
+* `mark 1 3 av/false` marks the first and third displayed players unavailable.
+* `mark 1 2 injury/fit` records both displayed players as fit.
+* `mark 2 4 fee/paid` records payment for the second and fourth displayed players.
+* `mark 1 consent/received` records consent for the first displayed player.
+
+To update several statuses, run separate commands, checking indexes between commands if a filter is active.
+
 ### Locating players by name: `find`
 
 Finds players whose names contain any of the given keywords.
@@ -245,6 +282,8 @@ Examples:
 * `find John` returns `john` and `John Doe`
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
+
+* A current sort order is retained; `find` changes which players are shown, not how they are ordered.
 
 ### Filtering players: `filter`
 
@@ -269,6 +308,7 @@ for `available/true|false`.
 * Results replace the currently displayed list and use its normal consecutive indexes. Those indexes can be used
   immediately with `delete`.
 * Unknown filter prefixes and text before the first criterion are rejected as an invalid command format.
+* A current sort order is retained; `filter` changes which players are shown, not how they are ordered.
 
 Examples:
 
@@ -276,6 +316,27 @@ Examples:
 * `filter available/true`
 * `filter available/true squad/Football Fellas`
 * `filter sn/Soccer Stars av/false`
+
+### Sorting displayed players: `sort`
+
+Sorts the currently displayed players by one field. Sorting is case-insensitive and does not change saved player data.
+Players with the same selected field are ordered by name. `available` players appear before `unavailable` players.
+
+Format: `sort FIELD`
+
+Supported fields: `name`, `squad`, `position`, `availability`, and `reset`.
+
+* `sort` works on the current `list`, `find`, or `filter` results. The displayed indexes are updated to match the
+  sorted order and can be used with index-based commands such as `edit`, `delete`, and `remark`.
+* `find`, `filter`, and `list` retain the current sort order. `list` only clears the current search or filter.
+* `sort reset` restores the original stored player order while keeping the current search or filter.
+* A sort is not saved to the data file. Restarting SquadLink restores the stored player order.
+
+Examples:
+
+* `sort name`
+* `filter sn/Soccer Stars av/true` followed by `sort position`
+* `sort reset`
 
 ### Deleting players: `delete`
 
@@ -340,7 +401,9 @@ Format: `exit`
 
 ### Saving the data
 
-SquadLink automatically saves after successful commands that change player data. Read-only commands such as `list`, `find` , `filter`, `main` and `overview` do not write the data file. If saving fails, the app reports an error and restores the player data in memory.
+SquadLink automatically saves after successful commands that change player data. Read-only commands such as `list`,
+`find`, `filter`, `sort`, `main` and `overview` do not write the data file. If saving fails, the app reports an error
+and restores the player data in memory.
 
 Older data files containing player phone numbers, emails and addresses can still be loaded. Those legacy fields are
 ignored and omitted the next time the file is saved; player names and the remaining profile fields are retained.
@@ -387,12 +450,14 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker injury/fit`
 **Clear** | `clear`
+**Mark status** | `mark INDEX [INDEX]... STATUS/VALUE`<br> Choose one: `av/true\|false`, `injury/fit\|injured`, `fee/paid\|unpaid`, `consent/received\|pending`<br> e.g., `mark 1 3 fee/paid`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter squad/SQUAD_NAME [available/true\|false]` or `filter available/true\|false [squad/SQUAD_NAME]`<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true`
-**List** | `list` (show all registered players and clear the current search or filter)
-**Main** | `main` (return to the main player list and preserve the current search or filter and indexes)
+**Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`
+**List** | `list` (show all registered players, clear the current search or filter, and retain the sort order)
+**Main** | `main` (return to the main player list and preserve the current search, filter, sort order, and indexes)
 **Overview** | `overview`
 **Help** | `help`
 **Exit** | `exit`

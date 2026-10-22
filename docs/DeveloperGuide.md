@@ -123,7 +123,9 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list.
+  A _sorted_ view is layered over it for the `sort` command. The model exposes this unmodifiable
+  `ObservableList<Person>` to the UI, so the UI updates when the filter or sort order changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -154,6 +156,21 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 ## **Implementation**
 
 This section describes some noteworthy details on how certain features are implemented.
+
+### Bulk player status updates
+
+`MarkCommandParser` parses displayed indexes and exactly one status prefix into a `MarkCommand`. It reuses
+`ParserUtil.parsePlayerIndex` and the existing status types for validation. CLI availability values (`true`/`false`)
+are mapped to domain values (`available`/`unavailable`).
+
+`MarkCommand` resolves all indexes to distinct player objects before preparing replacements through
+`PlayerStatusField.withValue`. All targets and replacements are validated before model updates begin, preventing
+partial changes from invalid input and index shifts when a filter shrinks. Only changed records are replaced;
+feedback separates changed and unchanged players. The active filter remains in place.
+
+`PlayerStatusField` copies every other profile field unchanged, keeping injury independent of availability.
+The command uses `LogicManager`'s existing save-and-rollback mechanism. Parser and command tests cover input and
+selection behavior; `MarkIntegrationTest` verifies command routing, all four statuses, save/reload and rollback.
 
 ### \[Proposed\] Undo/redo feature
 
@@ -284,6 +301,7 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 | `***`    | coach | delete a player | remove players who are no longer relevant or were added by mistake |
 | `**`     | coach | filter players by squad | quickly find players belonging to a particular squad |
 | `**`     | coach | filter players by availability | quickly find players who are available or unavailable |
+| `**`     | coach | sort the displayed roster | organise the players currently relevant to me |
 | `**`     | first-time user | view help for the available commands | learn how to use the application without memorising every command |
 | `*`      | coach | edit a player's details | correct or update information without deleting and re-adding the player |
 | `*`      | coach | record additional player information such as skill level, injury status, consent status and fee status | keep more comprehensive information about each player |
@@ -427,6 +445,22 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 
     Use case ends.
 
+**Use case: Sort displayed players**
+
+**MSS**
+
+1. Coach requests to sort the displayed players by a supported field.
+2. SquadLink validates the selected field.
+3. SquadLink displays the current players in the requested order and updates their indexes.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The field is missing or unsupported.
+  * 1a1. SquadLink shows usage guidance.
+
+    Use case ends.
 
 ### Non-Functional Requirements
 
