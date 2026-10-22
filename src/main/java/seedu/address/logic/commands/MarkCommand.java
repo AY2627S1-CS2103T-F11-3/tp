@@ -92,7 +92,6 @@ public class MarkCommand extends Command {
     }
 
     private String formatFeedback(List<Person> changed, List<Person> unchanged, String recordedValue) {
-        assert !changed.isEmpty() || !unchanged.isEmpty() : "At least one validated player must be selected";
         String status = field.getDisplayName() + ": " + recordedValue;
         if (changed.isEmpty()) {
             return String.format("No changes needed. Already recorded %s (%d %s):\n%s", status,

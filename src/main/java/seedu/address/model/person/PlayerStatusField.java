@@ -42,26 +42,10 @@ public enum PlayerStatusField {
     public Person withValue(Person player, String value) {
         requireNonNull(player);
         requireNonNull(value);
-        Availability availability = player.getAvailability();
-        InjuryStatus injury = player.getInjuryStatus();
-        FeeStatus fee = player.getFeeStatus();
-        ConsentStatus consent = player.getConsentStatus();
-        switch (this) {
-            case AVAILABILITY:
-                availability = new Availability(value);
-                break;
-            case INJURY:
-                injury = new InjuryStatus(value);
-                break;
-            case FEE:
-                fee = new FeeStatus(value);
-                break;
-            case CONSENT:
-                consent = new ConsentStatus(value);
-                break;
-            default:
-                throw new AssertionError("Unhandled player status: " + this);
-        }
+        Availability availability = this == AVAILABILITY ? new Availability(value) : player.getAvailability();
+        InjuryStatus injury = this == INJURY ? new InjuryStatus(value) : player.getInjuryStatus();
+        FeeStatus fee = this == FEE ? new FeeStatus(value) : player.getFeeStatus();
+        ConsentStatus consent = this == CONSENT ? new ConsentStatus(value) : player.getConsentStatus();
         return new Person(player.getName(), player.getTags(), player.getRemark(), player.getSquadName(),
                 player.getPosition(), player.getGuardianName(), player.getGuardianContact(),
                 availability, injury, fee, consent);

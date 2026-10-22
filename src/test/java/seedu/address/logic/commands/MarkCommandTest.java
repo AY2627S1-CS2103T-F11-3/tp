@@ -1,8 +1,10 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 
 import java.util.ArrayList;
@@ -62,6 +64,49 @@ public class MarkCommandTest {
         assertEquals("Updated fee status: paid for 1 player:\nBen Lee\n\n"
                 + "Already recorded fee status: paid (unchanged, 1 player):\nAmy Tan", result.getFeedbackToUser());
         assertEquals("paid", model.getAddressBook().getPersonList().get(1).getFeeStatus().value);
+    }
+
+    @Test
+    public void execute_multipleChangedPlayers_reportsPlural() throws Exception {
+        addPlayers();
+
+        CommandResult result = command(PlayerStatusField.FEE, "paid", 2, 1).execute(model);
+
+        assertEquals("Updated fee status: paid for 2 players:\nBen Lee\nAmy Tan", result.getFeedbackToUser());
+        assertEquals(List.of(new PersonBuilder(amy).withFeeStatus("paid").build(),
+                new PersonBuilder(ben).withFeeStatus("paid").build(), cal),
+                model.getAddressBook().getPersonList());
+    }
+
+    @Test
+    public void execute_multipleUnchangedPlayers_reportsPlural() throws Exception {
+        Person paidAmy = new PersonBuilder(amy).withFeeStatus("paid").build();
+        Person paidBen = new PersonBuilder(ben).withFeeStatus("paid").build();
+        model.addPerson(paidAmy);
+        model.addPerson(paidBen);
+        model.addPerson(cal);
+
+        CommandResult result = command(PlayerStatusField.FEE, "paid", 1, 2, 3).execute(model);
+
+        assertEquals("Updated fee status: paid for 1 player:\nCal Lim\n\n"
+                + "Already recorded fee status: paid (unchanged, 2 players):\nAmy Tan\nBen Lee",
+                result.getFeedbackToUser());
+        assertEquals(List.of(paidAmy, paidBen, new PersonBuilder(cal).withFeeStatus("paid").build()),
+                model.getAddressBook().getPersonList());
+        assertSame(paidAmy, model.getAddressBook().getPersonList().getFirst());
+        assertSame(paidBen, model.getAddressBook().getPersonList().get(1));
+    }
+
+    @Test
+    public void execute_singleAlreadyMarkedPlayer_reportsSingular() throws Exception {
+        addPlayers();
+
+        CommandResult result = command(PlayerStatusField.FEE, "unpaid", 1, 1).execute(model);
+
+        assertEquals("No changes needed. Already recorded fee status: unpaid (1 player):\nAmy Tan",
+                result.getFeedbackToUser());
+        assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
+        assertSame(amy, model.getAddressBook().getPersonList().getFirst());
     }
 
     @Test
@@ -132,6 +177,29 @@ public class MarkCommandTest {
         assertThrows(IllegalArgumentException.class, () -> new MarkCommand(List.of(), PlayerStatusField.FEE, "paid"));
         assertThrows(NullPointerException.class, () -> new MarkCommand(indices, null, "paid"));
         assertThrows(NullPointerException.class, () -> new MarkCommand(indices, PlayerStatusField.FEE, null));
+    }
+
+    @Test
+    public void equals() {
+        MarkCommand markCommand = command(PlayerStatusField.FEE, "paid", 1, 2);
+
+        assertTrue(markCommand.equals(markCommand));
+        assertTrue(markCommand.equals(command(PlayerStatusField.FEE, "paid", 1, 2)));
+        assertFalse(markCommand.equals(null));
+        assertFalse(markCommand.equals(1));
+        assertFalse(markCommand.equals(command(PlayerStatusField.FEE, "paid", 1)));
+        assertFalse(markCommand.equals(command(PlayerStatusField.FEE, "paid", 2, 1)));
+        assertFalse(markCommand.equals(command(PlayerStatusField.INJURY, "paid", 1, 2)));
+        assertFalse(markCommand.equals(command(PlayerStatusField.FEE, "unpaid", 1, 2)));
+    }
+
+    @Test
+    public void toStringMethod() {
+        MarkCommand markCommand = command(PlayerStatusField.FEE, "paid", 1, 2);
+        String expected = MarkCommand.class.getCanonicalName()
+                + "{targetIndices=" + List.of(Index.fromOneBased(1), Index.fromOneBased(2))
+                + ", field=FEE, value=paid}";
+        assertEquals(expected, markCommand.toString());
     }
 
     private void assertStatusUpdate(PlayerStatusField field, String value, Person expected) throws Exception {
