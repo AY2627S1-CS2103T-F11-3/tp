@@ -231,6 +231,41 @@ Examples:
 *  `edit 2 fee/unpaid` Marks only the 2nd player's fee payment as unpaid.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
+### Updating player statuses in bulk: `mark`
+
+Sets one status for one or more displayed players.
+
+Format: `mark INDEX [INDEX]... STATUS/VALUE`
+
+| Status | Prefix | Values |
+| --- | --- | --- |
+| Availability | `available/` or `av/` | `true`, `false` |
+| Injury | `injury/` | `fit`, `injured` |
+| Fees | `fee/` | `paid`, `unpaid` |
+| Consent | `consent/` | `received`, `pending` |
+
+* Put positive player indexes first, separated by spaces or tabs, followed by exactly one status prefix and value.
+  Indexes refer to the currently displayed list, including after `find` or `filter`. From the overview, use `main`
+  to check the retained player list before marking.
+* Prefixes are lowercase. Values ignore case and surrounding whitespace. Repeated indexes count only once.
+* Only the selected status changes. For example, marking a player injured does not change their recorded availability.
+* All indexes and the value are validated before any player changes. Invalid input leaves every player unchanged.
+* The current search or filter remains active. Players who no longer match disappear, and remaining players are
+  renumbered. Check the displayed indexes before the next command; use `list` to show everyone.
+* Feedback lists updated players separately from players already at the requested status. If every selected player
+  already has that status, it reports `No changes needed`.
+* The command saves through the normal automatic-save process. If saving fails, player data is restored and an
+  error is shown.
+
+Examples:
+
+* `mark 1 3 av/false` marks the first and third displayed players unavailable.
+* `mark 1 2 injury/fit` records both displayed players as fit.
+* `mark 2 4 fee/paid` records payment for the second and fourth displayed players.
+* `mark 1 consent/received` records consent for the first displayed player.
+
+To update several statuses, run separate commands, checking indexes between commands if a filter is active.
+
 ### Locating players by name: `find`
 
 Finds players whose names contain any of the given keywords.
@@ -415,6 +450,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker injury/fit`
 **Clear** | `clear`
+**Mark status** | `mark INDEX [INDEX]... STATUS/VALUE`<br> Choose one: `av/true\|false`, `injury/fit\|injured`, `fee/paid\|unpaid`, `consent/received\|pending`<br> e.g., `mark 1 3 fee/paid`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
