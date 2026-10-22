@@ -30,9 +30,12 @@ public class ListCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) {
+        assert model != null : "Model must not be null when executing ListCommand";
         requireNonNull(model);
+
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         List<Person> lastShownList = model.getFilteredPersonList();
+        assert lastShownList != null : "Filtered person list should never be null after update";
 
         if (lastShownList.isEmpty()) {
             return new CommandResult(MESSAGE_EMPTY_LIST);
@@ -40,9 +43,12 @@ public class ListCommand extends Command {
 
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < lastShownList.size(); i++) {
+            Person person = lastShownList.get(i);
+            assert person != null : "Person in filtered list must not be null at index " + i;
+
             builder.append(i + 1)
                     .append(". ")
-                    .append(lastShownList.get(i).toListString());
+                    .append(person.toListString());
 
             if (i < lastShownList.size() - 1) {
                 builder.append("\n");
