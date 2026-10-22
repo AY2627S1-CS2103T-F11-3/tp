@@ -72,6 +72,7 @@ public class AddressBookParser {
                 ParserUtil.requireNoArguments(arguments, ListCommand.MESSAGE_USAGE);
                 yield new ListCommand();
             }
+            case SortCommand.COMMAND_WORD -> new SortCommandParser().parse(arguments);
             case MainCommand.COMMAND_WORD -> {
                 ParserUtil.requireNoArguments(arguments, MainCommand.MESSAGE_USAGE);
                 yield new MainCommand();
