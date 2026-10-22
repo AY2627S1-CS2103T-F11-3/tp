@@ -59,8 +59,10 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_clearWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ClearCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("clear 3"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("clear squad/Alpha"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(ClearCommand.COMMAND_WORD + " 3"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(ClearCommand.COMMAND_WORD + " squad/Alpha"));
     }
 
     @Test
@@ -118,8 +120,8 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_exitWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ExitCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("exit 3"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("exit squad/Alpha"));
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand(ExitCommand.COMMAND_WORD + " 3"));
+        assertThrows(ParseException.class, expected, () -> parser.parseCommand(ExitCommand.COMMAND_WORD + " now"));
     }
 
     @Test
@@ -144,19 +146,25 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_helpWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("help 3"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("help squad/Alpha"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(HelpCommand.COMMAND_WORD + " 3"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(HelpCommand.COMMAND_WORD + " squad/Alpha"));
     }
 
     @Test
     public void parseCommand_list() throws Exception {
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + "  ") instanceof ListCommand);
+    }
 
-        assertThrows(ParseException.class, () ->
+    @Test
+    public void parseCommand_listWithArguments_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ListCommand.MESSAGE_USAGE);
+        assertThrows(ParseException.class, expected, () ->
                 parser.parseCommand(ListCommand.COMMAND_WORD + " 3"));
-        assertThrows(ParseException.class, () ->
-                parser.parseCommand(ListCommand.COMMAND_WORD + " extra text"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(ListCommand.COMMAND_WORD + " all"));
     }
 
     @Test
@@ -173,8 +181,10 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_mainWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, MainCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("main 1"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("main squad/Alpha"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(MainCommand.COMMAND_WORD + " 1"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(MainCommand.COMMAND_WORD + " squad/Alpha"));
     }
 
     @Test
@@ -186,8 +196,10 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_overviewWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, OverviewCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview 1"));
-        assertThrows(ParseException.class, expected, () -> parser.parseCommand("overview squad/Alpha"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(OverviewCommand.COMMAND_WORD + " 1"));
+        assertThrows(ParseException.class, expected, () ->
+                parser.parseCommand(OverviewCommand.COMMAND_WORD + " squad/Alpha"));
     }
 
     @Test

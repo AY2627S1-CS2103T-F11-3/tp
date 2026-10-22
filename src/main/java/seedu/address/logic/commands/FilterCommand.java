@@ -54,10 +54,8 @@ public class FilterCommand extends Command {
         assert model != null : "Model cannot be null when executing FilterCommand";
         assert predicate != null : "Predicate cannot be null when executing FilterCommand";
         model.updateFilteredPersonList(predicate);
-        int numberOfMatches = model.getFilteredPersonList().size();
-        String message = numberOfMatches == 0 ? MESSAGE_NO_MATCHING_PLAYERS
-                : String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, numberOfMatches);
-        return new CommandResult(message);
+        return new CommandResult(Messages.getPlayerListSummary(model.getAddressBook().getPersonList().size(),
+                model.getFilteredPersonList().size()));
     }
 
     @Override

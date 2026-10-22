@@ -21,8 +21,22 @@ public class Messages {
     public static final String MESSAGE_INDEX_BELOW_ONE = "Invalid index entered! Index should be at least 1!";
     public static final String MESSAGE_INDEX_TOO_LARGE = "Invalid index entered! Index is too large!";
     public static final String MESSAGE_PERSONS_LISTED_OVERVIEW = "%1$d person(s) listed!";
+    public static final String MESSAGE_NO_REGISTERED_PLAYERS =
+            "No players registered. Add your first player, for example:\n"
+            + "add n/Amy Tan sn/U12 pos/Defender";
+    public static final String MESSAGE_NO_MATCHING_PLAYERS =
+            "No matching players found. Change your search or filter, or use list to show all players.";
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";
+
+    /** Returns list feedback with a next step when the club or current results are empty. */
+    public static String getPlayerListSummary(int totalPlayers, int displayedPlayers) {
+        if (totalPlayers == 0) {
+            return MESSAGE_NO_REGISTERED_PLAYERS;
+        }
+        return displayedPlayers == 0 ? MESSAGE_NO_MATCHING_PLAYERS
+                : String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, displayedPlayers);
+    }
 
     /**
      * Returns an error message indicating the duplicate prefixes.

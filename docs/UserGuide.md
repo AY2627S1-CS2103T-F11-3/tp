@@ -143,6 +143,11 @@ Examples:
 ### Listing all players: `list`
 
 Opens the main page and shows all registered players, clearing any current search or filter while keeping the current sort order.
+
+If no players are registered, the response includes an example `add` command to help you create your first player.
+Whenever the player table is empty, it shows guidance to use `list` to clear a search or filter, or to add a player
+if none are registered. This hint also appears after deleting the last player or clearing the club.
+
 To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
 
 Format: `list`
@@ -269,6 +274,9 @@ To update several statuses, run separate commands, checking indexes between comm
 ### Locating players by name: `find`
 
 Finds players whose names contain any of the given keywords.
+
+If no players match, the response suggests changing the search or using `list`. If no players are registered,
+it gives an example `add` command instead.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 

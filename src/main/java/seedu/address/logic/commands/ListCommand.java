@@ -5,6 +5,7 @@ import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
+import seedu.address.logic.Messages;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
@@ -15,7 +16,12 @@ public class ListCommand extends Command {
 
     public static final String COMMAND_WORD = "list";
 
-    public static final String MESSAGE_EMPTY_LIST = "No players found!";
+    public static final String MESSAGE_EMPTY_LIST = Messages.MESSAGE_NO_REGISTERED_PLAYERS;
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Shows a list of all players and their squad names, positions and availability.\n"
+            + "Parameters: none\n"
+            + "Example: " + COMMAND_WORD;
 
     @Override
     public boolean isAddressBookMutating() {
