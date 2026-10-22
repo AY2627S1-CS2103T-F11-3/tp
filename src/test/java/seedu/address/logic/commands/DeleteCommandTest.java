@@ -284,6 +284,18 @@ public class DeleteCommandTest {
     }
 
     @Test
+    public void execute_ambiguousNameAfterSorting_usesDisplayedPlayerOrderInMessage() {
+        Person soccerPlayer = new PersonBuilder().withName("John Doe").withSquadName("Soccer Stars").build();
+        Person basketballPlayer = new PersonBuilder().withName("john doe").withSquadName("Basketball Bears").build();
+        model.addPerson(soccerPlayer);
+        model.addPerson(basketballPlayer);
+        new SortCommand(SortCommand.SortField.SQUAD).execute(model);
+
+        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe")), "John Doe",
+                List.of(basketballPlayer, soccerPlayer));
+    }
+
+    @Test
     public void execute_moreThanTwoMatches_showsEveryMatchInOrder() {
         Person firstMatch = new PersonBuilder().withName("John Doe").withSquadName("Squad A").build();
         Person secondMatch = new PersonBuilder().withName("john doe").withSquadName("Squad B").build();

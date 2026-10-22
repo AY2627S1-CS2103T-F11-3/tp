@@ -123,7 +123,7 @@ public class DeleteCommand extends Command {
         }
         if (matches.size() > 1) {
             model.updateFilteredPersonList(matches::contains);
-            throw new CommandException(formatAmbiguousName(name, matches));
+            throw new CommandException(formatAmbiguousName(name, model.getFilteredPersonList()));
         }
         return matches.getFirst();
     }
