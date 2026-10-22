@@ -69,10 +69,8 @@ check squad availability, and navigate views by typing commands.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME t/TAG`, `t/TAG n/NAME` is also acceptable.
 
-* Extraneous parameters for `help`, `list`, `exit`, and `clear` are ignored.<br>
-  For example, `help 123` is interpreted as `help`.
-
-* `main` and `overview` accept no parameters. Extra arguments, such as `main 123`, are rejected with usage guidance.
+* `help`, `list`, `exit`, `clear`, `main` and `overview` accept no parameters.<br>
+  Extra arguments, such as `help 123`, are rejected with usage guidance.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
