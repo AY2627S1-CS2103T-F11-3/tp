@@ -19,8 +19,10 @@ public class ClearCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) {
+        assert model != null : "Model must not be null when executing ClearCommand";
         requireNonNull(model);
         model.setAddressBook(new AddressBook());
+        assert model.getAddressBook().getPersonList().isEmpty() : "Address book must be empty after clear";
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }
