@@ -18,23 +18,38 @@ public class FilterCommandParserTest {
 
     @Test
     public void parse_validCriteria_returnsFilterCommand() {
-        assertParseSuccess(parser, "squad/Soccer Stars", command("Soccer Stars", null));
-        assertParseSuccess(parser, "available/TrUe", command(null, Availability.AVAILABLE));
+        assertParseSuccess(parser, "squad/Soccer Stars",
+                command("Soccer Stars", null, null, null, null));
+        assertParseSuccess(parser, "available/TrUe",
+                command(null, Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "available/false squad/Football Fellas",
-                command("Football Fellas", Availability.UNAVAILABLE));
-        assertParseSuccess(parser, "sn/Soccer Stars av/true", command("Soccer Stars", Availability.AVAILABLE));
+                command("Football Fellas", Availability.UNAVAILABLE, null, null, null));
+        assertParseSuccess(parser, "sn/Soccer Stars av/true",
+                command("Soccer Stars", Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "squad/Soccer Stars av/false",
-                command("Soccer Stars", Availability.UNAVAILABLE));
+                command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
         assertParseSuccess(parser, "sn/Soccer Stars available/true",
-                command("Soccer Stars", Availability.AVAILABLE));
+                command("Soccer Stars", Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "\t squad/ Soccer Stars \t av/ false ",
-                command("Soccer Stars", Availability.UNAVAILABLE));
+                command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
+
+        // Status field combinations
+        assertParseSuccess(parser, "injury/fit",
+                command(null, null, "fit", null, null));
+        assertParseSuccess(parser, "fee/paid",
+                command(null, null, null, "paid", null));
+        assertParseSuccess(parser, "consent/received",
+                command(null, null, null, null, "received"));
+        assertParseSuccess(parser, "squad/Soccer Stars injury/injured fee/unpaid consent/pending",
+                command("Soccer Stars", null, "injured", "unpaid", "pending"));
     }
 
     @Test
     public void parse_squadHyphensAndRepeatedWhitespace_success() {
-        assertParseSuccess(parser, "squad/ \tU12-A \n Stars  2 ", command("U12-A Stars 2", null));
-        assertParseSuccess(parser, "sn/ \tU12-A \n Stars  2 ", command("U12-A Stars 2", null));
+        assertParseSuccess(parser, "squad/ \tU12-A \n Stars  2 ",
+                command("U12-A Stars 2", null, null, null, null));
+        assertParseSuccess(parser, "sn/ \tU12-A \n Stars  2 ",
+                command("U12-A Stars 2", null, null, null, null));
     }
 
     @Test
@@ -51,6 +66,9 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "sn/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
         assertParseFailure(parser, "available/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
         assertParseFailure(parser, "av/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
+        assertParseFailure(parser, "injury/", FilterCommandParser.MESSAGE_MISSING_INJURY);
+        assertParseFailure(parser, "fee/", FilterCommandParser.MESSAGE_MISSING_FEE);
+        assertParseFailure(parser, "consent/", FilterCommandParser.MESSAGE_MISSING_CONSENT);
     }
 
     @Test
@@ -60,16 +78,24 @@ public class FilterCommandParserTest {
     }
 
     @Test
+    public void parse_invalidPlayerStatus_throwsParseException() {
+        assertParseFailure(parser, "injury/recovering", FilterCommandParser.MESSAGE_INVALID_INJURY);
+        assertParseFailure(parser, "fee/waived", FilterCommandParser.MESSAGE_INVALID_FEE);
+        assertParseFailure(parser, "consent/signed", FilterCommandParser.MESSAGE_INVALID_CONSENT);
+    }
+
+    @Test
     public void parse_duplicateCriteria_throwsParseException() {
         assertParseFailure(parser, "squad/Team A sn/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "available/true av/false",
-                FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "available/true av/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
         assertParseFailure(parser, "sn/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
         assertParseFailure(parser, "squad/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "av/true available/false",
-                FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "av/true available/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
         assertParseFailure(parser, "available/true available/false",
                 FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "injury/fit injury/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
+        assertParseFailure(parser, "fee/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
+        assertParseFailure(parser, "consent/received consent/pending", FilterCommandParser.MESSAGE_DUPLICATE_CONSENT);
     }
 
     @Test
@@ -85,10 +111,15 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "position/Goalkeeper", expectedMessage);
     }
 
-    private FilterCommand command(String squadName, String availability) {
-        Optional<SquadName> squad = squadName == null ? Optional.empty() : Optional.of(new SquadName(squadName));
-        Optional<Availability> available = availability == null ? Optional.empty()
-                : Optional.of(new Availability(availability));
-        return new FilterCommand(new MatchesFilterCriteriaPredicate(squad, available));
+    private FilterCommand command(String squadName, String availability,
+                                  String injury, String fee, String consent) {
+        Optional<SquadName> squad = Optional.ofNullable(squadName).map(SquadName::new);
+        Optional<Availability> available = Optional.ofNullable(availability).map(Availability::new);
+        Optional<String> injuryStatus = Optional.ofNullable(injury);
+        Optional<String> feeStatus = Optional.ofNullable(fee);
+        Optional<String> consentStatus = Optional.ofNullable(consent);
+
+        return new FilterCommand(new MatchesFilterCriteriaPredicate(
+                squad, available, injuryStatus, feeStatus, consentStatus));
     }
 }
