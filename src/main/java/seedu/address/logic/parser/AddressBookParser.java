@@ -63,42 +63,30 @@ public class AddressBookParser {
             case MarkCommand.COMMAND_WORD -> new MarkCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
             case ClearCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            ClearCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, ClearCommand.MESSAGE_USAGE);
                 yield new ClearCommand();
             }
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case FilterCommand.COMMAND_WORD -> new FilterCommandParser().parse(arguments);
+            case ListCommand.COMMAND_WORD -> {
+                ParserUtil.requireNoArguments(arguments, ListCommand.MESSAGE_USAGE);
+                yield new ListCommand();
+            }
             case SortCommand.COMMAND_WORD -> new SortCommandParser().parse(arguments);
-            case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case MainCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            MainCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, MainCommand.MESSAGE_USAGE);
                 yield new MainCommand();
             }
             case OverviewCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            OverviewCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, OverviewCommand.MESSAGE_USAGE);
                 yield new OverviewCommand();
             }
             case ExitCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            ExitCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, ExitCommand.MESSAGE_USAGE);
                 yield new ExitCommand();
             }
             case HelpCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            HelpCommand.MESSAGE_USAGE));
-                }
+                ParserUtil.requireNoArguments(arguments, HelpCommand.MESSAGE_USAGE);
                 yield new HelpCommand();
             }
             case RemarkCommand.COMMAND_WORD -> new RemarkCommandParser().parse(arguments);

@@ -18,6 +18,11 @@ public class ListCommand extends Command {
 
     public static final String MESSAGE_EMPTY_LIST = Messages.MESSAGE_NO_REGISTERED_PLAYERS;
 
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Shows a list of all players and their squad names, positions and availability.\n"
+            + "Parameters: none\n"
+            + "Example: " + COMMAND_WORD;
+
     @Override
     public boolean isAddressBookMutating() {
         return false;
