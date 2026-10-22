@@ -24,7 +24,7 @@ public class FilterCommand extends Command {
             + PREFIX_AVAILABILITY + " for " + PREFIX_AVAILABILITY_FULL + "\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_SQUADNAME_FULL + "Soccer Stars "
             + PREFIX_AVAILABILITY_FULL + "true";
-    public static final String MESSAGE_NO_MATCHING_PLAYERS = "No matching players found!";
+    public static final String MESSAGE_NO_MATCHING_PLAYERS = Messages.MESSAGE_NO_MATCHING_PLAYERS;
 
     private final MatchesFilterCriteriaPredicate predicate;
 
@@ -41,10 +41,8 @@ public class FilterCommand extends Command {
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.updateFilteredPersonList(predicate);
-        int numberOfMatches = model.getFilteredPersonList().size();
-        String message = numberOfMatches == 0 ? MESSAGE_NO_MATCHING_PLAYERS
-                : String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, numberOfMatches);
-        return new CommandResult(message);
+        return new CommandResult(Messages.getPlayerListSummary(model.getAddressBook().getPersonList().size(),
+                model.getFilteredPersonList().size()));
     }
 
     @Override

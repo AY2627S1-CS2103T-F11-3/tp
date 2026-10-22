@@ -142,6 +142,10 @@ Examples:
 
 ### Listing all players: `list`
 
+If no players are registered, the response includes an example `add` command to help you create your first player.
+Whenever the player table is empty, it shows guidance to use `list` to clear a search or filter, or to add a player
+if none are registered. This hint also appears after deleting the last player or clearing the club.
+
 Opens the main page and shows all registered players, clearing any current search or filter.
 To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
 
@@ -235,6 +239,9 @@ Examples:
 
 Finds players whose names contain any of the given keywords.
 
+If no players match, the response suggests changing the search or using `list`. If no players are registered,
+it gives an example `add` command instead.
+
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
@@ -267,7 +274,8 @@ for `available/true|false`.
 * Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
   as `available`; `false` matches players stored as `unavailable`.
 * When both criteria are supplied, a player must satisfy both. If no players match, the result is
-  `No matching players found!`.
+  `No matching players found`, with guidance to change the search or filter or use `list` to show all players.
+  If the club has no registered players, the response instead suggests adding the first player.
 * Results replace the currently displayed list and use its normal consecutive indexes. Those indexes can be used
   immediately with `delete`.
 * Unknown filter prefixes and text before the first criterion are rejected as an invalid command format.
