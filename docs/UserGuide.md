@@ -316,8 +316,9 @@ Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [
 - Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace.
 - Fee payment accepts ASCII `paid` or `unpaid`, ignoring case and surrounding whitespace.
 - Consent accepts ASCII `received` or `pending`, ignoring case and surrounding whitespace.
-- When multiple criteria are supplied, a player must satisfy all of them (AND logic). If no players match, the result is
-  `No matching players found!`.
+- When multiple criteria are supplied, a player must satisfy all of them (AND logic). If players are registered but none
+  match, the result is `No matching players found. Change your search or filter, or use list to show all players.`
+  If no players are registered, the result instead suggests adding the first player and provides an example command.
 - Results replace the currently displayed list and use consecutive indexes starting from 1. Those indexes can be used
   immediately with commands like `edit`, `mark`, and `delete`.
 - Unknown filter prefixes, empty values, and any text preceding the first prefix are rejected as invalid command format.

@@ -35,7 +35,7 @@ public class FilterCommand extends Command {
             + PREFIX_INJURY_FULL + "injured "
             + PREFIX_FEE_FULL + "unpaid";
 
-    public static final String MESSAGE_NO_MATCHING_PLAYERS = "No matching players found!";
+    public static final String MESSAGE_NO_MATCHING_PLAYERS = Messages.MESSAGE_NO_MATCHING_PLAYERS;
 
     private final MatchesFilterCriteriaPredicate predicate;
 
