@@ -168,6 +168,12 @@ are mapped to domain values (`available`/`unavailable`).
 partial changes from invalid input and index shifts when a filter shrinks. Only changed records are replaced;
 feedback separates changed and unchanged players. The active filter remains in place.
 
+The sequence diagram below focuses on command execution after parsing. Resolving targets and preparing all
+replacements before the first `setPerson` call keeps later selections stable even if an update removes a player
+from the filtered view. Parsing and persistence are omitted to keep the diagram focused.
+
+![Execution of a bulk player status update](images/MarkSequenceDiagram.png)
+
 `PlayerStatusField` copies every other profile field unchanged, keeping injury independent of availability.
 The command uses `LogicManager`'s existing save-and-rollback mechanism. Parser and command tests cover input and
 selection behavior; `MarkIntegrationTest` verifies command routing, all four statuses, save/reload and rollback.
