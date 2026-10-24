@@ -4,8 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -26,6 +29,7 @@ public class PersonBuilder {
     public static final String DEFAULT_GUARDIAN_NAME = null;
     public static final String DEFAULT_GUARDIAN_CONTACT = null;
     public static final String DEFAULT_AVAILABILITY = Availability.AVAILABLE;
+    public static final String DEFAULT_INJURY_STATUS = InjuryStatus.FIT;
 
     private Name name;
     private Set<Tag> tags;
@@ -35,6 +39,9 @@ public class PersonBuilder {
     private GuardianName guardianName;
     private GuardianContact guardianContact;
     private Availability availability;
+    private InjuryStatus injuryStatus;
+    private FeeStatus feeStatus;
+    private ConsentStatus consentStatus;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -48,6 +55,9 @@ public class PersonBuilder {
         guardianName = null;
         guardianContact = null;
         availability = new Availability(DEFAULT_AVAILABILITY);
+        injuryStatus = new InjuryStatus(DEFAULT_INJURY_STATUS);
+        feeStatus = new FeeStatus(FeeStatus.UNPAID);
+        consentStatus = new ConsentStatus(ConsentStatus.PENDING);
     }
 
     /**
@@ -62,6 +72,9 @@ public class PersonBuilder {
         guardianName = personToCopy.getGuardianName();
         guardianContact = personToCopy.getGuardianContact();
         availability = personToCopy.getAvailability();
+        injuryStatus = personToCopy.getInjuryStatus();
+        feeStatus = personToCopy.getFeeStatus();
+        consentStatus = personToCopy.getConsentStatus();
     }
 
     /**
@@ -128,12 +141,30 @@ public class PersonBuilder {
         return this;
     }
 
+    /** Sets the recorded fee payment status. */
+    public PersonBuilder withFeeStatus(String feeStatus) {
+        this.feeStatus = new FeeStatus(feeStatus);
+        return this;
+    }
+
+    /** Sets the recorded consent status. */
+    public PersonBuilder withConsentStatus(String consentStatus) {
+        this.consentStatus = new ConsentStatus(consentStatus);
+        return this;
+    }
+
+    /** Sets the injury status of the player being built. */
+    public PersonBuilder withInjuryStatus(String injuryStatus) {
+        this.injuryStatus = new InjuryStatus(injuryStatus);
+        return this;
+    }
+
     /**
      * Builds a {@code Person} with the configured details.
      */
     public Person build() {
         return new Person(name, tags, remark, squadName, position, guardianName,
-                guardianContact, availability);
+                guardianContact, availability, injuryStatus, feeStatus, consentStatus);
     }
 
 }

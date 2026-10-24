@@ -35,6 +35,12 @@ public class PersonListPanel extends UiPart<Region> {
     @FXML
     private TableColumn<Person, String> availabilityColumn;
     @FXML
+    private TableColumn<Person, String> injuryColumn;
+    @FXML
+    private TableColumn<Person, String> feeColumn;
+    @FXML
+    private TableColumn<Person, String> consentColumn;
+    @FXML
     private TableColumn<Person, String> tagsColumn;
     @FXML
     private TableColumn<Person, String> remarkColumn;
@@ -57,6 +63,9 @@ public class PersonListPanel extends UiPart<Region> {
         guardianContactColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getGuardianContact()));
         availabilityColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getAvailability().value));
         availabilityColumn.setCellFactory(column -> new AvailabilityTableCell());
+        injuryColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getInjuryStatus().value));
+        feeColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getFeeStatus().value));
+        consentColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getConsentStatus().value));
         tagsColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .map(tag -> tag.tagName)

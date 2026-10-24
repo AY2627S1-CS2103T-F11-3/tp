@@ -23,12 +23,15 @@ import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSucces
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_THIRD_PERSON;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.tag.Tag;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -42,6 +45,32 @@ public class EditCommandParserTest {
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
 
     private EditCommandParser parser = new EditCommandParser();
+
+    @Test
+    public void parse_injuryStatusAloneAndCombined_success() {
+        for (String value : new String[] {"fit", "injured"}) {
+            EditCommand expected = new EditCommand(INDEX_SECOND_PERSON,
+                    new EditPersonDescriptorBuilder().withInjuryStatus(value).build());
+            assertParseSuccess(parser, "2 injury/" + value, expected);
+            assertParseSuccess(parser, "2 injury/ \t" + value.toUpperCase(Locale.ROOT) + " \n", expected);
+        }
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withInjuryStatus("injured")
+                .withName(VALID_NAME_AMY).withAvailability("unavailable").build();
+        assertParseSuccess(parser, "2 injury/injured av/false" + NAME_DESC_AMY,
+                new EditCommand(INDEX_SECOND_PERSON, descriptor));
+    }
+
+    @Test
+    public void parse_invalidOrRepeatedInjuryStatus_failure() {
+        for (String value : new String[] {"", " \t", "unknown", "un\u212Anown",
+            "F\u0130T", "f\u0131t", "\u0130NJURED", "recovering", "true", "in jured"}) {
+            assertParseFailure(parser, "2 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+        }
+        assertParseFailure(parser, "2 injury/fit injury/injured",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
+        assertParseFailure(parser, "0 injury/injured", MESSAGE_INVALID_FORMAT);
+        assertParseFailure(parser, "2147483648 injury/injured", MESSAGE_INVALID_FORMAT);
+    }
 
     @Test
     public void parse_missingParts_failure() {

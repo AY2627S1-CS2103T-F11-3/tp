@@ -1,7 +1,5 @@
 package seedu.address.model.person;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -14,23 +12,48 @@ import seedu.address.commons.util.ToStringBuilder;
 public class MatchesFilterCriteriaPredicate implements Predicate<Person> {
     private final Optional<SquadName> squadName;
     private final Optional<Availability> availability;
+    private final Optional<String> injury;
+    private final Optional<String> fee;
+    private final Optional<String> consent;
 
     /**
      * Creates a predicate for the supplied optional criteria.
      *
-     * @param squadName squad criterion, if supplied
      * @param availability availability criterion, if supplied
+     * @param consent consent criterion, if supplied
+     * @param injury injury criterion, if supplied
+     * @param fee fee criterion, if supplied
+     * @param squadName squad criterion, if supplied
      */
-    public MatchesFilterCriteriaPredicate(Optional<SquadName> squadName, Optional<Availability> availability) {
-        this.squadName = requireNonNull(squadName);
-        this.availability = requireNonNull(availability);
+    public MatchesFilterCriteriaPredicate(
+            Optional<SquadName> squadName,
+            Optional<Availability> availability,
+            Optional<String> injury,
+            Optional<String> fee,
+            Optional<String> consent) {
+        assert squadName != null : "squadName Optional should not be null";
+        assert availability != null : "availability Optional should not be null";
+        assert injury != null : "injury Optional should not be null";
+        assert fee != null : "fee Optional should not be null";
+        assert consent != null : "consent Optional should not be null";
+
+        this.squadName = squadName;
+        this.availability = availability;
+        this.injury = injury;
+        this.fee = fee;
+        this.consent = consent;
     }
 
     @Override
     public boolean test(Person person) {
-        requireNonNull(person);
-        return squadName.map(person.getSquadName()::equals).orElse(true)
-                && availability.map(person.getAvailability()::equals).orElse(true);
+        assert person != null : "Target person for predicate check cannot be null";
+        boolean squadMatches = squadName.map(s -> s.equals(person.getSquadName())).orElse(true);
+        boolean availabilityMatches = availability.map(a -> a.equals(person.getAvailability())).orElse(true);
+        boolean injuryMatches = injury.map(i -> i.equalsIgnoreCase(person.getInjuryStatus().value)).orElse(true);
+        boolean feeMatches = fee.map(f -> f.equalsIgnoreCase(person.getFeeStatus().value)).orElse(true);
+        boolean consentMatches = consent.map(c -> c.equalsIgnoreCase(person.getConsentStatus().value)).orElse(true);
+
+        return squadMatches && availabilityMatches && injuryMatches && feeMatches && consentMatches;
     }
 
     @Override
@@ -41,7 +64,11 @@ public class MatchesFilterCriteriaPredicate implements Predicate<Person> {
         if (!(other instanceof MatchesFilterCriteriaPredicate otherPredicate)) {
             return false;
         }
-        return squadName.equals(otherPredicate.squadName) && availability.equals(otherPredicate.availability);
+        return squadName.equals(otherPredicate.squadName)
+                && availability.equals(otherPredicate.availability)
+                && injury.equals(otherPredicate.injury)
+                && fee.equals(otherPredicate.fee)
+                && consent.equals(otherPredicate.consent);
     }
 
     @Override

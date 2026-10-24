@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_TOO_LARGE;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 
@@ -101,5 +102,21 @@ public class ParserUtil {
             tagSet.add(parseTag(tagName));
         }
         return tagSet;
+    }
+
+    /**
+     * Ensures that no extraneous non-whitespace arguments were supplied for a zero-argument command.
+     *
+     * @param args The input arguments string following the command word.
+     * @param usageMessage The usage/syntax guide to include in the error message.
+     * @throws ParseException If {@code args} contains any non-whitespace characters.
+     */
+    public static void requireNoArguments(String args, String usageMessage) throws ParseException {
+        assert !usageMessage.isBlank() : "Usage message must not be blank";
+        requireNonNull(usageMessage);
+
+        if (!args.trim().isEmpty()) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, usageMessage));
+        }
     }
 }

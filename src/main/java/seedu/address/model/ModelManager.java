@@ -93,7 +93,8 @@ public class ModelManager implements Model {
     @Override
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
-
+        assert this.addressBook != null : "AddressBook must not be null";
+        assert this.addressBook.hasPerson(target) : "Target person must exist in the address book before editing";
         addressBook.setPerson(target, editedPerson);
     }
 
@@ -111,6 +112,7 @@ public class ModelManager implements Model {
     @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
+        assert this.filteredPersons != null : "Filtered person list must be initialized";
         filteredPersons.setPredicate(predicate);
     }
 

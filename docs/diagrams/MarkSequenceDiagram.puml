@@ -1,0 +1,65 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":MarkCommand" as MarkCommand LOGIC_COLOR
+participant "field:PlayerStatusField" as Field MODEL_COLOR
+participant "model:Model" as Model MODEL_COLOR
+
+note over LogicManager, MarkCommand
+  Execution of a parsed command, e.g. mark 1 3 fee/paid.
+  Parsing and persistence are omitted.
+end note
+
+LogicManager -> MarkCommand : execute(model)
+activate MarkCommand
+MarkCommand -> Model : getFilteredPersonList()
+activate Model
+Model --> MarkCommand : displayedPlayers
+deactivate Model
+
+MarkCommand -> MarkCommand : resolveTargets(displayedPlayers)
+activate MarkCommand
+MarkCommand --> MarkCommand : targets
+deactivate MarkCommand
+note right of MarkCommand
+  Resolve every index and deduplicate targets
+  before the displayed list can change.
+  Invalid targets or a deferred input error
+  abort execution before any model update.
+end note
+
+group Prepare all replacements before updating the model
+    loop each target in targets
+        MarkCommand -> Field : withValue(target, value)
+        activate Field
+        Field --> MarkCommand : replacement
+        deactivate Field
+    end
+end
+note right of MarkCommand
+  Each replacement preserves all other fields.
+  Invalid status values abort preparation
+  before any model update.
+end note
+
+loop each target and its prepared replacement
+    MarkCommand -> Field : getValue(target)
+    Field --> MarkCommand : oldValue
+    MarkCommand -> Field : getValue(replacement)
+    Field --> MarkCommand : newValue
+    alt oldValue equals newValue
+        note right of MarkCommand : Record target as unchanged.
+    else status changed
+        MarkCommand -> Model : setPerson(target, replacement)
+        activate Model
+        Model --> MarkCommand
+        deactivate Model
+        note right of MarkCommand : Record target as changed.
+    end
+end
+
+MarkCommand --> LogicManager : CommandResult (changed / unchanged feedback)
+deactivate MarkCommand
+@enduml
