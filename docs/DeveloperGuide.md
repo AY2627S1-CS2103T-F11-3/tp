@@ -131,6 +131,8 @@ The `Model` component,
 
 This partial class diagram shows the main model classes and their relationships; attributes are omitted for clarity. `ClubOverview` computes a snapshot from players and holds squad summaries; it does not retain the players or form part of the stored `AddressBook`.
 
+For details of `Person`'s fields and their relationships, refer to the player data model diagram in this guide.
+
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
