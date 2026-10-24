@@ -6,8 +6,11 @@ import java.util.stream.Stream;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -41,6 +44,9 @@ public class EditPersonDescriptorBuilder {
         descriptor.setGuardianName(person.getGuardianName());
         descriptor.setGuardianContact(person.getGuardianContact());
         descriptor.setAvailability(person.getAvailability());
+        descriptor.setInjuryStatus(person.getInjuryStatus());
+        descriptor.setFeeStatus(person.getFeeStatus());
+        descriptor.setConsentStatus(person.getConsentStatus());
     }
 
     /**
@@ -95,5 +101,23 @@ public class EditPersonDescriptorBuilder {
 
     public EditPersonDescriptor build() {
         return descriptor;
+    }
+
+    /** Sets the fee payment status. */
+    public EditPersonDescriptorBuilder withFeeStatus(String feeStatus) {
+        descriptor.setFeeStatus(new FeeStatus(feeStatus));
+        return this;
+    }
+
+    /** Sets the consent status. */
+    public EditPersonDescriptorBuilder withConsentStatus(String consentStatus) {
+        descriptor.setConsentStatus(new ConsentStatus(consentStatus));
+        return this;
+    }
+
+    /** Sets the injury status. */
+    public EditPersonDescriptorBuilder withInjuryStatus(String injuryStatus) {
+        descriptor.setInjuryStatus(new InjuryStatus(injuryStatus));
+        return this;
     }
 }

@@ -11,13 +11,19 @@ import seedu.address.model.Model;
 public class ClearCommand extends Command {
 
     public static final String COMMAND_WORD = "clear";
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Clears all player profiles.\n"
+            + "Parameters: none\n"
+            + "Example: " + COMMAND_WORD;
     public static final String MESSAGE_SUCCESS = "Address book has been cleared!";
 
 
     @Override
     public CommandResult execute(Model model) {
+        assert model != null : "Model must not be null when executing ClearCommand";
         requireNonNull(model);
         model.setAddressBook(new AddressBook());
+        assert model.getAddressBook().getPersonList().isEmpty() : "Address book must be empty after clear";
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }

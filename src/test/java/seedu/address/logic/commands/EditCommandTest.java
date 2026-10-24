@@ -35,10 +35,65 @@ public class EditCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_clearGuardianDetailOnly_preservesInjuryAndOtherDetails() {
+        Person original = new PersonBuilder().withName("Player").withSquadName("U12")
+                .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567")
+                .withInjuryStatus("injured").withRemark("Left footed").build();
+        for (boolean clearName : new boolean[] {true, false}) {
+            Model actualModel = new ModelManager();
+            actualModel.addPerson(original);
+            Person expected = clearName ? new PersonBuilder(original).withGuardianName(null).build()
+                    : new PersonBuilder(original).withGuardianContact(null).build();
+            Model expectedModel = new ModelManager();
+            expectedModel.addPerson(expected);
+            EditPersonDescriptor descriptor = clearName
+                    ? new EditPersonDescriptorBuilder().withGuardianName(null).build()
+                    : new EditPersonDescriptorBuilder().withGuardianContact(null).build();
+            assertCommandSuccess(new EditCommand(INDEX_FIRST_PERSON, descriptor), actualModel,
+                    String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, original.getName()), expectedModel);
+            assertEquals(original.getRemark(), actualModel.getFilteredPersonList().getFirst().getRemark());
+        }
+    }
+
+    @Test
+    public void execute_editInjuryFromFilteredList_updatesDisplayedPlayerAndPreservesOtherFields() throws Exception {
+        Person previous = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+        Person target = new PersonBuilder(previous).withFeeStatus("paid").withConsentStatus("received").build();
+        model.setPerson(previous, target);
+        showPersonAtIndex(model, INDEX_SECOND_PERSON);
+        Person edited = new PersonBuilder(target).withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
+        Model expected = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expected.setPerson(target, edited);
+        EditCommand command = new EditCommand(INDEX_FIRST_PERSON,
+                new EditPersonDescriptorBuilder().withInjuryStatus("injured").build());
+        assertCommandSuccess(command, model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, target.getName()), expected);
+
+        new EditCommand(INDEX_SECOND_PERSON, new EditPersonDescriptorBuilder().withInjuryStatus("fit").build())
+                .execute(model);
+        assertEquals(target, model.getAddressBook().getPersonList().get(INDEX_SECOND_PERSON.getZeroBased()));
+    }
+
+    @Test
+    public void execute_editInjuryInvalidIndex_changesNothing() {
+        Index invalid = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        EditCommand command = new EditCommand(invalid,
+                new EditPersonDescriptorBuilder().withInjuryStatus("injured").build());
+        assertCommandFailure(command, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        assertCommandFailure(new EditCommand(INDEX_SECOND_PERSON,
+                new EditPersonDescriptorBuilder().withInjuryStatus("injured").build()), model,
+                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
     public void execute_editName_preservesPlayerProfileFields() {
         Person original = new PersonBuilder().withName("Original Player").withTags("captain")
                 .withSquadName("U12 A").withPosition("Defender").withGuardianName("Jane Doe")
-                .withGuardianContact("81234567").withAvailability("unavailable").withRemark("Left footed").build();
+                .withGuardianContact("81234567").withAvailability("unavailable").withRemark("Left footed")
+                .withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
         Model profileModel = new ModelManager();
         profileModel.addPerson(original);
         Person edited = new PersonBuilder(original).withName("Updated Player").build();

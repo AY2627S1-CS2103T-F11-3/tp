@@ -3,10 +3,13 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
@@ -26,8 +29,11 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -46,7 +52,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 
     private enum Field {
-        NAME, SQUAD, POSITION, GUARDIAN, CONTACT, AVAILABILITY, TAG
+        NAME, SQUAD, POSITION, GUARDIAN, CONTACT, AVAILABILITY, INJURY, FEE, CONSENT, TAG
     }
 
     @Override
@@ -62,6 +68,9 @@ public class AddCommandParser implements Parser<AddCommand> {
         GuardianName guardian = null;
         GuardianContact contact = null;
         Availability availability = new Availability(Availability.AVAILABLE);
+        InjuryStatus injuryStatus = new InjuryStatus(InjuryStatus.FIT);
+        FeeStatus feeStatus = new FeeStatus(FeeStatus.UNPAID);
+        ConsentStatus consentStatus = new ConsentStatus(ConsentStatus.PENDING);
         Set<Tag> tags = new HashSet<>();
         Set<Field> seen = new HashSet<>();
         for (Argument argument : arguments) {
@@ -99,6 +108,15 @@ public class AddCommandParser implements Parser<AddCommand> {
                     case TAG:
                         tags.add(ParserUtil.parseTag(value));
                         break;
+                    case FEE:
+                        feeStatus = new FeeStatus(value);
+                        break;
+                    case CONSENT:
+                        consentStatus = new ConsentStatus(value);
+                        break;
+                    case INJURY:
+                        injuryStatus = new InjuryStatus(value);
+                        break;
                     default:
                         throw new AssertionError("Unknown add field");
                 }
@@ -106,7 +124,9 @@ public class AddCommandParser implements Parser<AddCommand> {
                 throw new ParseException(exception.getMessage(), exception);
             }
         }
-        return new AddCommand(new Person(name, tags, new Remark(""), squad, position, guardian, contact, availability));
+        assert name != null && squad != null && position != null : "Required add fields must be resolved";
+        return new AddCommand(new Person(name, tags, new Remark(""), squad, position, guardian, contact,
+                availability, injuryStatus, feeStatus, consentStatus));
     }
 
     private List<Argument> tokenize(String args) throws ParseException {
@@ -158,6 +178,9 @@ public class AddCommandParser implements Parser<AddCommand> {
             case GUARDIAN -> new Prefix[] {PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL};
             case CONTACT -> new Prefix[] {PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL};
             case AVAILABILITY -> new Prefix[] {PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL};
+            case FEE -> new Prefix[] {PREFIX_FEE_FULL};
+            case CONSENT -> new Prefix[] {PREFIX_CONSENT_FULL};
+            case INJURY -> new Prefix[] {PREFIX_INJURY_FULL};
             case TAG -> new Prefix[] {PREFIX_TAG};
         };
     }

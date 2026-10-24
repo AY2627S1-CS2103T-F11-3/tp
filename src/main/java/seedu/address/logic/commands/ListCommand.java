@@ -5,6 +5,7 @@ import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
+import seedu.address.logic.Messages;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
@@ -15,7 +16,12 @@ public class ListCommand extends Command {
 
     public static final String COMMAND_WORD = "list";
 
-    public static final String MESSAGE_EMPTY_LIST = "No players found!";
+    public static final String MESSAGE_EMPTY_LIST = Messages.MESSAGE_NO_REGISTERED_PLAYERS;
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Shows a list of all players and their squad names, positions and availability.\n"
+            + "Parameters: none\n"
+            + "Example: " + COMMAND_WORD;
 
     @Override
     public boolean isAddressBookMutating() {
@@ -24,9 +30,12 @@ public class ListCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) {
+        assert model != null : "Model must not be null when executing ListCommand";
         requireNonNull(model);
+
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         List<Person> lastShownList = model.getFilteredPersonList();
+        assert lastShownList != null : "Filtered person list should never be null after update";
 
         if (lastShownList.isEmpty()) {
             return new CommandResult(MESSAGE_EMPTY_LIST);
@@ -34,9 +43,12 @@ public class ListCommand extends Command {
 
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < lastShownList.size(); i++) {
+            Person person = lastShownList.get(i);
+            assert person != null : "Person in filtered list must not be null at index " + i;
+
             builder.append(i + 1)
                     .append(". ")
-                    .append(lastShownList.get(i).toListString());
+                    .append(person.toListString());
 
             if (i < lastShownList.size() - 1) {
                 builder.append("\n");
