@@ -1,7 +1,9 @@
 package seedu.address.logic.parser;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -119,5 +121,28 @@ public class ParserUtilTest {
         Set<Tag> expectedTagSet = Set.of(new Tag(VALID_TAG_1), new Tag(VALID_TAG_2));
 
         assertEquals(expectedTagSet, actualTagSet);
+    }
+
+    @Test
+    public void requireNoArguments_emptyOrWhitespace_success() {
+        // Empty input
+        assertDoesNotThrow(() -> ParserUtil.requireNoArguments("", "Usage info"));
+
+        // Single and multiple whitespace characters
+        assertDoesNotThrow(() -> ParserUtil.requireNoArguments(" ", "Usage info"));
+        assertDoesNotThrow(() -> ParserUtil.requireNoArguments("   \t \n ", "Usage info"));
+    }
+
+    @Test
+    public void requireNoArguments_nonWhitespaceArgs_throwsParseException() {
+        String dummyUsage = "Dummy usage";
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, dummyUsage);
+
+        // Non-empty strings
+        assertThrows(ParseException.class, expectedMessage, () ->
+                ParserUtil.requireNoArguments("123", dummyUsage));
+
+        assertThrows(ParseException.class, expectedMessage, () ->
+                ParserUtil.requireNoArguments(" extra text ", dummyUsage));
     }
 }

@@ -11,8 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
+import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
@@ -35,6 +38,9 @@ class JsonAdaptedPerson {
     private final String guardianName;
     private final String guardianContact;
     private final String availability;
+    private final String injuryStatus;
+    private final String feeStatus;
+    private final String consentStatus;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -46,7 +52,10 @@ class JsonAdaptedPerson {
             @JsonProperty("guardianName") String guardianName,
             @JsonProperty("guardianContact") String guardianContact,
             @JsonProperty("availability") String availability,
-            @JsonProperty("guardianNumber") String legacyGuardianContact) {
+            @JsonProperty("guardianNumber") String legacyGuardianContact,
+            @JsonProperty("injuryStatus") String injuryStatus,
+            @JsonProperty("feeStatus") String feeStatus,
+            @JsonProperty("consentStatus") String consentStatus) {
         this.name = name;
         this.remark = remark;
         this.squadName = squadName;
@@ -54,9 +63,28 @@ class JsonAdaptedPerson {
         this.guardianName = guardianName;
         this.guardianContact = guardianContact == null ? legacyGuardianContact : guardianContact;
         this.availability = availability;
+        this.injuryStatus = injuryStatus;
+        this.feeStatus = feeStatus;
+        this.consentStatus = consentStatus;
         if (tags != null) {
             this.tags.addAll(tags);
         }
+    }
+
+    /** Constructs a record without recorded fee or consent statuses. */
+    public JsonAdaptedPerson(String name, List<JsonAdaptedTag> tags, String remark,
+            String squadName, String position, String guardianName, String guardianContact,
+            String availability, String legacyGuardianContact, String injuryStatus) {
+        this(name, tags, remark, squadName, position, guardianName, guardianContact,
+                availability, legacyGuardianContact, injuryStatus, null, null);
+    }
+
+    /** Constructs a legacy record without a recorded injury status. */
+    public JsonAdaptedPerson(String name, List<JsonAdaptedTag> tags, String remark,
+            String squadName, String position, String guardianName, String guardianContact,
+            String availability, String legacyGuardianContact) {
+        this(name, tags, remark, squadName, position, guardianName, guardianContact,
+                availability, legacyGuardianContact, null);
     }
 
     /**
@@ -83,6 +111,9 @@ class JsonAdaptedPerson {
         guardianName = source.getGuardianName() == null ? null : source.getGuardianName().value;
         guardianContact = source.getGuardianContact() == null ? null : source.getGuardianContact().value;
         availability = source.getAvailability().value;
+        injuryStatus = source.getInjuryStatus().value;
+        feeStatus = source.getFeeStatus().value;
+        consentStatus = source.getConsentStatus().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -121,7 +152,8 @@ class JsonAdaptedPerson {
         final Availability modelAvailability = createAvailability();
 
         return new Person(modelName, modelTags, modelRemark, modelSquadName,
-                modelPosition, modelGuardianName, modelGuardianContact, modelAvailability);
+                modelPosition, modelGuardianName, modelGuardianContact, modelAvailability, createInjuryStatus(),
+                createFeeStatus(), createConsentStatus());
     }
 
     private SquadName createSquadName() throws IllegalValueException {
@@ -164,6 +196,33 @@ class JsonAdaptedPerson {
             throw new IllegalValueException(GuardianContact.MESSAGE_CONSTRAINTS);
         }
         return new GuardianContact(value);
+    }
+
+    private FeeStatus createFeeStatus() throws IllegalValueException {
+        String value = feeStatus == null || feeStatus.strip().matches("(?i:unknown)")
+                ? FeeStatus.UNPAID : feeStatus;
+        if (!FeeStatus.isValidFeeStatus(value)) {
+            throw new IllegalValueException(FeeStatus.MESSAGE_CONSTRAINTS);
+        }
+        return new FeeStatus(value);
+    }
+
+    private ConsentStatus createConsentStatus() throws IllegalValueException {
+        String value = consentStatus == null || consentStatus.strip().matches("(?i:unknown)")
+                ? ConsentStatus.PENDING : consentStatus;
+        if (!ConsentStatus.isValidConsentStatus(value)) {
+            throw new IllegalValueException(ConsentStatus.MESSAGE_CONSTRAINTS);
+        }
+        return new ConsentStatus(value);
+    }
+
+    private InjuryStatus createInjuryStatus() throws IllegalValueException {
+        String value = injuryStatus == null || injuryStatus.strip().matches("(?i:unknown)")
+                ? InjuryStatus.FIT : injuryStatus;
+        if (!InjuryStatus.isValidInjuryStatus(value)) {
+            throw new IllegalValueException(InjuryStatus.MESSAGE_CONSTRAINTS);
+        }
+        return new InjuryStatus(value);
     }
 
     private Availability createAvailability() throws IllegalValueException {
