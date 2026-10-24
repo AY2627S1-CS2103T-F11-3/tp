@@ -119,7 +119,11 @@ How the parsing works:
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
+<<<<<<< HEAD
 <img src="images/SquadLinkModelClassDiagram.png" width="800" />
+=======
+<img src="images/ModelClassDiagram.png" width="760" />
+>>>>>>> 4d443b17c3d3479d85aae879963409325832db58
 
 The model class diagram above shows how the roster, filtered and sorted player views, club overview, and
 user preferences relate to one another. To keep that diagram readable, the player profile fields are expanded
@@ -136,6 +140,15 @@ The `Model` component,
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
+This partial class diagram shows the main model classes and their relationships; attributes are omitted for clarity. `ClubOverview` computes a snapshot from players and holds squad summaries; it does not retain the players or form part of the stored `AddressBook`.
+
+For details of `Person`'s fields and their relationships, refer to the player data model diagram in this guide.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
+
+<img src="images/BetterModelClassDiagram.png" width="450" />
+
+</div>
 
 ### Storage component
 
