@@ -1,0 +1,31 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor MODEL_COLOR
+skinparam classBackgroundColor MODEL_COLOR
+
+class Person
+class Name
+class SquadName
+class Position
+class GuardianName
+class GuardianContact
+class Availability
+class InjuryStatus
+class FeeStatus
+class ConsentStatus
+class Remark
+class Tag
+
+Person *--> "1" Name
+Person *--> "1" SquadName
+Person *--> "1" Position
+Person *--> "0..1" GuardianName
+Person *--> "0..1" GuardianContact
+Person *--> "1" Availability
+Person *--> "1" InjuryStatus
+Person *--> "1" FeeStatus
+Person *--> "1" ConsentStatus
+Person *--> "1" Remark
+Person *--> "*" Tag
+@enduml
