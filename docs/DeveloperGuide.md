@@ -73,11 +73,13 @@ The sections below give more details of each component.
 
 The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
 
-![Structure of the UI Component](images/UiClassDiagram.png)
+<img src="images/UiClassDiagram.png" alt="Partial class diagram of the UI component" width="1000" />
 
 The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
 
-The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
+`PersonListPanel` displays players in a table. For an `overview` result, `MainWindow` creates an `OverviewPanel` using the `ClubOverview` snapshot and replaces the table view with it. `OverviewPanel` extends JavaFX `ScrollPane` and builds its display from `ClubOverview` and `SquadSummary` data. The `main` command restores the existing player table with its current filter and sort order.
+
+The `UI` component uses the JavaFX UI framework. The layouts of the `UiPart` subclasses are defined in matching `.fxml` files in `src/main/resources/view`; `OverviewPanel` builds its layout in Java. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
 
 The `UI` component,
 
@@ -173,6 +175,12 @@ are mapped to domain values (`available`/`unavailable`).
 `PlayerStatusField.withValue`. All targets and replacements are validated before model updates begin, preventing
 partial changes from invalid input and index shifts when a filter shrinks. Only changed records are replaced;
 feedback separates changed and unchanged players. The active filter remains in place.
+
+The sequence diagram below focuses on command execution after parsing. Resolving targets and preparing all
+replacements before the first `setPerson` call keeps later selections stable even if an update removes a player
+from the filtered view. Parsing and persistence are omitted to keep the diagram focused.
+
+![Execution of a bulk player status update](images/MarkSequenceDiagram.png)
 
 `PlayerStatusField` copies every other profile field unchanged, keeping injury independent of availability.
 The command uses `LogicManager`'s existing save-and-rollback mechanism. Parser and command tests cover input and
