@@ -119,8 +119,13 @@ How the parsing works:
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/SquadLinkModelClassDiagram.png" width="800" />
 
+The model class diagram above shows how the roster, filtered and sorted player views, club overview, and
+user preferences relate to one another. To keep that diagram readable, the player profile fields are expanded
+separately below.
+
+![Player data model](images/PersonDataModelDiagram.png)
 
 The `Model` component,
 
@@ -130,12 +135,6 @@ The `Model` component,
   `ObservableList<Person>` to the UI, so the UI updates when the filter or sort order changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
-
-<img src="images/BetterModelClassDiagram.png" width="450" />
-
-</div>
 
 
 ### Storage component

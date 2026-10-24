@@ -21,6 +21,9 @@ package Model <<Rectangle>> {
     class GuardianName
     class GuardianContact
     class Availability
+    class InjuryStatus
+    class FeeStatus
+    class ConsentStatus
     class Remark
     class Tag
 
@@ -54,6 +57,9 @@ Person *--> "1" Position
 Person o--> "0..1" GuardianName
 Person o--> "0..1" GuardianContact
 Person *--> "1" Availability
+Person *--> "1" InjuryStatus
+Person *--> "1" FeeStatus
+Person *--> "1" ConsentStatus
 Person *--> "1" Remark
 Person *--> "*" Tag
 
