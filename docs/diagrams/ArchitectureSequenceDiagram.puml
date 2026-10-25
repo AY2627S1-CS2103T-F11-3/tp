@@ -10,37 +10,26 @@ Participant ":Model" as model MODEL_COLOR
 Participant ":Storage" as storage STORAGE_COLOR
 
 user -[USER_COLOR]> ui : "delete 1"
-activate ui UI_COLOR
 
 ui -[UI_COLOR]> logic : execute("delete 1")
-activate logic LOGIC_COLOR
 
 note over logic : Parse command; deletion requires persistence.
 logic -> model : getAddressBook()
-activate model MODEL_COLOR
 model --> logic : addressBook
-deactivate model
 note over logic : Copy addressBook as beforeCommand.
 
 logic -> model : getFilteredPersonList()
-activate model MODEL_COLOR
 model --> logic : displayedPlayers
-deactivate model
 note over logic : Resolve player p at displayed index 1.
 
 logic -[LOGIC_COLOR]> model : deletePerson(p)
-activate model MODEL_COLOR
 
 model -[MODEL_COLOR]-> logic
-deactivate model
 
 logic -> model : getAddressBook()
-activate model MODEL_COLOR
 model --> logic : updatedAddressBook
-deactivate model
 
 logic -[LOGIC_COLOR]> storage : saveAddressBook(updatedAddressBook)
-activate storage STORAGE_COLOR
 
 alt Save succeeds
     storage --> logic
@@ -49,13 +38,8 @@ alt Save succeeds
 else Save throws IOException
     storage --> logic : IOException
     logic -> model : setAddressBook(beforeCommand)
-    activate model MODEL_COLOR
     model --> logic
-    deactivate model
     logic --> ui : CommandException
     ui --> user : Save error; player data restored
 end
-deactivate storage
-deactivate logic
-deactivate ui
 @enduml
