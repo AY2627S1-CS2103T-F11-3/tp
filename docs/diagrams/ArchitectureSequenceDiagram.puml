@@ -1,6 +1,7 @@
 @startuml
 !include style.puml
 skinparam ArrowFontStyle plain
+skinparam dpi 150
 
 Actor User as user USER_COLOR
 Participant ":UI" as ui UI_COLOR
@@ -9,31 +10,36 @@ Participant ":Model" as model MODEL_COLOR
 Participant ":Storage" as storage STORAGE_COLOR
 
 user -[USER_COLOR]> ui : "delete 1"
-activate ui UI_COLOR
 
 ui -[UI_COLOR]> logic : execute("delete 1")
-activate logic LOGIC_COLOR
+
+note over logic : Parse command; deletion requires persistence.
+logic -> model : getAddressBook()
+model --> logic : addressBook
+note over logic : Copy addressBook as beforeCommand.
+
+logic -> model : getFilteredPersonList()
+model --> logic : displayedPlayers
+note over logic : Resolve player p at displayed index 1.
 
 logic -[LOGIC_COLOR]> model : deletePerson(p)
-activate model MODEL_COLOR
 
 model -[MODEL_COLOR]-> logic
-deactivate model
 
-logic -[LOGIC_COLOR]> storage : saveAddressBook(addressBook)
-activate storage STORAGE_COLOR
+logic -> model : getAddressBook()
+model --> logic : updatedAddressBook
 
-storage -[STORAGE_COLOR]> storage : Save to file
-activate storage STORAGE_COLOR_T1
-storage --[STORAGE_COLOR]> storage
-deactivate storage
+logic -[LOGIC_COLOR]> storage : saveAddressBook(updatedAddressBook)
 
-storage --[STORAGE_COLOR]> logic
-deactivate storage
-
-logic --[LOGIC_COLOR]> ui
-deactivate logic
-
-ui--[UI_COLOR]> user
-deactivate ui
+alt Save succeeds
+    storage --> logic
+    logic --> ui : CommandResult
+    ui --> user : Deletion feedback
+else Save throws IOException
+    storage --> logic : IOException
+    logic -> model : setAddressBook(beforeCommand)
+    model --> logic
+    logic --> ui : CommandException
+    ui --> user : Save error; player data restored
+end
 @enduml

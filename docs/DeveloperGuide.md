@@ -51,9 +51,12 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete 1`.
+The *Sequence Diagram* below shows how the components interact for a valid `delete 1` command,
+including recovery if saving fails. Interactions within `Logic` are collapsed into one lifeline.
+Before executing a mutating command, `LogicManager` copies the player data. If storage throws
+an `IOException`, it restores that data and reports a save error instead of deletion success.
 
-<img src="images/ArchitectureSequenceDiagram.png" width="574" />
+<img src="images/ArchitectureSequenceDiagram.png" alt="Deletion and save-failure recovery across components" width="850" />
 
 Each of the four main components (also shown in the diagram above),
 
@@ -111,6 +114,9 @@ How the `Logic` component works:
 1. The command can communicate with the `Model` when it is executed (e.g. to delete a player).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
+   For commands whose `isAddressBookMutating()` returns `true`, `LogicManager` saves the data
+   before returning the result and restores the pre-command snapshot if saving fails.
+   Non-mutating commands, such as `overview` and `sort`, skip the snapshot and save.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
 
@@ -123,8 +129,12 @@ How the parsing works:
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/ModelClassDiagram.png" width="760" />
 
+The model class diagram above shows the main roster, player-view, overview, and user-preference classes.
+It omits individual player fields for clarity; the detailed player data model below expands `Person`.
+
+![Player data model](images/PersonDataModelDiagram.png)
 
 The `Model` component,
 
@@ -140,7 +150,6 @@ The `Model` component,
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
 </div>
-
 
 ### Storage component
 
