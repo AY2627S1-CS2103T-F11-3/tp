@@ -87,6 +87,16 @@ public interface Model {
     void undoAddressBook();
 
     /**
+     * Returns true if the model has previous address book states to restore.
+     */
+    boolean canRedoAddressBook();
+
+    /**
+     * Restores the model's address book to its previously undone state.
+     */
+    void redoAddressBook();
+
+    /**
      * Saves the current address book state for undo/redo history.
      */
     void commitAddressBook();
