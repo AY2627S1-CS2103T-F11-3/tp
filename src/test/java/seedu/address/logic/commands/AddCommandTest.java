@@ -147,6 +147,21 @@ public class AddCommandTest {
         public void updateSortComparator(Comparator<Person> comparator) {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public boolean canUndoAddressBook() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void undoAddressBook() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void commitAddressBook() {
+            // Can be left empty or throw AssertionError depending on the test
+        }
     }
 
     /**

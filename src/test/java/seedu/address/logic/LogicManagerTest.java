@@ -26,6 +26,7 @@ import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -126,23 +127,25 @@ public class LogicManagerTest {
                 .withAvailability("unavailable").build();
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addPerson(player);
+        expectedModel.commitAddressBook();
         String command = "add name/John Doe squad/Soccer Stars position/goal-keeper"
                 + " guardian/Jane Doe contact/8123-4567 available/f a l s e";
         assertCommandSuccess(command, "Player John Doe added!", expectedModel);
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
         assertCommandException("add n/John Doe sn/Soccer Stars pos/Goalkeeper",
                 "John Doe is already a registered player!");
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
         assertParseException("add n/Invalid Contact sn/Stars pos/Defender gc/1234567",
                 seedu.address.model.person.GuardianContact.MESSAGE_CONSTRAINTS);
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
 
         Person minimal = new PersonBuilder().withName("Mike Ox").withSquadName("Football Fellas")
                 .withPosition("Striker").build();
         expectedModel.addPerson(minimal);
+        expectedModel.commitAddressBook();
         assertCommandSuccess("add n/Mike Ox sn/Football Fellas pos/Striker", "Player Mike Ox added!", expectedModel);
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -153,15 +156,17 @@ public class LogicManagerTest {
         Person updatedPlayer = new PersonBuilder(player).withAvailability("unavailable").build();
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.setPerson(player, updatedPlayer);
+        expectedModel.commitAddressBook();
 
         assertCommandSuccess("edit 1 av/false",
                 String.format("Player %s updated!", updatedPlayer.getName()), expectedModel);
 
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
 
         expectedModel.updateFilteredPersonList(person ->
                 person.getAvailability().equals(new Availability("unavailable")));
+        expectedModel.commitAddressBook();
         assertCommandSuccess("filter av/false", String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, 1),
                 expectedModel);
     }
@@ -175,12 +180,13 @@ public class LogicManagerTest {
                 .withGuardianName("Mary Doe").withGuardianContact("87654321").build();
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.setPerson(player, updatedPlayer);
+        expectedModel.commitAddressBook();
 
         assertCommandSuccess("edit 1 sn/Football Fellas pos/Defender guardian/Mary Doe contact/8765-4321",
                 String.format("Player %s updated!", updatedPlayer.getName()), expectedModel);
 
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -269,7 +275,9 @@ public class LogicManagerTest {
         List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(originalPersons.get(0));
+        expectedModel.commitAddressBook();
         expectedModel.deletePerson(originalPersons.get(2));
+        expectedModel.commitAddressBook();
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
                 "1. Alice Pauline (Unassigned, Unassigned)\n2. Carl Kurz (Unassigned, Unassigned)");
 
@@ -277,7 +285,7 @@ public class LogicManagerTest {
 
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -288,7 +296,9 @@ public class LogicManagerTest {
         Person third = originalPersons.get(2);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(first);
+        expectedModel.commitAddressBook();
         expectedModel.deletePerson(third);
+        expectedModel.commitAddressBook();
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSONS_SUCCESS, 2,
                 "1. Alice Pauline (Unassigned, Unassigned)\n2. Carl Kurz (Unassigned, Unassigned)");
 
@@ -297,7 +307,7 @@ public class LogicManagerTest {
 
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -315,7 +325,7 @@ public class LogicManagerTest {
                 MESSAGE_EMPTY_NAME);
 
         assertEquals(expectedModel, model);
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -360,7 +370,7 @@ public class LogicManagerTest {
         assertParseException("delete 1 abc", MESSAGE_NON_NUMERIC_INDEX);
 
         assertEquals(expectedModel, model);
-        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test

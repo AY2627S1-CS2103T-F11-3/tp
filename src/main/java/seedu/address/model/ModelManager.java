@@ -94,7 +94,8 @@ public class ModelManager implements Model {
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
         assert this.versionedAddressBook != null : "AddressBook must not be null";
-        assert this.versionedAddressBook.hasPerson(target) : "Target person must exist in the address book before editing";
+        assert this.versionedAddressBook.hasPerson(target)
+                : "Target person must exist in the address book before editing";
         versionedAddressBook.setPerson(target, editedPerson);
     }
 
@@ -147,7 +148,10 @@ public class ModelManager implements Model {
             return false;
         }
 
-        return versionedAddressBook.equals(otherModelManager.versionedAddressBook)
+        boolean isAddressBookEqual = new AddressBook(versionedAddressBook)
+                .equals(new AddressBook(otherModelManager.versionedAddressBook));
+
+        return isAddressBookEqual
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && filteredPersons.equals(otherModelManager.filteredPersons)
                 && sortedPersons.equals(otherModelManager.sortedPersons);
