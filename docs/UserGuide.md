@@ -71,7 +71,7 @@ check squad availability, and navigate views by typing commands.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME t/TAG`, `t/TAG n/NAME` is also acceptable.
 
-* `help`, `list`, `exit`, `clear`, `main` and `overview` accept no parameters.<br>
+* `help`, `list`, `exit`, `clear`, `main`, `overview`, `undo` and `redo` accept no parameters.<br>
   Extra arguments, such as `help 123`, are rejected with usage guidance.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -144,13 +144,17 @@ Examples:
 
 Opens the main page and shows all registered players, clearing any current search or filter while keeping the current sort order.
 
-If no players are registered, the response includes an example `add` command to help you create your first player.
-Whenever the player table is empty, it shows guidance to use `list` to clear a search or filter, or to add a player
-if none are registered. This hint also appears after deleting the last player or clearing the club.
-
-To return from the overview while keeping your current player list, use [`main`](#returning-to-the-main-page-main).
-
 Format: `list`
+
+* Clears any active `find` or `filter` criteria and displays every registered player.
+* Retains the currently applied `sort` order.
+* Accepts no parameters. Providing arguments (such as `list 2`) is rejected with usage guidance.
+* If no players are registered, the response includes an example `add` command to help you create your first player.
+* Whenever the player table is empty, it displays guidance on using `list` to clear filters or adding a new player.
+* To return from the overview while keeping your current search/filter results instead of resetting to all players, use [`main`](#returning-to-the-main-page-main).
+
+Examples:
+* `list`
 
 ### Returning to the main page: `main`
 
@@ -307,30 +311,29 @@ Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [
 | Fee payment status | `fee/` | None | `paid`, `unpaid` |
 | Consent status | `consent/` | None | `received`, `pending` |
 
-- Supply at least one criterion. Criteria can appear in any order, but each criterion can appear only once.
-  Specifying both long and shorthand forms for the same criterion (such as `squad/` and `sn/`) is rejected.
-- Squad names must not be blank and may contain only letters, digits, hyphens, and whitespace. Squad matching is
-  case-sensitive; surrounding whitespace is trimmed, and repeated internal whitespace is treated as a single space.
-- Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
-  as `available`; `false` matches players stored as `unavailable`.
-- Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace.
-- Fee payment accepts ASCII `paid` or `unpaid`, ignoring case and surrounding whitespace.
-- Consent accepts ASCII `received` or `pending`, ignoring case and surrounding whitespace.
-- When multiple criteria are supplied, a player must satisfy all of them (AND logic). If players are registered but none
+* Supply at least one criterion. Criteria can appear in any order, but each criterion can appear only once.
+  Specifying both long and shorthand forms for the same criterion (such as `squad/` and `sn/`) is rejected. 
+* Squad names must not be blank and may contain only letters, digits, hyphens, and whitespace. Squad matching is
+  case-sensitive; surrounding whitespace is trimmed, and repeated internal whitespace is treated as a single space. 
+* Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
+  as `available`; `false` matches players stored as `unavailable`. 
+* Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace. 
+* Fee payment accepts ASCII `paid` or `unpaid`, ignoring case and surrounding whitespace. 
+* Consent accepts ASCII `received` or `pending`, ignoring case and surrounding whitespace. 
+* When multiple criteria are supplied, a player must satisfy all of them (AND logic). If players are registered but none
   match, the result is `No matching players found. Change your search or filter, or use list to show all players.`
-  If no players are registered, the result instead suggests adding the first player and provides an example command.
-- Results replace the currently displayed list and use consecutive indexes starting from 1. Those indexes can be used
-  immediately with commands like `edit`, `mark`, and `delete`.
-- Unknown filter prefixes, empty values, and any text preceding the first prefix are rejected as invalid command format.
-- A current sort order is retained; `filter` changes which players are shown, not how they are ordered.
+  If no players are registered, the result instead suggests adding the first player and provides an example command. 
+* Results replace the currently displayed list and use consecutive indexes starting from 1. Those indexes can be used
+  immediately with commands like `edit`, `mark`, and `delete`. 
+* Unknown filter prefixes, empty values, and any text preceding the first prefix are rejected as invalid command format. 
+* A current sort order is retained; `filter` changes which players are shown, not how they are ordered.
 
 Examples:
-
-- `filter squad/Soccer Stars`
-- `filter available/true`
-- `filter injury/injured fee/unpaid`
-- `filter sn/Soccer Stars av/true fee/paid consent/received`
-- `filter sn/Football Fellas injury/fit av/false`
+* `filter squad/Soccer Stars`
+* `filter available/true`
+* `filter injury/injured fee/unpaid`
+* `filter sn/Soccer Stars av/true fee/paid consent/received`
+* `filter sn/Football Fellas injury/fit av/false`
 
 ### Sorting displayed players: `sort`
 
@@ -348,7 +351,6 @@ Supported fields: `name`, `squad`, `position`, `availability`, and `reset`.
 * A sort is not saved to the data file. Restarting SquadLink restores the stored player order.
 
 Examples:
-
 * `sort name`
 * `filter sn/Soccer Stars av/true` followed by `sort position`
 * `sort reset`
@@ -407,6 +409,41 @@ Examples:
 Removes all registered players from SquadLink.
 
 Format: `clear`
+
+### Undoing previous commands: `undo`
+
+Reverts the previous command that modified player data.
+
+Format: `undo`
+
+* Reverses the most recent data-modifying command (such as `add`, `edit`, `delete`, `clear`, or `mark`).
+* Commands that do not modify player data (such as `list`, `find`, `filter`, `sort`, `main`, `overview`, and `help`) cannot be undone and are skipped by `undo`.
+* Multiple commands can be undone consecutively back to the initial state when the application started.
+* Accepts no parameters. Extra arguments (such as `undo 1`) are rejected with usage guidance.
+* If there are no previous commands to undo, SquadLink displays: `There is no command to undo!`.
+
+Success displays `Undid the last command!`.
+
+Examples:
+* `delete 1` followed by `undo` (restores the deleted player).
+* `mark 1 2 av/false` followed by `undo` (reverts both players to their previous availability).
+
+### Redoing undone commands: `redo`
+
+Reverses the most recent `undo` command, restoring the data changes.
+
+Format: `redo`
+
+* Re-applies the action of the last command reversed by `undo`.
+* Multiple `undo` commands can be reversed with consecutive `redo` commands.
+* If a new modifying command (such as `add`, `delete`, `edit`, or `mark`) is entered after an `undo`, the remaining redo history is cleared and can no longer be redone.
+* Accepts no parameters. Extra arguments (such as `redo all`) are rejected with usage guidance.
+* If there is no undone command to redo, SquadLink displays: `There is no undo to redo!`.
+
+Success displays `Redid the last undo!`.
+
+Examples:
+* `delete 1` followed by `undo` (restores player), followed by `redo` (deletes the player again).
 
 ### Exiting the program: `exit`
 
@@ -472,6 +509,8 @@ Action | Format, Examples
 **Filter** | `filter [squad/SQUAD_NAME] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true injury/fit fee/paid`
 **Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`
 **List** | `list` (show all registered players, clear the current search or filter, and retain the sort order)
+**Undo** | `undo` (revert the most recent data-modifying command) |
+**Redo** | `redo` (reverse the most recent undo command) |
 **Main** | `main` (return to the main player list and preserve the current search, filter, sort order, and indexes)
 **Overview** | `overview`
 **Help** | `help`
