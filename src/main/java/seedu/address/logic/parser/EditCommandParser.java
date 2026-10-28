@@ -14,6 +14,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -35,6 +36,7 @@ import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Position;
+import seedu.address.model.person.Remark;
 import seedu.address.model.person.SquadName;
 import seedu.address.model.tag.Tag;
 
@@ -58,7 +60,7 @@ public class EditCommandParser implements Parser<EditCommand> {
                         PREFIX_AVAILABILITY_FULL, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL,
                         PREFIX_POSITION, PREFIX_POSITION_FULL, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL,
                         PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL, PREFIX_INJURY_FULL,
-                        PREFIX_FEE_FULL, PREFIX_CONSENT_FULL, PREFIX_TAG);
+                        PREFIX_FEE_FULL, PREFIX_CONSENT_FULL, PREFIX_REMARK, PREFIX_TAG);
 
         Index index;
 
@@ -71,7 +73,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
                 PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL, PREFIX_POSITION, PREFIX_POSITION_FULL,
                 PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL,
-                PREFIX_INJURY_FULL, PREFIX_FEE_FULL, PREFIX_CONSENT_FULL);
+                PREFIX_INJURY_FULL, PREFIX_FEE_FULL, PREFIX_CONSENT_FULL, PREFIX_REMARK);
         verifyAliasesUsedOnce(argMultimap, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_POSITION, PREFIX_POSITION_FULL);
@@ -94,6 +96,7 @@ public class EditCommandParser implements Parser<EditCommand> {
                 .ifPresent(editPersonDescriptor::setFeeStatus);
         parseValue(argMultimap.getValue(PREFIX_CONSENT_FULL), ConsentStatus::new)
                 .ifPresent(editPersonDescriptor::setConsentStatus);
+        argMultimap.getValue(PREFIX_REMARK).ifPresent(value -> editPersonDescriptor.setRemark(new Remark(value)));
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {

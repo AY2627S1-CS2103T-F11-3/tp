@@ -205,12 +205,12 @@ Example overview showing club totals and squad cards:
 
 Edits an existing player in SquadLink.
 
-Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending] [r/REMARK] [t/TAG]…​`
 
 * Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* Name, squad, position, guardian name, guardian contact, availability, injury status, fee payment, consent and tags
+* Name, squad, position, guardian name, guardian contact, availability, injury status, fee payment, consent, remark and tags
   can be edited with this command.
   Use `sn/`, `pos/`, `g/`, `gc/` and `av/` as shorthand for their respective full prefixes.
 * Squad, position, guardian name, guardian contact and availability use the same validation as `add`. `Unassigned`
@@ -218,6 +218,7 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
   Player phone number, email and address are no longer supported.
 * When editing tags, all of the player's existing tags are removed; adding tags is not cumulative.
 * To remove all of a player's tags, enter `t/` without a tag after it.
+* Use `r/REMARK` to update a player's remark. Enter `r/` without a remark to clear it.
 * Use `injury/fit` or `injury/injured` to update the recorded injury status. Values require ASCII letters, ignoring case and
   surrounding whitespace. Omit `injury/` to keep the existing status; use `injury/fit` to return to the default.
   Empty values and repeated `injury/` fields are rejected. Changing injury status does not change availability.
@@ -235,6 +236,7 @@ Examples:
 *  `edit 2 fee/paid consent/received` Records payment and consent for the 2nd player.
 *  `edit 2 fee/unpaid` Marks only the 2nd player's fee payment as unpaid.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
+*  `edit 2 r/Reliable defender` updates the 2nd player's remark.
 
 ### Updating player statuses in bulk: `mark`
 
@@ -467,7 +469,7 @@ Action | Format, Examples
 **Clear** | `clear`
 **Mark status** | `mark INDEX [INDEX]... STATUS/VALUE`<br> Choose one: `av/true\|false`, `injury/fit\|injured`, `fee/paid\|unpaid`, `consent/received\|pending`<br> e.g., `mark 1 3 fee/paid`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
+**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [r/REMARK] [t/TAG]…​`<br> e.g., `edit 2 r/Reliable defender`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter [squad/SQUAD_NAME] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true injury/fit fee/paid`
 **Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`

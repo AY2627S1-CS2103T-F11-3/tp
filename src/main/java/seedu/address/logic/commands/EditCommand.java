@@ -13,6 +13,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -66,6 +67,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
+            + "[" + PREFIX_REMARK + "REMARK] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
             + PREFIX_GUARDIANCONTACT + ", and " + PREFIX_AVAILABILITY + " for their full prefixes\n"
@@ -131,7 +133,7 @@ public class EditCommand extends Command {
 
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
-        Remark updatedRemark = personToEdit.getRemark(); // edit command does not allow editing remarks
+        Remark updatedRemark = editPersonDescriptor.getRemark().orElse(personToEdit.getRemark());
         SquadName updatedSquadName = editPersonDescriptor.getSquadName().orElse(personToEdit.getSquadName());
         Position updatedPosition = editPersonDescriptor.getPosition().orElse(personToEdit.getPosition());
         GuardianName updatedGuardianName = editPersonDescriptor.isGuardianNameEdited()
@@ -190,6 +192,7 @@ public class EditCommand extends Command {
         private InjuryStatus injuryStatus;
         private FeeStatus feeStatus;
         private ConsentStatus consentStatus;
+        private Remark remark;
         private boolean guardianNameEdited;
         private boolean guardianContactEdited;
 
@@ -214,6 +217,7 @@ public class EditCommand extends Command {
             setInjuryStatus(toCopy.injuryStatus);
             setFeeStatus(toCopy.feeStatus);
             setConsentStatus(toCopy.consentStatus);
+            setRemark(toCopy.remark);
         }
 
         /**
@@ -221,7 +225,7 @@ public class EditCommand extends Command {
          */
         public boolean isAnyFieldEdited() {
             return CollectionUtil.isAnyNonNull(name, tags, squadName, position, availability,
-                    injuryStatus, feeStatus, consentStatus)
+                    injuryStatus, feeStatus, consentStatus, remark)
                     || guardianNameEdited || guardianContactEdited;
         }
 
@@ -324,6 +328,14 @@ public class EditCommand extends Command {
             return Optional.ofNullable(injuryStatus);
         }
 
+        public void setRemark(Remark remark) {
+            this.remark = remark;
+        }
+
+        public Optional<Remark> getRemark() {
+            return Optional.ofNullable(remark);
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -345,6 +357,7 @@ public class EditCommand extends Command {
                     && Objects.equals(injuryStatus, otherEditPersonDescriptor.injuryStatus)
                     && Objects.equals(feeStatus, otherEditPersonDescriptor.feeStatus)
                     && Objects.equals(consentStatus, otherEditPersonDescriptor.consentStatus)
+                    && Objects.equals(remark, otherEditPersonDescriptor.remark)
                     && guardianNameEdited == otherEditPersonDescriptor.guardianNameEdited
                     && guardianContactEdited == otherEditPersonDescriptor.guardianContactEdited;
         }
@@ -362,6 +375,7 @@ public class EditCommand extends Command {
                 .add("injuryStatus", injuryStatus)
                 .add("feeStatus", feeStatus)
                 .add("consentStatus", consentStatus)
+                .add("remark", remark)
                     .toString();
         }
     }
