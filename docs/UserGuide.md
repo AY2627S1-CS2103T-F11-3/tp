@@ -416,7 +416,7 @@ Reverts the previous command that modified player data.
 
 Format: `undo`
 
-* Reverses the most recent data-modifying command (such as `add`, `edit`, `delete`, `clear`, or `mark`).
+* Reverses the most recent data-modifying command (such as `add`, `edit`, `delete`, `clear`, `remark` or `mark`).
 * Commands that do not modify player data (such as `list`, `find`, `filter`, `sort`, `main`, `overview`, and `help`) cannot be undone and are skipped by `undo`.
 * Multiple commands can be undone consecutively back to the initial state when the application started.
 * Accepts no parameters. Extra arguments (such as `undo 1`) are rejected with usage guidance.

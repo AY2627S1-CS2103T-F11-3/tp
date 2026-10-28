@@ -82,6 +82,9 @@ public class MarkCommand extends Command {
                 changed.add(target);
             }
         }
+
+        model.commitAddressBook();
+
         return new CommandResult(formatFeedback(changed, unchanged, field.getValue(replacements.getFirst())));
     }
 
