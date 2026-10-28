@@ -3,12 +3,15 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
@@ -178,9 +181,9 @@ public class AddCommandParser implements Parser<AddCommand> {
             case GUARDIAN -> new Prefix[] {PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL};
             case CONTACT -> new Prefix[] {PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL};
             case AVAILABILITY -> new Prefix[] {PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL};
-            case FEE -> new Prefix[] {PREFIX_FEE_FULL};
-            case CONSENT -> new Prefix[] {PREFIX_CONSENT_FULL};
-            case INJURY -> new Prefix[] {PREFIX_INJURY_FULL};
+            case FEE -> new Prefix[] {PREFIX_FEE, PREFIX_FEE_FULL};
+            case CONSENT -> new Prefix[] {PREFIX_CONSENT, PREFIX_CONSENT_FULL};
+            case INJURY -> new Prefix[] {PREFIX_INJURY, PREFIX_INJURY_FULL};
             case TAG -> new Prefix[] {PREFIX_TAG};
         };
     }

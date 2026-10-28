@@ -13,6 +13,9 @@ public class CliSyntax {
     public static final Prefix PREFIX_GUARDIANNAME = new Prefix("g/");
     public static final Prefix PREFIX_GUARDIANCONTACT = new Prefix("gc/");
     public static final Prefix PREFIX_AVAILABILITY = new Prefix("av/");
+    public static final Prefix PREFIX_INJURY = new Prefix("inj/");
+    public static final Prefix PREFIX_FEE = new Prefix("f/");
+    public static final Prefix PREFIX_CONSENT = new Prefix("c/");
 
     // Aliases
     public static final Prefix PREFIX_NAME_FULL = new Prefix("name/");
