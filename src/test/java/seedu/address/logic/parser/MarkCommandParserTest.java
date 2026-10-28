@@ -18,9 +18,6 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.MarkCommand;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
-import seedu.address.model.person.ConsentStatus;
-import seedu.address.model.person.FeeStatus;
-import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.PlayerStatusField;
 import seedu.address.testutil.PersonBuilder;
 
@@ -91,18 +88,18 @@ public class MarkCommandParserTest {
         assertDeferredFailure("1 av/available", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         assertDeferredFailure("1 av/t rue", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         for (String value : List.of("", "yes", "paid extra", "pa\u0131d")) {
-            assertDeferredFailure("1 fee/" + value, FeeStatus.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("1 fee/" + value, MarkCommandParser.MESSAGE_INVALID_FEE);
         }
-        assertDeferredFailure("1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertDeferredFailure("1 injury/f\u0131t", InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertDeferredFailure("1 consent/", ConsentStatus.MESSAGE_CONSTRAINTS);
-        assertDeferredFailure("1 consent/true", ConsentStatus.MESSAGE_CONSTRAINTS);
-        assertDeferredFailure("1 consent/rece\u0131ved", ConsentStatus.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1 injury/", MarkCommandParser.MESSAGE_INVALID_INJURY);
+        assertDeferredFailure("1 injury/f\u0131t", MarkCommandParser.MESSAGE_INVALID_INJURY);
+        assertDeferredFailure("1 consent/", MarkCommandParser.MESSAGE_INVALID_CONSENT);
+        assertDeferredFailure("1 consent/true", MarkCommandParser.MESSAGE_INVALID_CONSENT);
+        assertDeferredFailure("1 consent/rece\u0131ved", MarkCommandParser.MESSAGE_INVALID_CONSENT);
         // Empty and invalid values represent the two failure partitions for each new alias.
         for (String value : List.of("", "unknown")) {
-            assertDeferredFailure("1 inj/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
-            assertDeferredFailure("1 f/" + value, FeeStatus.MESSAGE_CONSTRAINTS);
-            assertDeferredFailure("1 c/" + value, ConsentStatus.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("1 inj/" + value, MarkCommandParser.MESSAGE_INVALID_INJURY);
+            assertDeferredFailure("1 f/" + value, MarkCommandParser.MESSAGE_INVALID_FEE);
+            assertDeferredFailure("1 c/" + value, MarkCommandParser.MESSAGE_INVALID_CONSENT);
         }
     }
 

@@ -31,7 +31,13 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     public static final String MESSAGE_ONE_STATUS = "Specify exactly one status per mark command.\n"
             + MarkCommand.MESSAGE_USAGE;
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Availability must be true or false. Use av/true or av/false.";
+            "Availability must be either \"true\" or \"false\".";
+    public static final String MESSAGE_INVALID_CONSENT =
+            "Consent status must be either \"received\" or \"pending\".";
+    public static final String MESSAGE_INVALID_INJURY =
+            "Injury status must be either \"fit\" or \"injured\".";
+    public static final String MESSAGE_INVALID_FEE =
+            "Fee payment status must be either \"paid\" or \"unpaid\".";
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(\\S*/)");
     private static final Map<String, PlayerStatusField> STATUS_PREFIXES = Map.of(
             PREFIX_AVAILABILITY.getPrefix(), PlayerStatusField.AVAILABILITY,
@@ -83,9 +89,9 @@ public class MarkCommandParser implements Parser<MarkCommand> {
         try {
             return switch (field) {
                 case AVAILABILITY -> parseAvailability(value);
-                case INJURY -> new InjuryStatus(value).value;
-                case FEE -> new FeeStatus(value).value;
-                case CONSENT -> new ConsentStatus(value).value;
+                case INJURY -> parseInjury(value);
+                case FEE -> parseFee(value);
+                case CONSENT -> parseConsent(value);
             };
         } catch (IllegalArgumentException exception) {
             throw new ParseException(exception.getMessage(), exception);
@@ -100,5 +106,26 @@ public class MarkCommandParser implements Parser<MarkCommand> {
             return Availability.UNAVAILABLE;
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);
+    }
+
+    private String parseConsent(String value) throws ParseException {
+        if (!ConsentStatus.isValidConsentStatus(value)) {
+            throw new ParseException(MESSAGE_INVALID_CONSENT);
+        }
+        return new ConsentStatus(value).value;
+    }
+
+    private String parseInjury(String value) throws ParseException {
+        if (!InjuryStatus.isValidInjuryStatus(value)) {
+            throw new ParseException(MESSAGE_INVALID_INJURY);
+        }
+        return new InjuryStatus(value).value;
+    }
+
+    private String parseFee(String value) throws ParseException {
+        if (!FeeStatus.isValidFeeStatus(value)) {
+            throw new ParseException(MESSAGE_INVALID_FEE);
+        }
+        return new FeeStatus(value).value;
     }
 }
