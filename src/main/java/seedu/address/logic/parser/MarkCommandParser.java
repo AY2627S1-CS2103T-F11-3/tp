@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
@@ -28,11 +29,13 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     public static final String MESSAGE_ONE_STATUS = "Specify exactly one status per mark command.\n"
             + MarkCommand.MESSAGE_USAGE;
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Availability must be true or false. Use av/true or av/false.";
+            "Availability must be true, false, available, or unavailable. "
+                    + "Use av/available or av/unavailable.";
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(\\S*/)");
     private static final Map<String, PlayerStatusField> STATUS_PREFIXES = Map.of(
             PREFIX_AVAILABILITY.getPrefix(), PlayerStatusField.AVAILABILITY,
             PREFIX_AVAILABILITY_FULL.getPrefix(), PlayerStatusField.AVAILABILITY,
+            PREFIX_AVAILABILITY_LEGACY.getPrefix(), PlayerStatusField.AVAILABILITY,
             PREFIX_INJURY_FULL.getPrefix(), PlayerStatusField.INJURY,
             PREFIX_FEE_FULL.getPrefix(), PlayerStatusField.FEE,
             PREFIX_CONSENT_FULL.getPrefix(), PlayerStatusField.CONSENT);
@@ -87,10 +90,10 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     }
 
     private String parseAvailability(String value) throws ParseException {
-        if (value.equalsIgnoreCase("true")) {
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
             return Availability.AVAILABLE;
         }
-        if (value.equalsIgnoreCase("false")) {
+        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
             return Availability.UNAVAILABLE;
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

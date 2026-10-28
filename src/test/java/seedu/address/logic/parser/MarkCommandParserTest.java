@@ -32,7 +32,10 @@ public class MarkCommandParserTest {
     @Test
     public void parse_eachStatusAndValue_returnsNormalizedCommand() {
         assertStatus("av/true", PlayerStatusField.AVAILABILITY, "available");
-        assertStatus("available/FALSE", PlayerStatusField.AVAILABILITY, "unavailable");
+        assertStatus("availability/FALSE", PlayerStatusField.AVAILABILITY, "unavailable");
+        assertStatus("av/Available", PlayerStatusField.AVAILABILITY, "available");
+        assertStatus("availability/unavailable", PlayerStatusField.AVAILABILITY, "unavailable");
+        assertStatus("available/true", PlayerStatusField.AVAILABILITY, "available");
         assertStatus("injury/FIT", PlayerStatusField.INJURY, "fit");
         assertStatus("injury/injured", PlayerStatusField.INJURY, "injured");
         assertStatus("fee/PAID", PlayerStatusField.FEE, "paid");
@@ -58,7 +61,7 @@ public class MarkCommandParserTest {
     @Test
     public void parse_missingOrMultipleStatuses_showsSingleStatusGuidance() {
         for (String input : List.of("", "1 3", "1 fee/paid consent/received", "1 fee/paid fee/paid",
-                "1 av/true available/false", "1 fee/paid unknown/value")) {
+                "1 av/true availability/false", "1 fee/paid unknown/value")) {
             assertParseFailure(parser, input, MarkCommandParser.MESSAGE_ONE_STATUS);
         }
     }
@@ -84,7 +87,7 @@ public class MarkCommandParserTest {
     @Test
     public void parse_invalidOrMissingValues_usesDomainConstraints() {
         assertDeferredFailure("1 av/", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertDeferredFailure("1 av/available", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/unknown", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         assertDeferredFailure("1 av/t rue", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         for (String value : List.of("", "yes", "paid extra", "pa\u0131d")) {
             assertDeferredFailure("1 fee/" + value, FeeStatus.MESSAGE_CONSTRAINTS);

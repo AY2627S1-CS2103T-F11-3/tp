@@ -33,7 +33,8 @@ public class AddCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a player profile.\nParameters: "
             + PREFIX_NAME_FULL + "NAME " + PREFIX_SQUADNAME_FULL + "SQUAD " + PREFIX_POSITION_FULL + "POSITION "
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN] [" + PREFIX_GUARDIANCONTACT_FULL + "CONTACT] "
-            + "[" + PREFIX_AVAILABILITY_FULL + "true/false] [" + PREFIX_INJURY_FULL + "fit|injured] "
+            + "[" + PREFIX_AVAILABILITY_FULL + "true|false|available|unavailable] [" + PREFIX_INJURY_FULL
+            + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
             + "[" + PREFIX_TAG + "TAG]...\n"

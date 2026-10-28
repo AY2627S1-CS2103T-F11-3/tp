@@ -71,8 +71,10 @@ public class AddCommandParserTest {
     public void parse_optionalFieldsAndAliases_success() {
         Person expected = new PersonBuilder(player()).withGuardianName("Long Ox").withGuardianContact("99999999")
                 .withAvailability("unavailable").build();
-        assertParseSuccess(parser, REQUIRED + " guardian/Long Ox contact/99999999 available/FALSE",
+        assertParseSuccess(parser, REQUIRED + " guardian/Long Ox contact/99999999 availability/unavailable",
                 new AddCommand(expected));
+        assertParseSuccess(parser, REQUIRED + " available/FALSE",
+                new AddCommand(new PersonBuilder(player()).withAvailability("unavailable").build()));
         assertParseSuccess(parser, " av/f a L s E gc/99-99 99\t99 g/Long Ox" + REQUIRED, new AddCommand(expected));
         assertParseSuccess(parser, REQUIRED + " av/ t R u E ", new AddCommand(player()));
     }
@@ -113,8 +115,8 @@ public class AddCommandParserTest {
         for (String contact : new String[] {"", "000", "1234567", "123456789", "1234abcd", "+81234567"}) {
             assertParseFailure(parser, REQUIRED + " contact/" + contact, GuardianContact.MESSAGE_CONSTRAINTS);
         }
-        for (String availability : new String[] {"", "yes", "available", "true-false"}) {
-            assertParseFailure(parser, REQUIRED + " available/" + availability,
+        for (String availability : new String[] {"", "yes", "true-false"}) {
+            assertParseFailure(parser, REQUIRED + " availability/" + availability,
                     AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
         }
     }
@@ -127,7 +129,7 @@ public class AddCommandParserTest {
             {CliSyntax.PREFIX_POSITION, CliSyntax.PREFIX_POSITION_FULL},
             {CliSyntax.PREFIX_GUARDIANNAME, CliSyntax.PREFIX_GUARDIANNAME_FULL},
             {CliSyntax.PREFIX_GUARDIANCONTACT, CliSyntax.PREFIX_GUARDIANCONTACT_FULL},
-            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL}
+            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL, CliSyntax.PREFIX_AVAILABILITY_LEGACY}
         };
         String[] values = {"John Doe", "Soccer Stars", "Goalkeeper", "Jane Doe", "81234567", "true"};
         String[] bases = {" squad/Stars position/striker", " name/John position/striker",
@@ -145,9 +147,9 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_invalidValues_reportsFirstSuppliedField() {
-        assertParseFailure(parser, " available/no contact/abc" + REQUIRED,
+        assertParseFailure(parser, " availability/no contact/abc" + REQUIRED,
                 AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, " contact/abc available/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " contact/abc availability/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " pos/invalid sn/Stars! n/John@Doe", Position.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " sn/Stars! pos/invalid n/John@Doe", SquadName.MESSAGE_CONSTRAINTS);
     }

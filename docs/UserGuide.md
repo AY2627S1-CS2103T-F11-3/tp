@@ -90,7 +90,7 @@ Format: `help`
 
 Adds a player. Name, squad and position are required; the other fields are optional.
 
-Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…`
+Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [availability/true|false|available|unavailable] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…`
 
 | Field | Full prefix | Shorthand |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
 | Position | `position/` | `pos/` |
 | Guardian name | `guardian/` | `g/` |
 | Guardian contact | `contact/` | `gc/` |
-| Availability | `available/` | `av/` |
+| Availability | `availability/` | `av/` |
 | Injury status | `injury/` | None |
 | Fee payment status | `fee/` | None |
 | Consent status | `consent/` | None |
@@ -112,13 +112,14 @@ Format: `add name/NAME squad/SQUAD_NAME position/POSITION [guardian/GUARDIAN_NAM
   (for example, `goal-keeper` means `Goalkeeper`).
 * Guardian name and contact can be supplied independently. Omitted details display as `Not provided`; supplied empty
   values are rejected. Guardian contact numbers must have eight digits, ignoring whitespace and hyphens (for example, `8123-4567`).
-* Availability accepts `true` or `false`, ignoring case and whitespace, and defaults to `true`.
+* Availability accepts `true`, `false`, `available`, or `unavailable`, ignoring case and whitespace, and defaults to
+  `available`.
 * Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace, and defaults to
   `fit`. Empty or unsupported values, including `unknown` and Unicode look-alike letters, are rejected.
   The player table displays the value in the `Injury` column
   next to `Availability`; scroll horizontally if the column is outside the visible area.
 * Injury status and availability are independent. Recording `injury/injured` does not mark a player unavailable;
-  supply `av/false` as well if needed. Injury status does not affect the availability counts in `overview`.
+  supply `av/unavailable` as well if needed. Injury status does not affect the availability counts in `overview`.
 * Fee payment accepts ASCII `paid` or `unpaid` and defaults to `unpaid`; consent accepts ASCII `received` or `pending`
   and defaults to `pending`. Both ignore case and surrounding whitespace, and reject empty or unsupported
   values, including `unknown` and Unicode look-alike letters.
@@ -136,8 +137,8 @@ repeated field is reported from left to right.
 Examples:
 
 * `add name/John Doe squad/Soccer Stars position/Goalkeeper`
-* `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/false t/captain`
-* `add n/Alex Tan sn/U12 pos/Defender injury/injured av/false`
+* `add n/Mike Ox sn/Football Fellas pos/Striker g/Long Ox gc/9999-9999 av/unavailable t/captain`
+* `add n/Alex Tan sn/U12 pos/Defender injury/injured availability/unavailable`
 * `add n/Sam Lee sn/U12 pos/Midfielder fee/unpaid consent/pending`
 
 ### Listing all players: `list`
@@ -205,7 +206,7 @@ Example overview showing club totals and squad cards:
 
 Edits an existing player in SquadLink.
 
-Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [availability/true|false|available|unavailable] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending] [t/TAG]…​`
 
 * Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
@@ -229,7 +230,7 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
 Examples:
 *  `edit 1 n/John Doe` Edits the name of the 1st player to be `John Doe`.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd player to be `Betsy Crower` and clears all existing tags.
-*  `edit 2 av/false` Marks the 2nd player as unavailable.
+*  `edit 2 av/unavailable` Marks the 2nd player as unavailable.
 *  `edit 2 injury/fit` Records the 2nd player as fit, keeping their current availability.
 *  `edit 2 injury/injured` Records the 2nd player as injured without changing availability.
 *  `edit 2 fee/paid consent/received` Records payment and consent for the 2nd player.
@@ -244,7 +245,7 @@ Format: `mark INDEX [INDEX]... STATUS/VALUE`
 
 | Status | Prefix | Values |
 | --- | --- | --- |
-| Availability | `available/` or `av/` | `true`, `false` |
+| Availability | `availability/` or `av/` | `true`, `false`, `available`, `unavailable` |
 | Injury | `injury/` | `fit`, `injured` |
 | Fees | `fee/` | `paid`, `unpaid` |
 | Consent | `consent/` | `received`, `pending` |
@@ -297,12 +298,12 @@ Examples:
 
 Displays registered players that match squad, availability, injury, fee payment, or consent criteria.
 
-Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending]`
+Format: `filter [squad/SQUAD_NAME] [availability/true|false|available|unavailable] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending]`
 
 | Criterion | Full prefix | Shorthand | Supported values |
 | --- | --- | --- | --- |
 | Squad name | `squad/` | `sn/` | Non-blank text (letters, digits, hyphens, spaces) |
-| Availability | `available/` | `av/` | `true`, `false` |
+| Availability | `availability/` | `av/` | `true`, `false`, `available`, `unavailable` |
 | Injury status | `injury/` | None | `fit`, `injured` |
 | Fee payment status | `fee/` | None | `paid`, `unpaid` |
 | Consent status | `consent/` | None | `received`, `pending` |
@@ -311,8 +312,9 @@ Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [
   Specifying both long and shorthand forms for the same criterion (such as `squad/` and `sn/`) is rejected.
 - Squad names must not be blank and may contain only letters, digits, hyphens, and whitespace. Squad matching is
   case-sensitive; surrounding whitespace is trimmed, and repeated internal whitespace is treated as a single space.
-- Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
-  as `available`; `false` matches players stored as `unavailable`.
+- Availability accepts `true`, `false`, `available`, or `unavailable`, ignoring case and surrounding whitespace.
+  `true` and `available` match players stored as `available`; `false` and `unavailable` match players stored as
+  `unavailable`.
 - Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace.
 - Fee payment accepts ASCII `paid` or `unpaid`, ignoring case and surrounding whitespace.
 - Consent accepts ASCII `received` or `pending`, ignoring case and surrounding whitespace.
@@ -327,10 +329,10 @@ Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [
 Examples:
 
 - `filter squad/Soccer Stars`
-- `filter available/true`
+- `filter availability/available`
 - `filter injury/injured fee/unpaid`
-- `filter sn/Soccer Stars av/true fee/paid consent/received`
-- `filter sn/Football Fellas injury/fit av/false`
+- `filter sn/Soccer Stars av/available fee/paid consent/received`
+- `filter sn/Football Fellas injury/fit av/unavailable`
 
 ### Sorting displayed players: `sort`
 
@@ -463,13 +465,13 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker injury/fit`
+**Add** | `add name/NAME squad/SQUAD position/POSITION [guardian/GUARDIAN] [contact/CONTACT] [availability/true\|false\|available\|unavailable] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…` <br> Aliases: `n/`, `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `add n/James Ho sn/Soccer Stars pos/Striker av/available injury/fit`
 **Clear** | `clear`
-**Mark status** | `mark INDEX [INDEX]... STATUS/VALUE`<br> Choose one: `av/true\|false`, `injury/fit\|injured`, `fee/paid\|unpaid`, `consent/received\|pending`<br> e.g., `mark 1 3 fee/paid`
+**Mark status** | `mark INDEX [INDEX]... STATUS/VALUE`<br> Choose one: `av/true\|false\|available\|unavailable`, `injury/fit\|injured`, `fee/paid\|unpaid`, `consent/received\|pending`<br> e.g., `mark 1 3 av/available`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
-**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
+**Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [availability/true\|false\|available\|unavailable] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/unavailable`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter [squad/SQUAD_NAME] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true injury/fit fee/paid`
+**Filter** | `filter [squad/SQUAD_NAME] [availability/true\|false\|available\|unavailable] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/available injury/fit fee/paid`
 **Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`
 **List** | `list` (show all registered players, clear the current search or filter, and retain the sort order)
 **Main** | `main` (return to the main player list and preserve the current search, filter, sort order, and indexes)
