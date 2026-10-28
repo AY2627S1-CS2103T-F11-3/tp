@@ -295,13 +295,18 @@ Examples:
 
 ### Filtering players: `filter`
 
-Displays registered players that match squad, availability, injury, fee payment, or consent criteria.
+Displays registered players that match squad, player details, availability, injury, fee payment, or consent criteria.
 
-Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending]`
+Format: `filter [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [t/TAG] [r/KEYWORD] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending]`
 
 | Criterion | Full prefix | Shorthand | Supported values |
 | --- | --- | --- | --- |
 | Squad name | `squad/` | `sn/` | Non-blank text (letters, digits, hyphens, spaces) |
+| Position | `position/` | `pos/` | `Goalkeeper`, `Defender`, `Midfielder`, `Striker` |
+| Guardian name | `guardian/` | `g/` | Non-blank name (letters, digits, hyphens, spaces) |
+| Guardian contact | `contact/` | `gc/` | Eight digits; whitespace and hyphens are ignored |
+| Tag | None | `t/` | Alphanumeric text |
+| Remark | None | `r/` | Non-blank keyword or phrase |
 | Availability | `available/` | `av/` | `true`, `false` |
 | Injury status | `injury/` | None | `fit`, `injured` |
 | Fee payment status | `fee/` | None | `paid`, `unpaid` |
@@ -311,6 +316,9 @@ Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [
   Specifying both long and shorthand forms for the same criterion (such as `squad/` and `sn/`) is rejected.
 - Squad names must not be blank and may contain only letters, digits, hyphens, and whitespace. Squad matching is
   case-sensitive; surrounding whitespace is trimmed, and repeated internal whitespace is treated as a single space.
+- Position, guardian name, guardian contact, and tag use the same validation and exact matching as their respective
+  `add` fields. Players without a guardian detail do not match that guardian criterion. Remark matching is
+  case-insensitive and matches any remark containing the supplied keyword or phrase.
 - Availability accepts `true` or `false`, ignoring case and surrounding whitespace. `true` matches players stored
   as `available`; `false` matches players stored as `unavailable`.
 - Injury status accepts ASCII `fit` or `injured`, ignoring case and surrounding whitespace.
@@ -327,6 +335,8 @@ Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [
 Examples:
 
 - `filter squad/Soccer Stars`
+- `filter pos/Defender g/Jane Doe`
+- `filter gc/8123-4567 t/captain r/left foot`
 - `filter available/true`
 - `filter injury/injured fee/unpaid`
 - `filter sn/Soccer Stars av/true fee/paid consent/received`
@@ -469,7 +479,7 @@ Action | Format, Examples
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [t/TAG]…​`<br> e.g., `edit 2 injury/injured av/false`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**Filter** | `filter [squad/SQUAD_NAME] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/` <br> e.g., `filter sn/Soccer Stars av/true injury/fit fee/paid`
+**Filter** | `filter [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [t/TAG] [r/KEYWORD] [available/true\|false] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `pos/`, `g/`, `gc/`, `av/` <br> e.g., `filter pos/Defender t/captain`
 **Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`
 **List** | `list` (show all registered players, clear the current search or filter, and retain the sort order)
 **Main** | `main` (return to the main player list and preserve the current search, filter, sort order, and indexes)

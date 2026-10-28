@@ -5,9 +5,17 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +26,12 @@ import java.util.regex.Pattern;
 import seedu.address.logic.commands.FilterCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
+import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.MatchesFilterCriteriaPredicate;
+import seedu.address.model.person.Position;
 import seedu.address.model.person.SquadName;
+import seedu.address.model.tag.Tag;
 
 /**
  * Parses input arguments and creates a {@link FilterCommand}.
@@ -57,6 +69,17 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
     public static final String MESSAGE_DUPLICATE_SQUAD =
             "Error! Parameter " + PREFIX_SQUADNAME_FULL + " cannot be specified more than once!";
+    public static final String MESSAGE_MISSING_REMARK = "Error! Remark keyword must be specified!";
+    public static final String MESSAGE_DUPLICATE_POSITION = "Error! Parameter " + PREFIX_POSITION_FULL
+            + " cannot be specified more than once!";
+    public static final String MESSAGE_DUPLICATE_GUARDIAN = "Error! Parameter " + PREFIX_GUARDIANNAME_FULL
+            + " cannot be specified more than once!";
+    public static final String MESSAGE_DUPLICATE_CONTACT = "Error! Parameter " + PREFIX_GUARDIANCONTACT_FULL
+            + " cannot be specified more than once!";
+    public static final String MESSAGE_DUPLICATE_TAG = "Error! Parameter " + PREFIX_TAG
+            + " cannot be specified more than once!";
+    public static final String MESSAGE_DUPLICATE_REMARK = "Error! Parameter " + PREFIX_REMARK
+            + " cannot be specified more than once!";
 
 
     private static final Pattern PREFIX_TOKEN_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>/\\S+|\\S+/)");
@@ -79,6 +102,11 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         String injuryValue = null;
         String feeValue = null;
         String squadValue = null;
+        String positionValue = null;
+        String guardianValue = null;
+        String contactValue = null;
+        String tagValue = null;
+        String remarkValue = null;
         for (int index = 0; index < prefixes.size(); index++) {
             PrefixMatch prefix = prefixes.get(index);
             int valueEnd = index + 1 < prefixes.size() ? prefixes.get(index + 1).start() : args.length();
@@ -108,6 +136,31 @@ public class FilterCommandParser implements Parser<FilterCommand> {
                     throw new ParseException(MESSAGE_DUPLICATE_SQUAD);
                 }
                 squadValue = value;
+            } else if (isPositionPrefix(prefix.value())) {
+                if (positionValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_POSITION);
+                }
+                positionValue = value;
+            } else if (isGuardianPrefix(prefix.value())) {
+                if (guardianValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_GUARDIAN);
+                }
+                guardianValue = value;
+            } else if (isContactPrefix(prefix.value())) {
+                if (contactValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_CONTACT);
+                }
+                contactValue = value;
+            } else if (isTagPrefix(prefix.value())) {
+                if (tagValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_TAG);
+                }
+                tagValue = value;
+            } else if (isRemarkPrefix(prefix.value())) {
+                if (remarkValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_REMARK);
+                }
+                remarkValue = value;
             } else {
                 throw invalidFormat();
             }
@@ -118,7 +171,12 @@ public class FilterCommandParser implements Parser<FilterCommand> {
                 parseAvailability(availabilityValue),
                 parseInjury(injuryValue),
                 parseFee(feeValue),
-                parseConsent(consentValue)
+                parseConsent(consentValue),
+                parsePosition(positionValue),
+                parseGuardianName(guardianValue),
+                parseProfileValue(contactValue, GuardianContact::new),
+                parseTag(tagValue),
+                parseRemark(remarkValue)
         ));
     }
 
@@ -140,7 +198,12 @@ public class FilterCommandParser implements Parser<FilterCommand> {
                 || isAvailabilityPrefix(prefix)
                 || isInjuryPrefix(prefix)
                 || isFeePrefix(prefix)
-                || isConsentPrefix(prefix);
+                || isConsentPrefix(prefix)
+                || isPositionPrefix(prefix)
+                || isGuardianPrefix(prefix)
+                || isContactPrefix(prefix)
+                || isTagPrefix(prefix)
+                || isRemarkPrefix(prefix);
     }
 
     private boolean isAvailabilityPrefix(String prefix) {
@@ -161,6 +224,27 @@ public class FilterCommandParser implements Parser<FilterCommand> {
 
     private boolean isSquadPrefix(String prefix) {
         return prefix.equals(PREFIX_SQUADNAME.getPrefix()) || prefix.equals(PREFIX_SQUADNAME_FULL.getPrefix());
+    }
+
+    private boolean isPositionPrefix(String prefix) {
+        return prefix.equals(PREFIX_POSITION.getPrefix()) || prefix.equals(PREFIX_POSITION_FULL.getPrefix());
+    }
+
+    private boolean isGuardianPrefix(String prefix) {
+        return prefix.equals(PREFIX_GUARDIANNAME.getPrefix()) || prefix.equals(PREFIX_GUARDIANNAME_FULL.getPrefix());
+    }
+
+    private boolean isContactPrefix(String prefix) {
+        return prefix.equals(PREFIX_GUARDIANCONTACT.getPrefix())
+                || prefix.equals(PREFIX_GUARDIANCONTACT_FULL.getPrefix());
+    }
+
+    private boolean isTagPrefix(String prefix) {
+        return prefix.equals(PREFIX_TAG.getPrefix());
+    }
+
+    private boolean isRemarkPrefix(String prefix) {
+        return prefix.equals(PREFIX_REMARK.getPrefix());
     }
 
     private Optional<Availability> parseAvailability(String value) throws ParseException {
@@ -232,6 +316,54 @@ public class FilterCommandParser implements Parser<FilterCommand> {
             return Optional.of(new SquadName(value));
         } catch (IllegalArgumentException exception) {
             throw new ParseException(SquadName.MESSAGE_CONSTRAINTS, exception);
+        }
+    }
+
+    private Optional<Tag> parseTag(String value) throws ParseException {
+        if (value == null) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(ParserUtil.parseTag(value));
+        } catch (IllegalArgumentException exception) {
+            throw new ParseException(exception.getMessage(), exception);
+        }
+    }
+
+    private Optional<Position> parsePosition(String value) throws ParseException {
+        Optional<Position> position = parseProfileValue(value, Position::new);
+        if (position.isPresent() && position.get().isUnassigned()) {
+            throw new ParseException(Position.MESSAGE_CONSTRAINTS);
+        }
+        return position;
+    }
+
+    private Optional<GuardianName> parseGuardianName(String value) throws ParseException {
+        if ("unassigned".equalsIgnoreCase(value)) {
+            throw new ParseException(GuardianName.MESSAGE_CONSTRAINTS);
+        }
+        return parseProfileValue(value, GuardianName::new);
+    }
+
+    private Optional<String> parseRemark(String value) throws ParseException {
+        if (value == null) {
+            return Optional.empty();
+        }
+        if (value.isEmpty()) {
+            throw new ParseException(MESSAGE_MISSING_REMARK);
+        }
+        return Optional.of(value);
+    }
+
+    private <T> Optional<T> parseProfileValue(String value, java.util.function.Function<String, T> constructor)
+            throws ParseException {
+        if (value == null) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(constructor.apply(value));
+        } catch (IllegalArgumentException exception) {
+            throw new ParseException(exception.getMessage(), exception);
         }
     }
 

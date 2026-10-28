@@ -10,8 +10,12 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.FilterCommand;
 import seedu.address.model.person.Availability;
+import seedu.address.model.person.GuardianContact;
+import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.MatchesFilterCriteriaPredicate;
+import seedu.address.model.person.Position;
 import seedu.address.model.person.SquadName;
+import seedu.address.model.tag.Tag;
 
 public class FilterCommandParserTest {
     private final FilterCommandParser parser = new FilterCommandParser();
@@ -53,9 +57,19 @@ public class FilterCommandParserTest {
     }
 
     @Test
+    public void parse_playerDetailCriteria_returnsFilterCommand() {
+        assertParseSuccess(parser, "position/Defender guardian/Jane Doe contact/8123-4567 t/captain r/left foot",
+                commandWithPlayerDetails("Defender", "Jane Doe", "81234567", "captain", "left foot"));
+        assertParseSuccess(parser, "pos/goal-keeper g/Jane Doe gc/81234567 t/friend r/RELIABLE",
+                commandWithPlayerDetails("Goalkeeper", "Jane Doe", "81234567", "friend", "RELIABLE"));
+    }
+
+    @Test
     public void parse_invalidSquadName_throwsParseException() {
         assertParseFailure(parser, "squad/Team@A", SquadName.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "sn/Team_A", SquadName.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "pos/Unassigned", Position.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "g/unassigned", GuardianName.MESSAGE_CONSTRAINTS);
     }
 
     @Test
@@ -69,6 +83,7 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "injury/", FilterCommandParser.MESSAGE_MISSING_INJURY);
         assertParseFailure(parser, "fee/", FilterCommandParser.MESSAGE_MISSING_FEE);
         assertParseFailure(parser, "consent/", FilterCommandParser.MESSAGE_MISSING_CONSENT);
+        assertParseFailure(parser, "r/", FilterCommandParser.MESSAGE_MISSING_REMARK);
     }
 
     @Test
@@ -96,6 +111,11 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "injury/fit injury/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
         assertParseFailure(parser, "fee/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
         assertParseFailure(parser, "consent/received consent/pending", FilterCommandParser.MESSAGE_DUPLICATE_CONSENT);
+        assertParseFailure(parser, "pos/Defender position/Striker", FilterCommandParser.MESSAGE_DUPLICATE_POSITION);
+        assertParseFailure(parser, "g/Jane guardian/Jill", FilterCommandParser.MESSAGE_DUPLICATE_GUARDIAN);
+        assertParseFailure(parser, "gc/81234567 contact/87654321", FilterCommandParser.MESSAGE_DUPLICATE_CONTACT);
+        assertParseFailure(parser, "t/captain t/friend", FilterCommandParser.MESSAGE_DUPLICATE_TAG);
+        assertParseFailure(parser, "r/left r/right", FilterCommandParser.MESSAGE_DUPLICATE_REMARK);
     }
 
     @Test
@@ -108,7 +128,6 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "/squad Team A", expectedMessage);
         assertParseFailure(parser, "/availability true", expectedMessage);
         assertParseFailure(parser, "availability/true", expectedMessage);
-        assertParseFailure(parser, "position/Goalkeeper", expectedMessage);
     }
 
     private FilterCommand command(String squadName, String availability,
@@ -122,4 +141,14 @@ public class FilterCommandParserTest {
         return new FilterCommand(new MatchesFilterCriteriaPredicate(
                 squad, available, injuryStatus, feeStatus, consentStatus));
     }
+
+    private FilterCommand commandWithPlayerDetails(String position, String guardianName, String guardianContact,
+                                                   String tag, String remarkKeyword) {
+        return new FilterCommand(new MatchesFilterCriteriaPredicate(
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.of(new Position(position)), Optional.of(new GuardianName(guardianName)),
+                Optional.of(new GuardianContact(guardianContact)), Optional.of(new Tag(tag)),
+                Optional.of(remarkKeyword)));
+    }
+
 }

@@ -5,9 +5,14 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
@@ -22,14 +27,19 @@ public class FilterCommand extends Command {
     public static final String COMMAND_WORD = "filter";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Displays players matching squad and/or status criteria.\n"
+            + ": Displays players matching the supplied criteria.\n"
             + "Parameters: [" + PREFIX_SQUADNAME_FULL + "SQUAD_NAME] ["
             + PREFIX_AVAILABILITY_FULL + "true|false] ["
             + PREFIX_INJURY_FULL + "fit|injured] ["
             + PREFIX_FEE_FULL + "paid|unpaid] ["
-            + PREFIX_CONSENT_FULL + "received|pending] (at least one criterion is required)\n"
+            + PREFIX_CONSENT_FULL + "received|pending] ["
+            + PREFIX_POSITION + "POSITION] [" + PREFIX_GUARDIANNAME + "GUARDIAN_NAME] ["
+            + PREFIX_GUARDIANCONTACT + "TELEPHONE_NUMBER] [" + PREFIX_TAG + "TAG] [" + PREFIX_REMARK
+            + "KEYWORD] (at least one criterion is required)\n"
             + "Aliases: " + PREFIX_SQUADNAME + " for " + PREFIX_SQUADNAME_FULL + ", "
-            + PREFIX_AVAILABILITY + " for " + PREFIX_AVAILABILITY_FULL + "\n"
+            + PREFIX_AVAILABILITY + " for " + PREFIX_AVAILABILITY_FULL + ", "
+            + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", and " + PREFIX_GUARDIANCONTACT
+            + " for their full prefixes\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_SQUADNAME_FULL + "Soccer Stars "
             + PREFIX_AVAILABILITY_FULL + "true "
             + PREFIX_INJURY_FULL + "injured "

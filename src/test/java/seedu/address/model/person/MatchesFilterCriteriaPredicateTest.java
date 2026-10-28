@@ -96,6 +96,24 @@ public class MatchesFilterCriteriaPredicateTest {
     }
 
     @Test
+    public void test_playerDetailCriteria_returnsExpectedResult() {
+        Person player = new PersonBuilder().withPosition("Defender").withGuardianName("Jane Doe")
+                .withGuardianContact("81234567").withTags("captain").withRemark("Reliable left footed player")
+                .build();
+        MatchesFilterCriteriaPredicate predicate = new MatchesFilterCriteriaPredicate(
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.of(new Position("Defender")), Optional.of(new GuardianName("Jane Doe")),
+                Optional.of(new GuardianContact("81234567")), Optional.of(new seedu.address.model.tag.Tag("captain")),
+                Optional.of("LEFT FOOTED"));
+
+        assertTrue(predicate.test(player));
+        assertFalse(new MatchesFilterCriteriaPredicate(
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.of(new Position("Striker")), Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.empty()).test(player));
+    }
+
+    @Test
     public void test_squadWhitespaceAndCase_returnsExpectedResult() {
         Person player = new PersonBuilder().withSquadName(" Soccer   Stars ").build();
         MatchesFilterCriteriaPredicate normalizedPredicate = new MatchesFilterCriteriaPredicate(
