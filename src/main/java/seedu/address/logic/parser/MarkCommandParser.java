@@ -4,8 +4,11 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 
 import java.util.ArrayList;
@@ -33,8 +36,11 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     private static final Map<String, PlayerStatusField> STATUS_PREFIXES = Map.of(
             PREFIX_AVAILABILITY.getPrefix(), PlayerStatusField.AVAILABILITY,
             PREFIX_AVAILABILITY_FULL.getPrefix(), PlayerStatusField.AVAILABILITY,
+            PREFIX_INJURY.getPrefix(), PlayerStatusField.INJURY,
             PREFIX_INJURY_FULL.getPrefix(), PlayerStatusField.INJURY,
+            PREFIX_FEE.getPrefix(), PlayerStatusField.FEE,
             PREFIX_FEE_FULL.getPrefix(), PlayerStatusField.FEE,
+            PREFIX_CONSENT.getPrefix(), PlayerStatusField.CONSENT,
             PREFIX_CONSENT_FULL.getPrefix(), PlayerStatusField.CONSENT);
 
     @Override
