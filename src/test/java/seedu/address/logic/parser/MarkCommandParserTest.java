@@ -39,6 +39,9 @@ public class MarkCommandParserTest {
         assertStatus("fee/unpaid", PlayerStatusField.FEE, "unpaid");
         assertStatus("consent/RECEIVED", PlayerStatusField.CONSENT, "received");
         assertStatus("consent/pending", PlayerStatusField.CONSENT, "pending");
+        assertStatus("inj/INJURED", PlayerStatusField.INJURY, "injured");
+        assertStatus("f/paid", PlayerStatusField.FEE, "paid");
+        assertStatus("c/received", PlayerStatusField.CONSENT, "received");
     }
 
     @Test
@@ -58,7 +61,8 @@ public class MarkCommandParserTest {
     @Test
     public void parse_missingOrMultipleStatuses_showsSingleStatusGuidance() {
         for (String input : List.of("", "1 3", "1 fee/paid consent/received", "1 fee/paid fee/paid",
-                "1 av/true available/false", "1 fee/paid unknown/value")) {
+                "1 av/true available/false", "1 fee/paid unknown/value",
+                "1 inj/fit injury/injured", "1 f/paid f/unpaid", "1 c/pending fee/paid")) {
             assertParseFailure(parser, input, MarkCommandParser.MESSAGE_ONE_STATUS);
         }
     }
@@ -94,6 +98,12 @@ public class MarkCommandParserTest {
         assertDeferredFailure("1 consent/", ConsentStatus.MESSAGE_CONSTRAINTS);
         assertDeferredFailure("1 consent/true", ConsentStatus.MESSAGE_CONSTRAINTS);
         assertDeferredFailure("1 consent/rece\u0131ved", ConsentStatus.MESSAGE_CONSTRAINTS);
+        // Empty and invalid values represent the two failure partitions for each new alias.
+        for (String value : List.of("", "unknown")) {
+            assertDeferredFailure("1 inj/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("1 f/" + value, FeeStatus.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("1 c/" + value, ConsentStatus.MESSAGE_CONSTRAINTS);
+        }
     }
 
     @Test

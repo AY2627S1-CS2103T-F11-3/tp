@@ -31,6 +31,8 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.tag.Tag;
@@ -45,6 +47,48 @@ public class EditCommandParserTest {
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
 
     private EditCommandParser parser = new EditCommandParser();
+
+    @Test
+    public void parse_statusShorthands_success() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
+        assertParseSuccess(parser, "2 inj/INJURED f/paid c/received", new EditCommand(INDEX_SECOND_PERSON, descriptor));
+        assertParseSuccess(parser, "2 injury/injured f/paid consent/received",
+                new EditCommand(INDEX_SECOND_PERSON, descriptor));
+    }
+
+    @Test
+    public void parse_statusShorthandsWithInvalidValues_failure() {
+        String[] prefixes = {"inj/", "f/", "c/"};
+        String[] messages = {InjuryStatus.MESSAGE_CONSTRAINTS, FeeStatus.MESSAGE_CONSTRAINTS,
+            ConsentStatus.MESSAGE_CONSTRAINTS};
+        for (int i = 0; i < prefixes.length; i++) {
+            for (String value : new String[] {"", "unknown"}) {
+                assertParseFailure(parser, "2 " + prefixes[i] + value, messages[i]);
+            }
+        }
+    }
+
+    @Test
+    public void parse_duplicateStatusAliases_failure() {
+        Prefix[][] aliases = {
+            {CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL},
+            {CliSyntax.PREFIX_FEE, CliSyntax.PREFIX_FEE_FULL},
+            {CliSyntax.PREFIX_CONSENT, CliSyntax.PREFIX_CONSENT_FULL}
+        };
+        String[] values = {"injured", "paid", "received"};
+        for (int i = 0; i < aliases.length; i++) {
+            Prefix shortPrefix = aliases[i][0];
+            Prefix fullPrefix = aliases[i][1];
+            String value = values[i];
+            assertParseFailure(parser, "2 " + shortPrefix + value + " " + shortPrefix + value,
+                    Messages.getErrorMessageForDuplicatePrefixes(shortPrefix));
+            assertParseFailure(parser, "2 " + shortPrefix + value + " " + fullPrefix + value,
+                    Messages.getErrorMessageForDuplicatePrefixes(shortPrefix, fullPrefix));
+            assertParseFailure(parser, "2 " + fullPrefix + value + " " + shortPrefix + value,
+                    Messages.getErrorMessageForDuplicatePrefixes(shortPrefix, fullPrefix));
+        }
+    }
 
     @Test
     public void parse_injuryStatusAloneAndCombined_success() {
