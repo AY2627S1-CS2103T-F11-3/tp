@@ -125,6 +125,12 @@ public class ModelManager implements Model {
         versionedAddressBook.commit();
     }
 
+    @Override
+    public void rollbackAddressBook() {
+        versionedAddressBook.rollbackLastCommit();
+        updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+    }
+
     //=========== Filtered Person List Accessors =============================================================
 
     /**

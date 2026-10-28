@@ -100,4 +100,9 @@ public interface Model {
      * Saves the current address book state for undo/redo history.
      */
     void commitAddressBook();
+
+    /**
+     * Rolls back the address book data and undo history by one commit.
+     */
+    void rollbackAddressBook();
 }

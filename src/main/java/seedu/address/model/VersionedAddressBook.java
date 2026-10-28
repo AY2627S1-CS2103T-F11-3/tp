@@ -106,4 +106,15 @@ public class VersionedAddressBook extends AddressBook {
             super("Current state pointer at end of addressBookStateList, unable to redo.");
         }
     }
+
+    /**
+     * Discards the most recent commit and restores the previous state when saving fails.
+     */
+    public void rollbackLastCommit() {
+        if (currentStatePointer > 0 && currentStatePointer == addressBookStateList.size() - 1) {
+            addressBookStateList.remove(currentStatePointer);
+            currentStatePointer--;
+            resetData(addressBookStateList.get(currentStatePointer));
+        }
+    }
 }

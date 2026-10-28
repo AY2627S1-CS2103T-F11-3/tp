@@ -12,9 +12,7 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
-import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
 import seedu.address.storage.Storage;
 
@@ -47,12 +45,10 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         Command command = addressBookParser.parseCommand(commandText);
-        ReadOnlyAddressBook addressBookBeforeCommand = command.isAddressBookMutating()
-                ? new AddressBook(model.getAddressBook()) : null;
         CommandResult commandResult = command.execute(model);
 
         if (command.isAddressBookMutating()) {
-            saveAddressBook(addressBookBeforeCommand);
+            saveAddressBook();
         }
 
         return commandResult;
@@ -61,11 +57,11 @@ public class LogicManager implements Logic {
     /**
      * Saves the current address book and restores its previous state if saving fails.
      */
-    private void saveAddressBook(ReadOnlyAddressBook addressBookBeforeCommand) throws CommandException {
+    private void saveAddressBook() throws CommandException {
         try {
             storage.saveAddressBook(model.getAddressBook());
         } catch (IOException ioe) {
-            model.setAddressBook(addressBookBeforeCommand);
+            model.rollbackAddressBook();
             String errorFormat = ioe instanceof AccessDeniedException
                     ? FILE_OPS_PERMISSION_ERROR_FORMAT
                     : FILE_OPS_ERROR_FORMAT;

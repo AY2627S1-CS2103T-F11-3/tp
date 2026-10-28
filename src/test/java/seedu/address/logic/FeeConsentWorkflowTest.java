@@ -150,6 +150,7 @@ public class FeeConsentWorkflowTest {
         ModelManager model = new ModelManager();
         Person original = new PersonBuilder().withFeeStatus("paid").withConsentStatus("received").build();
         model.addPerson(original);
+        model.commitAddressBook();
         JsonAddressBookStorage storage = new JsonAddressBookStorage(directory.resolve("players.json")) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {

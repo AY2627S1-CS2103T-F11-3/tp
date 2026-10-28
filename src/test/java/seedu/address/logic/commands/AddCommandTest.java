@@ -170,7 +170,12 @@ public class AddCommandTest {
 
         @Override
         public void commitAddressBook() {
-            // Can be left empty or throw AssertionError depending on the test
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void rollbackAddressBook() {
+            throw new AssertionError("This method should not be called.");
         }
     }
 
@@ -208,6 +213,11 @@ public class AddCommandTest {
         public void addPerson(Person person) {
             requireNonNull(person);
             personsAdded.add(person);
+        }
+
+        @Override
+        public void commitAddressBook() {
+            // Called by AddCommand#execute upon successful addition
         }
 
         @Override
