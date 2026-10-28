@@ -100,9 +100,10 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
-For `delete 1`, `DeleteCommand` first obtains the currently displayed player list from the `Model` and
-resolves the index against that list. It then deletes the selected player. After the command succeeds,
-`LogicManager` saves the updated address book through `Storage` before returning the result to the UI.
+For `delete 1`, `LogicManager` first snapshots the address book. `DeleteCommand` then obtains the currently
+displayed player list from the `Model`, resolves the index against that list, and deletes the selected player.
+`LogicManager` saves the updated address book through `Storage`; if saving fails, it restores the snapshot and
+returns an error instead of the command result.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
