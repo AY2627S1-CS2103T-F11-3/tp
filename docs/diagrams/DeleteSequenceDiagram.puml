@@ -12,6 +12,7 @@ end box
 
 box Model MODEL_COLOR_T1
 participant "m:Model" as Model MODEL_COLOR
+participant "before:AddressBook" as AddressBookBefore MODEL_COLOR
 end box
 
 box Storage STORAGE_COLOR_T1
@@ -50,6 +51,19 @@ destroy DeleteCommandParser
 AddressBookParser --> LogicManager : d
 deactivate AddressBookParser
 
+LogicManager -> Model : getAddressBook()
+activate Model
+
+Model --> LogicManager : addressBook
+deactivate Model
+
+create AddressBookBefore
+LogicManager -> AddressBookBefore : new AddressBook(addressBook)
+activate AddressBookBefore
+
+AddressBookBefore --> LogicManager
+deactivate AddressBookBefore
+
 LogicManager -> DeleteCommand : execute(m)
 activate DeleteCommand
 
@@ -83,12 +97,26 @@ activate Model
 Model --> LogicManager : addressBook
 deactivate Model
 
-LogicManager -> Storage : saveAddressBook(addressBook)
-activate Storage
+alt save succeeds
+    LogicManager -> Storage : saveAddressBook(addressBook)
+    activate Storage
 
-Storage --> LogicManager
-deactivate Storage
+    Storage --> LogicManager
+    deactivate Storage
+    [<--LogicManager : CommandResult
+else save fails
+    LogicManager -> Storage : saveAddressBook(addressBook)
+    activate Storage
 
-[<--LogicManager
+    Storage --> LogicManager : IOException
+    deactivate Storage
+    LogicManager -> Model : setAddressBook(before)
+    activate Model
+
+    Model --> LogicManager
+    deactivate Model
+    [<--LogicManager : CommandException
+end
+
 deactivate LogicManager
 @enduml

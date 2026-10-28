@@ -100,6 +100,11 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
+For `delete 1`, `LogicManager` first snapshots the address book. `DeleteCommand` then obtains the currently
+displayed player list from the `Model`, resolves the index against that list, and deletes the selected player.
+`LogicManager` saves the updated address book through `Storage`; if saving fails, it restores the snapshot and
+returns an error instead of the command result.
+
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
 
@@ -134,8 +139,8 @@ It omits individual player fields for clarity; the detailed player data model be
 
 The `Model` component,
 
-* stores the address book data i.e., all players (which are contained in a `UniquePersonList` object).
-* stores the players selected by the current filter, such as search results, in a separate _filtered_ list.
+* stores the roster data i.e., all player records (`Person` objects, contained in a `UniquePersonList` object).
+* stores the player records selected by the current filter, such as search results, in a separate _filtered_ list.
   A _sorted_ view is layered over it for the `sort` command. The model exposes this unmodifiable
   `ObservableList<Person>` to the UI, so the UI updates when the filter or sort order changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
