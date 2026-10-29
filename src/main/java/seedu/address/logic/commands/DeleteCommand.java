@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
@@ -45,6 +46,7 @@ public class DeleteCommand extends Command {
 
     private final List<Index> targetIndices;
     private final List<String> targetNames;
+    private final List<String> invalidIndices;
 
     /**
      * Creates a command to delete the player at {@code targetIndex}.
@@ -61,12 +63,29 @@ public class DeleteCommand extends Command {
     }
 
     private DeleteCommand(List<Index> targetIndices, List<String> targetNames) {
+        this(targetIndices, targetNames, List.of());
+    }
+
+    private DeleteCommand(List<Index> targetIndices, List<String> targetNames, List<String> invalidIndices) {
         requireNonNull(targetIndices);
         requireNonNull(targetNames);
-        checkArgument(targetIndices.isEmpty() != targetNames.isEmpty(), "Supply either indices or names.");
+        requireNonNull(invalidIndices);
+        long selectionCount = Stream.of(targetIndices, targetNames, invalidIndices)
+                .filter(selection -> !selection.isEmpty()).count();
+        checkArgument(selectionCount == 1, "Supply indices, names, or invalid index arguments.");
         checkArgument(targetNames.stream().allMatch(name -> !name.isBlank()), "Names must not be blank.");
+        checkArgument(invalidIndices.stream().allMatch(index -> !index.isBlank()),
+                "Invalid indices must not be blank.");
         this.targetIndices = List.copyOf(targetIndices);
         this.targetNames = List.copyOf(targetNames);
+        this.invalidIndices = List.copyOf(invalidIndices);
+    }
+
+    /**
+     * Creates a rejected deletion whose feedback uses the displayed index range at execution time.
+     */
+    public static DeleteCommand forInvalidIndices(List<String> invalidIndices) {
+        return new DeleteCommand(List.of(), List.of(), invalidIndices);
     }
 
     /**
@@ -79,12 +98,27 @@ public class DeleteCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+        if (!invalidIndices.isEmpty()) {
+            throw new CommandException(formatInvalidIndices(model.getFilteredPersonList().size()));
+        }
         List<Person> personsToDelete = targetNames.isEmpty()
                 ? resolveIndices(model.getFilteredPersonList())
                 : resolveNames(model);
         personsToDelete.forEach(model::deletePerson);
         model.commitAddressBook();
         return new CommandResult(formatSuccess(personsToDelete));
+    }
+
+    private String formatInvalidIndices(int displayedCount) {
+        String arguments = invalidIndices.stream().map(index -> "'" + index + "'")
+                .collect(Collectors.joining(", "));
+        String problem = invalidIndices.size() == 1 ? "Invalid index: " : "Invalid indices: ";
+        String guidance = switch (displayedCount) {
+            case 0 -> MESSAGE_NO_DISPLAYED_PLAYERS;
+            case 1 -> "Only index 1 is available.";
+            default -> String.format("Enter whole-number indices from 1 to %d.", displayedCount);
+        };
+        return problem + arguments + ". " + guidance + " No players deleted.";
     }
 
     /**
@@ -169,7 +203,8 @@ public class DeleteCommand extends Command {
         }
 
         return targetIndices.equals(otherDeleteCommand.targetIndices)
-                && targetNames.equals(otherDeleteCommand.targetNames);
+                && targetNames.equals(otherDeleteCommand.targetNames)
+                && invalidIndices.equals(otherDeleteCommand.invalidIndices);
     }
 
     @Override
@@ -177,6 +212,7 @@ public class DeleteCommand extends Command {
         return new ToStringBuilder(this)
                 .add("targetIndices", targetIndices)
                 .add("targetNames", targetNames)
+                .add("invalidIndices", invalidIndices)
                 .toString();
     }
 }

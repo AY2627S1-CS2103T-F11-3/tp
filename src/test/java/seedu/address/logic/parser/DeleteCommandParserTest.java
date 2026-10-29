@@ -1,10 +1,7 @@
 package seedu.address.logic.parser;
 
-import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
-import static seedu.address.logic.Messages.MESSAGE_INDEX_TOO_LARGE;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
-import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -57,30 +54,41 @@ public class DeleteCommandParserTest {
     }
 
     @Test
-    public void parse_nonNumericIndex_throwsParseException() {
-        assertParseFailure(parser, "abc", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1a", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1.5", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1e2", MESSAGE_NON_NUMERIC_INDEX);
+    public void parse_nonNumericIndex_defersInvalidArguments() {
+        assertParseSuccess(parser, "abc",
+                DeleteCommand.forInvalidIndices(List.of("abc")));
+        assertParseSuccess(parser, "1a",
+                DeleteCommand.forInvalidIndices(List.of("1a")));
+        assertParseSuccess(parser, "1.5",
+                DeleteCommand.forInvalidIndices(List.of("1.5")));
+        assertParseSuccess(parser, "1e2",
+                DeleteCommand.forInvalidIndices(List.of("1e2")));
     }
 
     @Test
-    public void parse_signedIndex_throwsParseException() {
-        assertParseFailure(parser, "-1", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "+1", MESSAGE_NON_NUMERIC_INDEX);
+    public void parse_signedIndex_defersInvalidArguments() {
+        assertParseSuccess(parser, "-1",
+                DeleteCommand.forInvalidIndices(List.of("-1")));
+        assertParseSuccess(parser, "+1",
+                DeleteCommand.forInvalidIndices(List.of("+1")));
     }
 
     @Test
-    public void parse_zeroIndex_throwsParseException() {
-        assertParseFailure(parser, "0", MESSAGE_INDEX_BELOW_ONE);
-        assertParseFailure(parser, " 000 ", MESSAGE_INDEX_BELOW_ONE);
+    public void parse_zeroIndex_defersInvalidArguments() {
+        assertParseSuccess(parser, "0",
+                DeleteCommand.forInvalidIndices(List.of("0")));
+        assertParseSuccess(parser, " 000 ",
+                DeleteCommand.forInvalidIndices(List.of("000")));
     }
 
     @Test
-    public void parse_extraArguments_throwsParseException() {
-        assertParseFailure(parser, "1 abc", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1 /squad Team", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1,2", MESSAGE_NON_NUMERIC_INDEX);
+    public void parse_extraArguments_defersInvalidArguments() {
+        assertParseSuccess(parser, "1 abc",
+                DeleteCommand.forInvalidIndices(List.of("abc")));
+        assertParseSuccess(parser, "1 /squad Team",
+                DeleteCommand.forInvalidIndices(List.of("/squad", "Team")));
+        assertParseSuccess(parser, "1,2",
+                DeleteCommand.forInvalidIndices(List.of("1,2")));
     }
 
     @Test
@@ -98,17 +106,35 @@ public class DeleteCommandParserTest {
     }
 
     @Test
-    public void parse_multipleInvalidIndices_reportsFirstError() {
-        assertParseFailure(parser, "0 abc", MESSAGE_INDEX_BELOW_ONE);
-        assertParseFailure(parser, "abc 0", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1 0 abc", MESSAGE_INDEX_BELOW_ONE);
-        assertParseFailure(parser, "1 2147483648 abc", MESSAGE_INDEX_TOO_LARGE);
+    public void parse_multipleInvalidIndices_collectsInvalidArguments() {
+        assertParseSuccess(parser, "0 abc",
+                DeleteCommand.forInvalidIndices(List.of("0", "abc")));
+        assertParseSuccess(parser, "abc 0",
+                DeleteCommand.forInvalidIndices(List.of("abc", "0")));
+        assertParseSuccess(parser, "1 0 abc",
+                DeleteCommand.forInvalidIndices(List.of("0", "abc")));
+        assertParseSuccess(parser, "1 2147483648 abc",
+                DeleteCommand.forInvalidIndices(List.of("2147483648", "abc")));
     }
 
     @Test
-    public void parse_integerOverflow_throwsParseException() {
-        assertParseFailure(parser, "2147483648", MESSAGE_INDEX_TOO_LARGE);
-        assertParseFailure(parser, "999999999999999999999999999999", MESSAGE_INDEX_TOO_LARGE);
+    public void parse_invalidBatchArgument_collectsInvalidArguments() {
+        assertParseSuccess(parser, "2 abc 4",
+                DeleteCommand.forInvalidIndices(List.of("abc")));
+        assertParseSuccess(parser, "2\tabc\t4",
+                DeleteCommand.forInvalidIndices(List.of("abc")));
+        assertParseSuccess(parser, "2 4 abc",
+                DeleteCommand.forInvalidIndices(List.of("abc")));
+        assertParseSuccess(parser, "2 abc def",
+                DeleteCommand.forInvalidIndices(List.of("abc", "def")));
+    }
+
+    @Test
+    public void parse_integerOverflow_defersInvalidArguments() {
+        assertParseSuccess(parser, "2147483648",
+                DeleteCommand.forInvalidIndices(List.of("2147483648")));
+        assertParseSuccess(parser, "999999999999999999999999999999",
+                DeleteCommand.forInvalidIndices(List.of("999999999999999999999999999999")));
     }
 
     @Test
@@ -161,10 +187,13 @@ public class DeleteCommandParserTest {
     }
 
     @Test
-    public void parse_namePrefixWithoutBoundary_throwsParseException() {
-        assertParseFailure(parser, "/names John Doe", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "/nameJohn Doe", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "1n/John Doe", MESSAGE_NON_NUMERIC_INDEX);
+    public void parse_namePrefixWithoutBoundary_defersInvalidArguments() {
+        assertParseSuccess(parser, "/names John Doe",
+                DeleteCommand.forInvalidIndices(List.of("/names", "John", "Doe")));
+        assertParseSuccess(parser, "/nameJohn Doe",
+                DeleteCommand.forInvalidIndices(List.of("/nameJohn", "Doe")));
+        assertParseSuccess(parser, "1n/John Doe",
+                DeleteCommand.forInvalidIndices(List.of("1n/John", "Doe")));
     }
 
     @Test
@@ -180,9 +209,12 @@ public class DeleteCommandParserTest {
     }
 
     @Test
-    public void parse_unsupportedNamePrefixes_throwsParseException() {
-        assertParseFailure(parser, "/name John Doe", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "N/John Doe", MESSAGE_NON_NUMERIC_INDEX);
-        assertParseFailure(parser, "NAME/John Doe", MESSAGE_NON_NUMERIC_INDEX);
+    public void parse_unsupportedNamePrefixes_defersInvalidArguments() {
+        assertParseSuccess(parser, "/name John Doe",
+                DeleteCommand.forInvalidIndices(List.of("/name", "John", "Doe")));
+        assertParseSuccess(parser, "N/John Doe",
+                DeleteCommand.forInvalidIndices(List.of("N/John", "Doe")));
+        assertParseSuccess(parser, "NAME/John Doe",
+                DeleteCommand.forInvalidIndices(List.of("NAME/John", "Doe")));
     }
 }
