@@ -15,9 +15,11 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.logic.commands.MarkCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -29,7 +31,7 @@ public class MarkIntegrationTest {
     @TempDir
     public Path temporaryFolder;
 
-    private final Model model = new ModelManager();
+    private Model model;
     private final Person amy = new PersonBuilder().withName("Amy Tan").withSquadName("U12")
             .withRemark("Left footed").build();
     private final Person ben = new PersonBuilder().withName("Ben Lee").withSquadName("U12").build();
@@ -39,9 +41,12 @@ public class MarkIntegrationTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        model.addPerson(amy);
-        model.addPerson(ben);
-        model.addPerson(cal);
+        AddressBook initialAddressBook = new AddressBook();
+        initialAddressBook.addPerson(amy);
+        initialAddressBook.addPerson(ben);
+        initialAddressBook.addPerson(cal);
+        model = new ModelManager(initialAddressBook, new UserPrefs());
+
         storage = new JsonAddressBookStorage(temporaryFolder.resolve("players.json"));
         storage.saveAddressBook(model.getAddressBook());
         logic = createLogic(storage);
@@ -116,7 +121,7 @@ public class MarkIntegrationTest {
     }
 
     @Test
-    public void execute_saveFailure_restoresAllPlayersAndFilter() throws Exception {
+    public void execute_saveFailure_restoresAllPlayersAndResetsFilter() throws Exception {
         JsonAddressBookStorage failingStorage = new JsonAddressBookStorage(storage.getAddressBookFilePath()) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
@@ -131,7 +136,7 @@ public class MarkIntegrationTest {
 
         assertEquals("Could not save data due to the following error: Disk unavailable", exception.getMessage());
         assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
-        assertEquals(List.of(amy, ben), model.getFilteredPersonList());
+        assertEquals(List.of(amy, ben, cal), model.getFilteredPersonList());
         assertEquals(List.of(amy, ben, cal), storage.readAddressBook().orElseThrow().getPersonList());
     }
 
