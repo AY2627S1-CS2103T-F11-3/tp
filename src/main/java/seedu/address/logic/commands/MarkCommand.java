@@ -24,8 +24,8 @@ public class MarkCommand extends Command {
     public static final String COMMAND_WORD = "mark";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Sets one status for displayed players.\n"
             + "Parameters: INDEX [INDEX]... STATUS/VALUE\n"
-            + "Choose one: av/true|false|available|unavailable (or availability/), injury/fit|injured, "
-            + "fee/paid|unpaid, consent/received|pending\n"
+            + "Choose one: av/true|false (or available/), injury/fit|injured (or inj/), "
+            + "fee/paid|unpaid (or f/), consent/received|pending (or c/)\n"
             + "Example: mark 1 3 fee/paid";
     public static final String MESSAGE_EMPTY_LIST =
             "No players are currently displayed. Use list to show all players before marking a status.";
@@ -82,6 +82,9 @@ public class MarkCommand extends Command {
                 changed.add(target);
             }
         }
+
+        model.commitAddressBook();
+
         return new CommandResult(formatFeedback(changed, unchanged, field.getValue(replacements.getFirst())));
     }
 

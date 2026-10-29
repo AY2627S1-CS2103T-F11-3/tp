@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.InjuryStatus;
@@ -22,6 +24,25 @@ import seedu.address.testutil.PersonBuilder;
 public class AddCommandParserTest {
     private static final String REQUIRED = " name/John Doe squad/Soccer Stars position/Goalkeeper";
     private final AddCommandParser parser = new AddCommandParser();
+
+    @Test
+    public void parse_statusShorthands_success() {
+        Person expected = new PersonBuilder(player()).withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
+        assertParseSuccess(parser, REQUIRED + " inj/INJURED f/paid c/received", new AddCommand(expected));
+    }
+
+    @Test
+    public void parse_statusShorthandsWithInvalidValues_failure() {
+        String[] prefixes = {"inj/", "f/", "c/"};
+        String[] messages = {InjuryStatus.MESSAGE_CONSTRAINTS, FeeStatus.MESSAGE_CONSTRAINTS,
+            ConsentStatus.MESSAGE_CONSTRAINTS};
+        for (int i = 0; i < prefixes.length; i++) {
+            for (String value : new String[] {"", "unknown"}) {
+                assertParseFailure(parser, REQUIRED + " " + prefixes[i] + value, messages[i]);
+            }
+        }
+    }
 
     @Test
     public void parse_injuryStatus_acceptsSupportedValuesAndDefaultsToFit() {
@@ -45,7 +66,7 @@ public class AddCommandParserTest {
             assertParseFailure(parser, REQUIRED + " injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",
-                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL));
         assertParseFailure(parser, " injury/recovering contact/abc" + REQUIRED, InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " contact/abc injury/recovering" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
     }
@@ -71,10 +92,8 @@ public class AddCommandParserTest {
     public void parse_optionalFieldsAndAliases_success() {
         Person expected = new PersonBuilder(player()).withGuardianName("Long Ox").withGuardianContact("99999999")
                 .withAvailability("unavailable").build();
-        assertParseSuccess(parser, REQUIRED + " guardian/Long Ox contact/99999999 availability/unavailable",
+        assertParseSuccess(parser, REQUIRED + " guardian/Long Ox contact/99999999 available/FALSE",
                 new AddCommand(expected));
-        assertParseSuccess(parser, REQUIRED + " available/FALSE",
-                new AddCommand(new PersonBuilder(player()).withAvailability("unavailable").build()));
         assertParseSuccess(parser, " av/f a L s E gc/99-99 99\t99 g/Long Ox" + REQUIRED, new AddCommand(expected));
         assertParseSuccess(parser, REQUIRED + " av/ t R u E ", new AddCommand(player()));
     }
@@ -115,8 +134,8 @@ public class AddCommandParserTest {
         for (String contact : new String[] {"", "000", "1234567", "123456789", "1234abcd", "+81234567"}) {
             assertParseFailure(parser, REQUIRED + " contact/" + contact, GuardianContact.MESSAGE_CONSTRAINTS);
         }
-        for (String availability : new String[] {"", "yes", "true-false"}) {
-            assertParseFailure(parser, REQUIRED + " availability/" + availability,
+        for (String availability : new String[] {"", "yes", "available", "true-false"}) {
+            assertParseFailure(parser, REQUIRED + " available/" + availability,
                     AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
         }
     }
@@ -129,11 +148,15 @@ public class AddCommandParserTest {
             {CliSyntax.PREFIX_POSITION, CliSyntax.PREFIX_POSITION_FULL},
             {CliSyntax.PREFIX_GUARDIANNAME, CliSyntax.PREFIX_GUARDIANNAME_FULL},
             {CliSyntax.PREFIX_GUARDIANCONTACT, CliSyntax.PREFIX_GUARDIANCONTACT_FULL},
-            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL, CliSyntax.PREFIX_AVAILABILITY_LEGACY}
+            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL},
+            {CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL},
+            {CliSyntax.PREFIX_FEE, CliSyntax.PREFIX_FEE_FULL},
+            {CliSyntax.PREFIX_CONSENT, CliSyntax.PREFIX_CONSENT_FULL}
         };
-        String[] values = {"John Doe", "Soccer Stars", "Goalkeeper", "Jane Doe", "81234567", "true"};
+        String[] values = {"John Doe", "Soccer Stars", "Goalkeeper", "Jane Doe", "81234567", "true",
+            "injured", "paid", "received"};
         String[] bases = {" squad/Stars position/striker", " name/John position/striker",
-            " name/John squad/Stars", REQUIRED, REQUIRED, REQUIRED};
+            " name/John squad/Stars", REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED};
         for (int index = 0; index < aliases.length; index++) {
             String message = Messages.getErrorMessageForDuplicatePrefixes(aliases[index]);
             for (Prefix first : aliases[index]) {
@@ -147,9 +170,9 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_invalidValues_reportsFirstSuppliedField() {
-        assertParseFailure(parser, " availability/no contact/abc" + REQUIRED,
+        assertParseFailure(parser, " available/no contact/abc" + REQUIRED,
                 AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, " contact/abc availability/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " contact/abc available/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " pos/invalid sn/Stars! n/John@Doe", Position.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " sn/Stars! pos/invalid n/John@Doe", SquadName.MESSAGE_CONSTRAINTS);
     }

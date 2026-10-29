@@ -4,12 +4,15 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
@@ -48,7 +51,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
     public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should be true, false, available, or unavailable!";
+            "Invalid availability entered! Availability should either be true or false!";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 
@@ -178,12 +181,11 @@ public class AddCommandParser implements Parser<AddCommand> {
             case POSITION -> new Prefix[] {PREFIX_POSITION, PREFIX_POSITION_FULL};
             case GUARDIAN -> new Prefix[] {PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL};
             case CONTACT -> new Prefix[] {PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL};
-            case AVAILABILITY -> new Prefix[] {
-                PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY
-            };
-            case FEE -> new Prefix[] {PREFIX_FEE_FULL};
-            case CONSENT -> new Prefix[] {PREFIX_CONSENT_FULL};
-            case INJURY -> new Prefix[] {PREFIX_INJURY_FULL};
+            case AVAILABILITY -> new Prefix[] {PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
+                PREFIX_AVAILABILITY_LEGACY};
+            case FEE -> new Prefix[] {PREFIX_FEE, PREFIX_FEE_FULL};
+            case CONSENT -> new Prefix[] {PREFIX_CONSENT, PREFIX_CONSENT_FULL};
+            case INJURY -> new Prefix[] {PREFIX_INJURY, PREFIX_INJURY_FULL};
             case TAG -> new Prefix[] {PREFIX_TAG};
         };
     }

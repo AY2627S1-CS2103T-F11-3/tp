@@ -3,12 +3,15 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
@@ -68,7 +71,8 @@ public class EditCommand extends Command {
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
-            + PREFIX_GUARDIANCONTACT + ", and " + PREFIX_AVAILABILITY + " for their full prefixes\n"
+            + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ", " + PREFIX_INJURY + ", "
+            + PREFIX_FEE + ", and " + PREFIX_CONSENT + " for their full prefixes\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_POSITION + "Defender " + PREFIX_AVAILABILITY + "false";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Player %1$s updated!";
@@ -119,6 +123,7 @@ public class EditCommand extends Command {
         }
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.commitAddressBook();
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, editedPerson.getName()));
     }
 

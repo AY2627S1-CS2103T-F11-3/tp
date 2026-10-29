@@ -86,7 +86,7 @@ The `UI` component,
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component because it displays `Person` objects from the model.
+* depends on some classes in the `Model` component because it displays players from the model.
 
 ### Logic component
 
@@ -146,7 +146,7 @@ The `Model` component,
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each player references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each player holding their own `Tag` objects.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
@@ -194,21 +194,34 @@ from the filtered view. Parsing and persistence are omitted to keep the diagram 
 The command uses `LogicManager`'s existing save-and-rollback mechanism. Parser and command tests cover input and
 selection behavior; `MarkIntegrationTest` verifies command routing, all four statuses, save/reload and rollback.
 
-### \[Proposed\] Undo/redo feature
+### Undo/redo feature
 
-#### Proposed Implementation
+#### Implementation
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+The undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`.
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+Additionally, `VersionedAddressBook` implements the following operations:
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
+* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
+* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+* `VersionedAddressBook#canUndo()` — Returns true if there are address book states before the current state pointer.
+* `VersionedAddressBook#canRedo()` — Returns true if there are address book states after the current state pointer.
+
+These operations are exposed through the `Model` interface as:
+* `Model#commitAddressBook()`
+* `Model#undoAddressBook()`
+* `Model#redoAddressBook()`
+* `Model#canUndoAddressBook()`
+* `Model#canRedoAddressBook()`
+
+`ModelManager` implements these methods by delegating directly to its internal `VersionedAddressBook` instance and refreshing the filtered person list via `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)` after every undo or redo operation.
+
+Command arguments are validated in `AddressBookParser` using `ParserUtil.requireNoArguments(arguments, UndoCommand.MESSAGE_USAGE)` and `ParserUtil.requireNoArguments(arguments, RedoCommand.MESSAGE_USAGE)` to reject extraneous parameters before execution.
 
 Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+**Step 1.** The user launches the application for the first time. The `VersionedAddressBook` is initialized with the initial address book state, and the `currentStatePointer` points to that single address book state (index `0`).
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
@@ -220,42 +233,38 @@ Step 3. The user executes `add n/David …​` to add a new player. The `add` co
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
-
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution (such as invalid arguments or a duplicate player error), it will not call `Model#commitAddressBook()`, ensuring the failed state is never recorded in `addressBookStateList`.
 </div>
 
-Step 4. The user now decides that adding the player was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+**Step 4.** The user decides that adding the player was a mistake and executes the `undo` command.
+1. `UndoCommand#execute(Model)` queries `Model#canUndoAddressBook()`.
+2. Because `currentStatePointer > 0`, it calls `Model#undoAddressBook()`.
+3. `VersionedAddressBook#undo()` decrements `currentStatePointer` once to the left (to index `1`) and calls `resetData(...)` to restore the address book to that state.
+4. `ModelManager` calls `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)` to show the updated roster.
 
 ![UndoRedoState3](images/UndoRedoState3.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If `currentStatePointer` is at index `0`, there are no prior states to restore. `Model#canUndoAddressBook()` returns `false`, causing `UndoCommand` to throw a `CommandException` with the message `There is no command to undo!`.
 </div>
 
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
+The sequence diagram below shows how an `undo` operation flows through the `Logic` and `Model` components:
 
 ![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
+**Step 5.** The user changes their mind and executes `redo`.
+1. `RedoCommand#execute(Model)` queries `Model#canRedoAddressBook()`.
+2. Because `currentStatePointer < addressBookStateList.size() - 1`, it calls `Model#redoAddressBook()`.
+3. `VersionedAddressBook#redo()` increments `currentStatePointer` once to the right (back to index `2`) and restores the address book to that state.
+4. `ModelManager` resets the view with `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)`.
 
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest state in the list, `Model#canRedoAddressBook()` returns `false`. `RedoCommand` throws a `CommandException` with the message `There is no undo to redo!`.
 </div>
 
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
+**Step 6.** The user executes `list` or `filter`. Commands that do not modify the stored address book data do not call `Model#commitAddressBook()`, `Model#undoAddressBook()`, or `Model#redoAddressBook()`. Thus, the `addressBookStateList` and `currentStatePointer` remain untouched.
 
 ![UndoRedoState4](images/UndoRedoState4.png)
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
+**Step 7.** The user executes `clear` after having undone one state (at index `1`). The `clear` command calls `Model#commitAddressBook()`. Because `currentStatePointer` was not pointing to the end of `addressBookStateList`, all states ahead of `currentStatePointer` are purged before the new state is appended. This prevents an inconsistent redo path after a branching modification.
 
 ![UndoRedoState5](images/UndoRedoState5.png)
 
@@ -263,20 +272,18 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 <img src="images/CommitActivityDiagram.png" width="250" />
 
+***
+
 #### Design considerations:
 
 **Aspect: How undo & redo execute:**
 
-* **Alternative 1 (current choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the player being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-_{more aspects and alternatives to be added}_
+* **Alternative 1 (current choice):** Saves the entire `AddressBook` state snapshot on every commit.
+    * Pros: Simple, resilient, and decoupled from individual command logic; commands only need to call `commitAddressBook()`.
+    * Cons: Higher memory consumption if the number of stored states or roster size grows very large.
+* **Alternative 2:** Individual commands implement their own reverse/inverse operations (memento/command pattern).
+    * Pros: Lower memory footprint, as only deltas (e.g. the specific added or deleted `Person`) are saved.
+    * Cons: Significantly higher implementation complexity and error surface; every mutating command must accurately define, test, and maintain an exact inverse operation.
 
 ### \[Proposed\] Data archiving
 
@@ -327,6 +334,8 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 | `**`     | first-time user | view help for the available commands | learn how to use the application without memorising every command |
 | `*`      | coach | edit a player's details | correct or update information without deleting and re-adding the player |
 | `*`      | coach | record additional player information such as skill level, injury status, consent status and fee status | keep more comprehensive information about each player |
+| `*`      | coach | undo my previous command | quickly revert accidental edits or deletions |
+| `*`      | coach | redo a previously undone command | restore changes without retyping the command |
 
 ### Use cases
 
@@ -483,6 +492,44 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
   * 1a1. SquadLink shows usage guidance.
 
     Use case ends.
+
+**Use case: Undo previous command**
+
+**MSS**
+
+1. Coach requests to undo the previous command.
+2. SquadLink restores the address book state to before the last mutating command was executed.
+3. SquadLink confirms that the command was undone.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Coach provides extra arguments (e.g., `undo 1`).
+    * 1a1. SquadLink shows an error message indicating that additional arguments are not accepted.
+      Use case ends.
+* 2a. There are no previous states to undo.
+    * 2a1. SquadLink shows an error message indicating that there is no command to undo.
+      Use case ends.
+
+**Use case: Redo undone command**
+
+**MSS**
+
+1. Coach requests to redo the previous undone command.
+2. SquadLink restores the address book state to before the undo command was executed.
+3. SquadLink confirms that the command was redone.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. Coach provides extra arguments (e.g., `redo all`).
+    * 1a1. SquadLink shows an error message indicating that additional arguments are not accepted.
+      Use case ends.
+* 2a. There are no undone states to redo.
+    * 2a1. SquadLink shows an error message indicating that there is no undo to redo.
+      Use case ends.
 
 ### Non-Functional Requirements
 

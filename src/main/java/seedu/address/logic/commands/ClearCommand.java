@@ -24,6 +24,7 @@ public class ClearCommand extends Command {
         requireNonNull(model);
         model.setAddressBook(new AddressBook());
         assert model.getAddressBook().getPersonList().isEmpty() : "Address book must be empty after clear";
+        model.commitAddressBook();
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }

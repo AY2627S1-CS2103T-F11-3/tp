@@ -44,6 +44,10 @@ public class FilterCommandParserTest {
                 command(null, null, null, null, "received"));
         assertParseSuccess(parser, "squad/Soccer Stars injury/injured fee/unpaid consent/pending",
                 command("Soccer Stars", null, "injured", "unpaid", "pending"));
+        assertParseSuccess(parser, "inj/INJURED f/paid c/received",
+                command(null, null, "injured", "paid", "received"));
+        assertParseSuccess(parser, "inj/fit fee/unpaid c/pending",
+                command(null, null, "fit", "unpaid", "pending"));
     }
 
     @Test
@@ -71,6 +75,9 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "injury/", FilterCommandParser.MESSAGE_MISSING_INJURY);
         assertParseFailure(parser, "fee/", FilterCommandParser.MESSAGE_MISSING_FEE);
         assertParseFailure(parser, "consent/", FilterCommandParser.MESSAGE_MISSING_CONSENT);
+        assertParseFailure(parser, "inj/", FilterCommandParser.MESSAGE_MISSING_INJURY);
+        assertParseFailure(parser, "f/", FilterCommandParser.MESSAGE_MISSING_FEE);
+        assertParseFailure(parser, "c/", FilterCommandParser.MESSAGE_MISSING_CONSENT);
     }
 
     @Test
@@ -84,6 +91,9 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "injury/recovering", FilterCommandParser.MESSAGE_INVALID_INJURY);
         assertParseFailure(parser, "fee/waived", FilterCommandParser.MESSAGE_INVALID_FEE);
         assertParseFailure(parser, "consent/signed", FilterCommandParser.MESSAGE_INVALID_CONSENT);
+        assertParseFailure(parser, "inj/unknown", FilterCommandParser.MESSAGE_INVALID_INJURY);
+        assertParseFailure(parser, "f/unknown", FilterCommandParser.MESSAGE_INVALID_FEE);
+        assertParseFailure(parser, "c/unknown", FilterCommandParser.MESSAGE_INVALID_CONSENT);
     }
 
     @Test
@@ -98,6 +108,11 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "injury/fit injury/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
         assertParseFailure(parser, "fee/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
         assertParseFailure(parser, "consent/received consent/pending", FilterCommandParser.MESSAGE_DUPLICATE_CONSENT);
+        // Repeated shorthand and mixed aliases share the duplicate-criterion partition.
+        assertParseFailure(parser, "inj/fit inj/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
+        assertParseFailure(parser, "injury/fit inj/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
+        assertParseFailure(parser, "f/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
+        assertParseFailure(parser, "consent/received c/pending", FilterCommandParser.MESSAGE_DUPLICATE_CONSENT);
     }
 
     @Test

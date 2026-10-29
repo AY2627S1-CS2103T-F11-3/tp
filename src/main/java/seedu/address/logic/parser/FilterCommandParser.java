@@ -1,22 +1,24 @@
 package seedu.address.logic.parser;
 
-import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import seedu.address.logic.commands.FilterCommand;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Availability;
 import seedu.address.model.person.MatchesFilterCriteriaPredicate;
@@ -150,15 +152,15 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     }
 
     private boolean isInjuryPrefix(String prefix) {
-        return prefix.equals(PREFIX_INJURY_FULL.getPrefix());
+        return prefix.equals(PREFIX_INJURY.getPrefix()) || prefix.equals(PREFIX_INJURY_FULL.getPrefix());
     }
 
     private boolean isFeePrefix(String prefix) {
-        return prefix.equals(PREFIX_FEE_FULL.getPrefix());
+        return prefix.equals(PREFIX_FEE.getPrefix()) || prefix.equals(PREFIX_FEE_FULL.getPrefix());
     }
 
     private boolean isConsentPrefix(String prefix) {
-        return prefix.equals(PREFIX_CONSENT_FULL.getPrefix());
+        return prefix.equals(PREFIX_CONSENT.getPrefix()) || prefix.equals(PREFIX_CONSENT_FULL.getPrefix());
     }
 
     private boolean isSquadPrefix(String prefix) {
