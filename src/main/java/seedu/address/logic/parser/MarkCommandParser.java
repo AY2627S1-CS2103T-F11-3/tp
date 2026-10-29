@@ -1,7 +1,12 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_CONSENT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_FEE;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_INJURY;
+import static seedu.address.logic.Messages.MESSAGE_ONE_STATUS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
@@ -29,16 +34,7 @@ import seedu.address.model.person.PlayerStatusField;
 
 /** Parses displayed indexes followed by exactly one player status and value. */
 public class MarkCommandParser implements Parser<MarkCommand> {
-    public static final String MESSAGE_ONE_STATUS = "Specify exactly one status per mark command.\n"
-            + MarkCommand.MESSAGE_USAGE;
-    public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Availability must be one of \"true\", \"false\", \"available\", or \"unavailable\".";
-    public static final String MESSAGE_INVALID_CONSENT =
-            "Consent status must be either \"received\" or \"pending\".";
-    public static final String MESSAGE_INVALID_INJURY =
-            "Injury status must be either \"fit\" or \"injured\".";
-    public static final String MESSAGE_INVALID_FEE =
-            "Fee payment status must be either \"paid\" or \"unpaid\".";
+
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(\\S*/)");
     private static final Map<String, PlayerStatusField> STATUS_PREFIXES = Map.of(
             PREFIX_AVAILABILITY.getPrefix(), PlayerStatusField.AVAILABILITY,
@@ -101,10 +97,10 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     }
 
     private String parseAvailability(String value) throws ParseException {
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
+        if (value.equalsIgnoreCase("true")) {
             return Availability.AVAILABLE;
         }
-        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
+        if (value.equalsIgnoreCase("false")) {
             return Availability.UNAVAILABLE;
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

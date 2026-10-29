@@ -1,5 +1,6 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
@@ -265,10 +266,8 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_invalidOrRepeatedAvailability_failure() {
-        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY + "yes",
-                EditCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY,
-                EditCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY + "yes", MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY, MESSAGE_INVALID_AVAILABILITY);
         assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + AVAILABILITY_DESC_UNAVAILABLE,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_AVAILABILITY));
         assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + " " + PREFIX_AVAILABILITY_FULL + "true",

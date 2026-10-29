@@ -3,9 +3,14 @@ package seedu.address.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_BELOW_ONE;
 import static seedu.address.logic.Messages.MESSAGE_INDEX_TOO_LARGE;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_CONSENT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_FEE;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_INJURY;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_ONE_STATUS;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -60,7 +65,7 @@ public class MarkCommandParserTest {
         for (String input : List.of("", "1 3", "1 fee/paid consent/received", "1 fee/paid fee/paid",
                 "1 av/true available/false", "1 fee/paid unknown/value",
                 "1 inj/fit injury/injured", "1 f/paid f/unpaid", "1 c/pending fee/paid")) {
-            assertParseFailure(parser, input, MarkCommandParser.MESSAGE_ONE_STATUS);
+            assertParseFailure(parser, input, MESSAGE_ONE_STATUS);
         }
     }
 
@@ -84,22 +89,22 @@ public class MarkCommandParserTest {
 
     @Test
     public void parse_invalidOrMissingValues_usesDomainConstraints() {
-        assertDeferredFailure("1 av/", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertDeferredFailure("1 av/unknown", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertDeferredFailure("1 av/t rue", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/", MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/available", MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/t rue", MESSAGE_INVALID_AVAILABILITY);
         for (String value : List.of("", "yes", "paid extra", "pa\u0131d")) {
-            assertDeferredFailure("1 fee/" + value, MarkCommandParser.MESSAGE_INVALID_FEE);
+            assertDeferredFailure("1 fee/" + value, MESSAGE_INVALID_FEE);
         }
-        assertDeferredFailure("1 injury/", MarkCommandParser.MESSAGE_INVALID_INJURY);
-        assertDeferredFailure("1 injury/f\u0131t", MarkCommandParser.MESSAGE_INVALID_INJURY);
-        assertDeferredFailure("1 consent/", MarkCommandParser.MESSAGE_INVALID_CONSENT);
-        assertDeferredFailure("1 consent/true", MarkCommandParser.MESSAGE_INVALID_CONSENT);
-        assertDeferredFailure("1 consent/rece\u0131ved", MarkCommandParser.MESSAGE_INVALID_CONSENT);
+        assertDeferredFailure("1 injury/", MESSAGE_INVALID_INJURY);
+        assertDeferredFailure("1 injury/f\u0131t", MESSAGE_INVALID_INJURY);
+        assertDeferredFailure("1 consent/", MESSAGE_INVALID_CONSENT);
+        assertDeferredFailure("1 consent/true", MESSAGE_INVALID_CONSENT);
+        assertDeferredFailure("1 consent/rece\u0131ved", MESSAGE_INVALID_CONSENT);
         // Empty and invalid values represent the two failure partitions for each new alias.
         for (String value : List.of("", "unknown")) {
-            assertDeferredFailure("1 inj/" + value, MarkCommandParser.MESSAGE_INVALID_INJURY);
-            assertDeferredFailure("1 f/" + value, MarkCommandParser.MESSAGE_INVALID_FEE);
-            assertDeferredFailure("1 c/" + value, MarkCommandParser.MESSAGE_INVALID_CONSENT);
+            assertDeferredFailure("1 inj/" + value, MESSAGE_INVALID_INJURY);
+            assertDeferredFailure("1 f/" + value, MESSAGE_INVALID_FEE);
+            assertDeferredFailure("1 c/" + value, MESSAGE_INVALID_CONSENT);
         }
     }
 
