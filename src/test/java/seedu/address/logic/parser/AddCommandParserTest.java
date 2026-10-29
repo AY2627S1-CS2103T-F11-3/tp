@@ -99,7 +99,7 @@ public class AddCommandParserTest {
     }
 
     @Test
-    public void parse_remark_successAndInvalidValues_failure() {
+    public void parse_remark_successAndInvalidValues() {
         Person expected = new PersonBuilder(player()).withRemark("Late arrival").build();
         assertParseSuccess(parser, REQUIRED + " r/Late arrival", new AddCommand(expected));
         assertParseFailure(parser, REQUIRED + " r/", AddCommandParser.MESSAGE_MISSING_REMARK);
