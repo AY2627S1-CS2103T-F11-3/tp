@@ -47,7 +47,7 @@ public class MatchesFilterCriteriaPredicate implements Predicate<Person> {
     @Override
     public boolean test(Person person) {
         assert person != null : "Target person for predicate check cannot be null";
-        boolean squadMatches = squadName.map(s -> s.equals(person.getSquadName())).orElse(true);
+        boolean squadMatches = squadName.map(s -> s.value.equalsIgnoreCase(person.getSquadName().value)).orElse(true);
         boolean availabilityMatches = availability.map(a -> a.equals(person.getAvailability())).orElse(true);
         boolean injuryMatches = injury.map(i -> i.equalsIgnoreCase(person.getInjuryStatus().value)).orElse(true);
         boolean feeMatches = fee.map(f -> f.equalsIgnoreCase(person.getFeeStatus().value)).orElse(true);
