@@ -305,6 +305,7 @@ Examples:
 ### Filtering players: `filter`
 
 Displays registered players that match squad, availability, injury, fee payment, or consent criteria.
+Squad matching ignores capitalization; if squad names differ only by capitalization, filtering shows players from both.
 
 Format: `filter [squad/SQUAD_NAME] [available/true|false] [injury/fit|injured] [fee/paid|unpaid] [consent/received|pending]`
 
