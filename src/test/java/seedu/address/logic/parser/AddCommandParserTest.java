@@ -102,9 +102,12 @@ public class AddCommandParserTest {
     public void parse_remark_successAndInvalidValues() {
         Person expected = new PersonBuilder(player()).withRemark("Late arrival").build();
         assertParseSuccess(parser, REQUIRED + " r/Late arrival", new AddCommand(expected));
+        assertParseSuccess(parser, REQUIRED + " remark/Late arrival", new AddCommand(expected));
         assertParseFailure(parser, REQUIRED + " r/", AddCommandParser.MESSAGE_MISSING_REMARK);
         assertParseFailure(parser, REQUIRED + " r/first r/second",
                 Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_REMARK));
+        assertParseFailure(parser, REQUIRED + " r/first remark/second",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_REMARK, CliSyntax.PREFIX_REMARK_FULL));
     }
 
     @Test
@@ -119,6 +122,7 @@ public class AddCommandParserTest {
     public void parse_tags_success() {
         Person expected = new PersonBuilder(player()).withTags("friend", "captain").build();
         assertParseSuccess(parser, " t/captain" + REQUIRED + " t/friend t/friend", new AddCommand(expected));
+        assertParseSuccess(parser, " tag/captain" + REQUIRED + " t/friend", new AddCommand(expected));
     }
 
     @Test

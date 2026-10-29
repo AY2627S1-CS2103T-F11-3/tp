@@ -18,8 +18,10 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
@@ -267,6 +269,14 @@ public class EditCommandParserTest {
         descriptor = new EditPersonDescriptorBuilder().withRemark("").build();
         assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_REMARK,
                 new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withRemark("Reliable defender").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_REMARK_FULL + "Reliable defender",
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_TAG_FULL + VALID_TAG_FRIEND,
+                new EditCommand(targetIndex, descriptor));
     }
 
     @Test
@@ -281,6 +291,8 @@ public class EditCommandParserTest {
     public void parse_repeatedRemark_failure() {
         assertParseFailure(parser, "1" + REMARK_DESC + " " + PREFIX_REMARK + "Reliable defender",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
+        assertParseFailure(parser, "1" + REMARK_DESC + " " + PREFIX_REMARK_FULL + "Reliable defender",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK, PREFIX_REMARK_FULL));
     }
 
     @Test

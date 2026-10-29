@@ -17,9 +17,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.Collections;
@@ -70,11 +72,12 @@ public class EditCommand extends Command {
             + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
-            + "[" + PREFIX_REMARK + "REMARK] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_REMARK_FULL + "REMARK] "
+            + "[" + PREFIX_TAG_FULL + "TAG]...\n"
             + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
             + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ", " + PREFIX_INJURY + ", "
-            + PREFIX_FEE + ", and " + PREFIX_CONSENT + " for their full prefixes\n"
+            + PREFIX_FEE + ", " + PREFIX_CONSENT + ", " + PREFIX_REMARK + ", and " + PREFIX_TAG
+            + " for their full prefixes\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_POSITION + "Defender " + PREFIX_AVAILABILITY + "false";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Player %1$s updated!";

@@ -19,9 +19,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -198,9 +200,9 @@ public class AddCommandParser implements Parser<AddCommand> {
                 PREFIX_AVAILABILITY_LEGACY};
             case FEE -> new Prefix[] {PREFIX_FEE, PREFIX_FEE_FULL};
             case CONSENT -> new Prefix[] {PREFIX_CONSENT, PREFIX_CONSENT_FULL};
-            case REMARK -> new Prefix[] {PREFIX_REMARK};
+            case REMARK -> new Prefix[] {PREFIX_REMARK, PREFIX_REMARK_FULL};
             case INJURY -> new Prefix[] {PREFIX_INJURY, PREFIX_INJURY_FULL};
-            case TAG -> new Prefix[] {PREFIX_TAG};
+            case TAG -> new Prefix[] {PREFIX_TAG, PREFIX_TAG_FULL};
         };
     }
 
