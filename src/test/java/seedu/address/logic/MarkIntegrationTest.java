@@ -134,7 +134,7 @@ public class MarkIntegrationTest {
         CommandException exception = assertThrows(CommandException.class, () ->
                 logic.execute("mark 1 2 av/false"));
 
-        assertEquals("Could not save data due to the following error: Disk unavailable", exception.getMessage());
+        assertEquals("Could not save data.\nError details: Disk unavailable", exception.getMessage());
         assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
         assertEquals(List.of(amy, ben, cal), model.getFilteredPersonList());
         assertEquals(List.of(amy, ben, cal), storage.readAddressBook().orElseThrow().getPersonList());

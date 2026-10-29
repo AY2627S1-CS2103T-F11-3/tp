@@ -20,8 +20,8 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class DeleteCommandParser implements Parser<DeleteCommand> {
 
     public static final String MESSAGE_MISSING_NAME =
-            "Error! Specify at least one player name after " + PREFIX_NAME + " or " + PREFIX_NAME_FULL + "!";
-    public static final String MESSAGE_EMPTY_NAME = "Invalid name list! Specify a name between each comma!";
+            "Error: Specify at least one player name after " + PREFIX_NAME + " or " + PREFIX_NAME_FULL + ".";
+    public static final String MESSAGE_EMPTY_NAME = "Invalid name list. Specify a name between each comma.";
 
     /**
      * Parses the given {@code String} of arguments in the context of the DeleteCommand

@@ -52,12 +52,12 @@ import seedu.address.model.tag.Tag;
 
 /** Parses the add-player arguments, validating supplied fields from left to right. */
 public class AddCommandParser implements Parser<AddCommand> {
-    public static final String MESSAGE_MISSING_NAME = "Error! Name must be specified!";
-    public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
-    public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
+    public static final String MESSAGE_MISSING_NAME = "Error: Name must be specified.";
+    public static final String MESSAGE_MISSING_SQUAD = "Error: Squad name must be specified.";
+    public static final String MESSAGE_MISSING_POSITION = "Error: Position must be specified.";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability must be true, false, available, or unavailable.";
-    public static final String MESSAGE_MISSING_REMARK = "Error! Remark must not be blank!";
+            "Invalid availability entered. Availability must be true, false, available, or unavailable.";
+    public static final String MESSAGE_MISSING_REMARK = "Error: Remark must not be blank.";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 

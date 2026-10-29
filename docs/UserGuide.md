@@ -457,7 +457,7 @@ Format: `undo`
 * Commands that do not modify player data (such as `list`, `find`, `filter`, `sort`, `main`, `overview`, and `help`) cannot be undone and are skipped by `undo`.
 * Multiple commands can be undone consecutively back to the initial state when the application started.
 * Accepts no parameters. Extra arguments (such as `undo 1`) are rejected with usage guidance.
-* If there are no previous commands to undo, SquadLink displays: `There is no command to undo!`.
+* If there are no previous commands to undo, SquadLink displays: `The previous command cannot be undone.`
 
 Success displays `Undid the last command!`.
 
@@ -475,7 +475,7 @@ Format: `redo`
 * Multiple `undo` commands can be reversed with consecutive `redo` commands.
 * If a new modifying command (such as `add`, `delete`, `edit`, or `mark`) is entered after an `undo`, the remaining redo history is cleared and can no longer be redone.
 * Accepts no parameters. Extra arguments (such as `redo all`) are rejected with usage guidance.
-* If there is no undone command to redo, SquadLink displays: `There is no undo to redo!`.
+* If there is no undone command to redo, SquadLink displays: `There is no undo to redo.`
 
 Success displays `Redid the last undo!`.
 

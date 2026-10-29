@@ -149,7 +149,7 @@ public class LogicManagerTest {
         assertParseException("add n/Other Player sn/U12 pos/Defender injury/invalid", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertCommandException("edit 2 injury/injured", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         assertCommandException("add n/John Doe sn/U12 pos/Defender injury/fit",
-                "John Doe is already a registered player!");
+                "John Doe is already a registered player.");
         assertEquals(before, Files.readString(file));
         assertEquals(List.of(updated), model.getAddressBook().getPersonList());
 
@@ -177,7 +177,7 @@ public class LogicManagerTest {
         JsonAddressBookStorage savedStorage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
         assertCommandException("add n/John Doe sn/Soccer Stars pos/Goalkeeper",
-                "John Doe is already a registered player!");
+                "John Doe is already a registered player.");
         assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
         assertParseException("add n/Invalid Contact sn/Stars pos/Defender gc/1234567",
                 seedu.address.model.person.GuardianContact.MESSAGE_CONSTRAINTS);
