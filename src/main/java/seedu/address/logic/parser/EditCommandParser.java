@@ -113,7 +113,9 @@ public class EditCommandParser implements Parser<EditCommand> {
 
     private void verifyAliasesUsedOnce(ArgumentMultimap argMultimap, Prefix... prefixes)
             throws ParseException {
-        long count = java.util.Arrays.stream(prefixes).filter(prefix -> argMultimap.getValue(prefix).isPresent()).count();
+        long count = java.util.Arrays.stream(prefixes)
+                .filter(prefix -> argMultimap.getValue(prefix).isPresent())
+                .count();
         if (count > 1) {
             throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(prefixes));
         }
@@ -174,10 +176,12 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
 
         String normalizedAvailability = availability.get().replaceAll("\\s", "");
-        if ("true".equalsIgnoreCase(normalizedAvailability) || "available".equalsIgnoreCase(normalizedAvailability)) {
+        if ("true".equalsIgnoreCase(normalizedAvailability)
+                || "available".equalsIgnoreCase(normalizedAvailability)) {
             return Optional.of(new Availability(Availability.AVAILABLE));
         }
-        if ("false".equalsIgnoreCase(normalizedAvailability) || "unavailable".equalsIgnoreCase(normalizedAvailability)) {
+        if ("false".equalsIgnoreCase(normalizedAvailability)
+                || "unavailable".equalsIgnoreCase(normalizedAvailability)) {
             return Optional.of(new Availability(Availability.UNAVAILABLE));
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);
