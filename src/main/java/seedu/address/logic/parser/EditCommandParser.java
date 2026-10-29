@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
@@ -46,9 +47,6 @@ import seedu.address.model.tag.Tag;
  * Parses input arguments and creates a new EditCommand object
  */
 public class EditCommandParser implements Parser<EditCommand> {
-
-    public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand

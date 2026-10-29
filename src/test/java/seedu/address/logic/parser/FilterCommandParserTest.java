@@ -1,6 +1,23 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_AVAILABILITY;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_CONSENT;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FEE;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_INJURY;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_POSITION;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_SQUAD;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_CONSENT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_FEE;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_INJURY;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_AVAILABILITY;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_CONSENT;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_CRITERION;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_FEE;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_INJURY;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_POSITION;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_SQUAD;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
@@ -78,55 +95,54 @@ public class FilterCommandParserTest {
 
     @Test
     public void parse_missingCriteriaOrValue_throwsParseException() {
-        assertParseFailure(parser, "", FilterCommandParser.MESSAGE_MISSING_CRITERION);
-        assertParseFailure(parser, "   ", FilterCommandParser.MESSAGE_MISSING_CRITERION);
-        assertParseFailure(parser, "squad/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
-        assertParseFailure(parser, "sn/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
-        assertParseFailure(parser, "available/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
-        assertParseFailure(parser, "av/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
-        assertParseFailure(parser, "injury/", FilterCommandParser.MESSAGE_MISSING_INJURY);
-        assertParseFailure(parser, "fee/", FilterCommandParser.MESSAGE_MISSING_FEE);
-        assertParseFailure(parser, "consent/", FilterCommandParser.MESSAGE_MISSING_CONSENT);
-        assertParseFailure(parser, "inj/", FilterCommandParser.MESSAGE_MISSING_INJURY);
-        assertParseFailure(parser, "f/", FilterCommandParser.MESSAGE_MISSING_FEE);
-        assertParseFailure(parser, "c/", FilterCommandParser.MESSAGE_MISSING_CONSENT);
-        assertParseFailure(parser, "pos/", FilterCommandParser.MESSAGE_MISSING_POSITION);
+        assertParseFailure(parser, "", MESSAGE_MISSING_CRITERION);
+        assertParseFailure(parser, "   ", MESSAGE_MISSING_CRITERION);
+        assertParseFailure(parser, "squad/", MESSAGE_MISSING_SQUAD);
+        assertParseFailure(parser, "sn/", MESSAGE_MISSING_SQUAD);
+        assertParseFailure(parser, "available/", MESSAGE_MISSING_AVAILABILITY);
+        assertParseFailure(parser, "av/", MESSAGE_MISSING_AVAILABILITY);
+        assertParseFailure(parser, "injury/", MESSAGE_MISSING_INJURY);
+        assertParseFailure(parser, "fee/", MESSAGE_MISSING_FEE);
+        assertParseFailure(parser, "consent/", MESSAGE_MISSING_CONSENT);
+        assertParseFailure(parser, "inj/", MESSAGE_MISSING_INJURY);
+        assertParseFailure(parser, "f/", MESSAGE_MISSING_FEE);
+        assertParseFailure(parser, "c/", MESSAGE_MISSING_CONSENT);
+        assertParseFailure(parser, "pos/", MESSAGE_MISSING_POSITION);
     }
 
     @Test
     public void parse_invalidAvailability_throwsParseException() {
-        assertParseFailure(parser, "available/available", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, "av/yes", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "available/available", MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "av/yes", MESSAGE_INVALID_AVAILABILITY);
     }
 
     @Test
     public void parse_invalidPlayerStatus_throwsParseException() {
-        assertParseFailure(parser, "injury/recovering", FilterCommandParser.MESSAGE_INVALID_INJURY);
-        assertParseFailure(parser, "fee/waived", FilterCommandParser.MESSAGE_INVALID_FEE);
-        assertParseFailure(parser, "consent/signed", FilterCommandParser.MESSAGE_INVALID_CONSENT);
-        assertParseFailure(parser, "inj/unknown", FilterCommandParser.MESSAGE_INVALID_INJURY);
-        assertParseFailure(parser, "f/unknown", FilterCommandParser.MESSAGE_INVALID_FEE);
-        assertParseFailure(parser, "c/unknown", FilterCommandParser.MESSAGE_INVALID_CONSENT);
+        assertParseFailure(parser, "injury/recovering", MESSAGE_INVALID_INJURY);
+        assertParseFailure(parser, "fee/waived", MESSAGE_INVALID_FEE);
+        assertParseFailure(parser, "consent/signed", MESSAGE_INVALID_CONSENT);
+        assertParseFailure(parser, "inj/unknown", MESSAGE_INVALID_INJURY);
+        assertParseFailure(parser, "f/unknown", MESSAGE_INVALID_FEE);
+        assertParseFailure(parser, "c/unknown", MESSAGE_INVALID_CONSENT);
     }
 
     @Test
     public void parse_duplicateCriteria_throwsParseException() {
-        assertParseFailure(parser, "squad/Team A sn/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "available/true av/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
-        assertParseFailure(parser, "sn/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "squad/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "av/true available/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
-        assertParseFailure(parser, "available/true available/false",
-                FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
-        assertParseFailure(parser, "injury/fit injury/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
-        assertParseFailure(parser, "fee/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
-        assertParseFailure(parser, "consent/received consent/pending", FilterCommandParser.MESSAGE_DUPLICATE_CONSENT);
+        assertParseFailure(parser, "squad/Team A sn/Team B", MESSAGE_DUPLICATE_SQUAD);
+        assertParseFailure(parser, "available/true av/false", MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "sn/Team A squad/Team B", MESSAGE_DUPLICATE_SQUAD);
+        assertParseFailure(parser, "squad/Team A squad/Team B", MESSAGE_DUPLICATE_SQUAD);
+        assertParseFailure(parser, "av/true available/false", MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "available/true available/false", MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "injury/fit injury/injured", MESSAGE_DUPLICATE_INJURY);
+        assertParseFailure(parser, "fee/paid fee/unpaid", MESSAGE_DUPLICATE_FEE);
+        assertParseFailure(parser, "consent/received consent/pending", MESSAGE_DUPLICATE_CONSENT);
         // Repeated shorthand and mixed aliases share the duplicate-criterion partition.
-        assertParseFailure(parser, "inj/fit inj/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
-        assertParseFailure(parser, "injury/fit inj/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
-        assertParseFailure(parser, "f/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
-        assertParseFailure(parser, "consent/received c/pending", FilterCommandParser.MESSAGE_DUPLICATE_CONSENT);
-        assertParseFailure(parser, "pos/Defender position/Striker", FilterCommandParser.MESSAGE_DUPLICATE_POSITION);
+        assertParseFailure(parser, "inj/fit inj/injured", MESSAGE_DUPLICATE_INJURY);
+        assertParseFailure(parser, "injury/fit inj/injured", MESSAGE_DUPLICATE_INJURY);
+        assertParseFailure(parser, "f/paid fee/unpaid", MESSAGE_DUPLICATE_FEE);
+        assertParseFailure(parser, "consent/received c/pending", MESSAGE_DUPLICATE_CONSENT);
+        assertParseFailure(parser, "pos/Defender position/Striker", MESSAGE_DUPLICATE_POSITION);
     }
 
     @Test

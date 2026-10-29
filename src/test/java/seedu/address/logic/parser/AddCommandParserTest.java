@@ -1,6 +1,11 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_NAME;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_POSITION;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_REMARK;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_SQUAD;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
@@ -102,7 +107,7 @@ public class AddCommandParserTest {
     public void parse_remark_successAndInvalidValues() {
         Person expected = new PersonBuilder(player()).withRemark("Late arrival").build();
         assertParseSuccess(parser, REQUIRED + " r/Late arrival", new AddCommand(expected));
-        assertParseFailure(parser, REQUIRED + " r/", AddCommandParser.MESSAGE_MISSING_REMARK);
+        assertParseFailure(parser, REQUIRED + " r/", MESSAGE_MISSING_REMARK);
         assertParseFailure(parser, REQUIRED + " r/first r/second",
                 Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_REMARK));
     }
@@ -123,10 +128,10 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_missingRequiredFields_failure() {
-        assertParseFailure(parser, "", AddCommandParser.MESSAGE_MISSING_NAME);
-        assertParseFailure(parser, " sn/Stars pos/striker", AddCommandParser.MESSAGE_MISSING_NAME);
-        assertParseFailure(parser, " n/John Doe pos/striker", AddCommandParser.MESSAGE_MISSING_SQUAD);
-        assertParseFailure(parser, " n/John Doe sn/Stars", AddCommandParser.MESSAGE_MISSING_POSITION);
+        assertParseFailure(parser, "", MESSAGE_MISSING_NAME);
+        assertParseFailure(parser, " sn/Stars pos/striker", MESSAGE_MISSING_NAME);
+        assertParseFailure(parser, " n/John Doe pos/striker", MESSAGE_MISSING_SQUAD);
+        assertParseFailure(parser, " n/John Doe sn/Stars", MESSAGE_MISSING_POSITION);
     }
 
     @Test
@@ -144,8 +149,7 @@ public class AddCommandParserTest {
             assertParseFailure(parser, REQUIRED + " contact/" + contact, GuardianContact.MESSAGE_CONSTRAINTS);
         }
         for (String availability : new String[] {"", "yes", "available", "true-false"}) {
-            assertParseFailure(parser, REQUIRED + " available/" + availability,
-                    AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
+            assertParseFailure(parser, REQUIRED + " available/" + availability, MESSAGE_INVALID_AVAILABILITY);
         }
     }
 
@@ -194,8 +198,7 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_invalidValues_reportsFirstSuppliedField() {
-        assertParseFailure(parser, " available/no contact/abc" + REQUIRED,
-                AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, " available/no contact/abc" + REQUIRED, MESSAGE_INVALID_AVAILABILITY);
         assertParseFailure(parser, " contact/abc available/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " pos/invalid sn/Stars! n/John@Doe", Position.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " sn/Stars! pos/invalid n/John@Doe", SquadName.MESSAGE_CONSTRAINTS);

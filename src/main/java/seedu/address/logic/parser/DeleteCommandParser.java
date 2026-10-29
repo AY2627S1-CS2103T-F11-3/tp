@@ -1,7 +1,9 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_EMPTY_NAME;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 
@@ -18,10 +20,6 @@ import seedu.address.logic.parser.exceptions.ParseException;
  * Parses input arguments and creates a new DeleteCommand object.
  */
 public class DeleteCommandParser implements Parser<DeleteCommand> {
-
-    public static final String MESSAGE_MISSING_NAME =
-            "Error! Specify at least one player name after " + PREFIX_NAME + " or " + PREFIX_NAME_FULL + "!";
-    public static final String MESSAGE_EMPTY_NAME = "Invalid name list! Specify a name between each comma!";
 
     /**
      * Parses the given {@code String} of arguments in the context of the DeleteCommand

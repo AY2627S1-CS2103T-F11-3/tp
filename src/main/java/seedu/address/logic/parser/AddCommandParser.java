@@ -1,6 +1,11 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_INVALID_AVAILABILITY;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_NAME;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_POSITION;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_REMARK;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_SQUAD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
@@ -49,12 +54,6 @@ import seedu.address.model.tag.Tag;
 
 /** Parses the add-player arguments, validating supplied fields from left to right. */
 public class AddCommandParser implements Parser<AddCommand> {
-    public static final String MESSAGE_MISSING_NAME = "Error! Name must be specified!";
-    public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
-    public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
-    public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
-    public static final String MESSAGE_MISSING_REMARK = "Error! Remark must not be blank!";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 
