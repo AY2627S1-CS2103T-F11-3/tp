@@ -54,6 +54,15 @@ public class FilterCommandParserTest {
     }
 
     @Test
+    public void parse_positionAliases_returnsFilterCommand() {
+        FilterCommand expectedCommand = new FilterCommand(new MatchesFilterCriteriaPredicate(
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
+                Optional.of(new Position("Goalkeeper"))));
+        assertParseSuccess(parser, "position/Goalkeeper", expectedCommand);
+        assertParseSuccess(parser, "pos/Goalkeeper", expectedCommand);
+    }
+
+    @Test
     public void parse_squadHyphensAndRepeatedWhitespace_success() {
         assertParseSuccess(parser, "squad/ \tU12-A \n Stars  2 ",
                 command("U12-A Stars 2", null, null, null, null));
@@ -130,7 +139,6 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "/squad Team A", expectedMessage);
         assertParseFailure(parser, "/availability true", expectedMessage);
         assertParseFailure(parser, "availability/true", expectedMessage);
-        assertParseFailure(parser, "position/Goalkeeper", expectedMessage);
     }
 
     private FilterCommand command(String squadName, String availability,
