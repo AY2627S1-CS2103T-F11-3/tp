@@ -84,7 +84,7 @@ public class FeeConsentWorkflowTest {
         for (String fields : new String[] {"fee/PA\u0130D", "fee/pa\u0131d", "fee/UNPA\u0130D", "fee/unpa\u0131d",
             "fee/p\u0430id", "fee/\uff50\uff41\uff49\uff44", "consent/RECE\u0130VED", "consent/rece\u0131ved",
             "consent/PEND\u0130NG", "consent/pend\u0131ng", "consent/rec\u0435ived", "consent/\uff50ending"}) {
-            assertThrows(ParseException.class, () -> logic.execute("edit 1 " + fields));
+            assertThrows(CommandException.class, () -> logic.execute("edit 1 " + fields));
             assertThrows(ParseException.class, () ->
                     logic.execute("add n/Other Player sn/U12 pos/Defender " + fields));
             assertEquals(before, model.getAddressBook().getPersonList());
@@ -102,14 +102,14 @@ public class FeeConsentWorkflowTest {
         String json = Files.readString(storage.getAddressBookFilePath());
         for (String field : new String[] {"fee/", "consent/"}) {
             for (String value : new String[] {"", "  ", "unknown", "true", "invalid", "pa id"}) {
-                assertThrows(ParseException.class, () -> logic.execute("edit 1 " + field + value));
+                assertThrows(CommandException.class, () -> logic.execute("edit 1 " + field + value));
                 assertThrows(ParseException.class, () ->
                         logic.execute("add n/Other Player sn/U12 pos/Defender " + field + value));
             }
         }
         for (String fields : new String[] {"fee/paid fee/unpaid", "consent/received consent/pending",
             "fee/unpaid consent/invalid", "fee/invalid consent/pending"}) {
-            assertThrows(ParseException.class, () -> logic.execute("edit 1 " + fields));
+            assertThrows(CommandException.class, () -> logic.execute("edit 1 " + fields));
             assertThrows(ParseException.class, () ->
                     logic.execute("add n/Other Player sn/U12 pos/Defender " + fields));
         }

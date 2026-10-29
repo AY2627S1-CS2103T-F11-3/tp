@@ -215,6 +215,9 @@ Format: `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GU
 
 * Edits the player at the specified `INDEX`. The index refers to the index number shown in the displayed player list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
+* The displayed player index is checked before errors in the edit fields are reported. For example, if only four
+  players are displayed, both `edit 99` and `edit 99 n/123@` report an invalid player index. With a valid index,
+  missing fields or invalid field values are reported instead. Rejected edits do not change player data.
 * Existing values will be updated to the input values.
 * Name, squad, position, guardian name, guardian contact, availability, injury status, fee payment, consent and tags
   can be edited with this command.
