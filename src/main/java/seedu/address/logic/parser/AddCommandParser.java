@@ -51,7 +51,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
     public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
+            "Invalid availability entered! Availability must be true, false, available, or unavailable.";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 

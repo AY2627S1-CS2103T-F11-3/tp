@@ -32,7 +32,7 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     public static final String MESSAGE_ONE_STATUS = "Specify exactly one status per mark command.\n"
             + MarkCommand.MESSAGE_USAGE;
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Availability must be either \"true\" or \"false\".";
+            "Availability must be one of \"true\", \"false\", \"available\", or \"unavailable\".";
     public static final String MESSAGE_INVALID_CONSENT =
             "Consent status must be either \"received\" or \"pending\".";
     public static final String MESSAGE_INVALID_INJURY =
