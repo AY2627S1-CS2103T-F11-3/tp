@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
@@ -53,7 +54,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
     public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
+            "Invalid availability entered! Availability must be true, false, available, or unavailable.";
     public static final String MESSAGE_MISSING_REMARK = "Error! Remark must not be blank!";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
@@ -193,7 +194,8 @@ public class AddCommandParser implements Parser<AddCommand> {
             case POSITION -> new Prefix[] {PREFIX_POSITION, PREFIX_POSITION_FULL};
             case GUARDIAN -> new Prefix[] {PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL};
             case CONTACT -> new Prefix[] {PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL};
-            case AVAILABILITY -> new Prefix[] {PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL};
+            case AVAILABILITY -> new Prefix[] {PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
+                PREFIX_AVAILABILITY_LEGACY};
             case FEE -> new Prefix[] {PREFIX_FEE, PREFIX_FEE_FULL};
             case CONSENT -> new Prefix[] {PREFIX_CONSENT, PREFIX_CONSENT_FULL};
             case REMARK -> new Prefix[] {PREFIX_REMARK};
@@ -204,10 +206,10 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     private Availability parseAvailability(String value) throws ParseException {
         String normalized = value.replaceAll("\\s", "");
-        if ("true".equalsIgnoreCase(normalized)) {
+        if ("true".equalsIgnoreCase(normalized) || "available".equalsIgnoreCase(normalized)) {
             return new Availability(Availability.AVAILABLE);
         }
-        if ("false".equalsIgnoreCase(normalized)) {
+        if ("false".equalsIgnoreCase(normalized) || "unavailable".equalsIgnoreCase(normalized)) {
             return new Availability(Availability.UNAVAILABLE);
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);
