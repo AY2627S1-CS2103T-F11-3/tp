@@ -367,7 +367,7 @@ public class DeleteCommandTest {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
         assertCommandFailure(DeleteCommand.forNames(List.of("Missing Person", "Unknown Player",
                 "missing person", "Unknown  Player")), model,
-                "No players found with these full names: Missing Person, Unknown Player\nNo players deleted.");
+                "No players found with these full names: \"Missing Person, Unknown Player\".\nNo players deleted.");
     }
 
     @Test
@@ -377,7 +377,7 @@ public class DeleteCommandTest {
                 "  MISSING\tPerson  "));
 
         assertCommandFailure(command, model,
-                "No player found with the full name: Missing Person\nNo players deleted.");
+                "No player found with the full name \"Missing Person\".\nNo players deleted.");
     }
 
     @Test
@@ -402,7 +402,7 @@ public class DeleteCommandTest {
         String validName = originalPersons.getFirst().getName().fullName;
         String details = "1. " + Messages.formatPlayerDetails(firstMatch)
                 + "\n2. " + Messages.formatPlayerDetails(secondMatch);
-        String expected = "No player found with the full name: Missing Person\n"
+        String expected = "No player found with the full name \"Missing Person\".\n"
                 + String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "Alex Tan", details);
 
         for (List<String> names : List.of(List.of(validName, "Missing Person", "Alex Tan"),

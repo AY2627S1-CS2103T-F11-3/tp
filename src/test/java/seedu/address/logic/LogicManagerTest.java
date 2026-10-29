@@ -356,7 +356,7 @@ public class LogicManagerTest {
         assertCommandException("delete n/" + validName + ", Missing Player",
                 String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player") + "\nNo players deleted.");
         assertCommandException("delete n/unknown, haha",
-                "No players found with these full names: unknown, haha\nNo players deleted.");
+                "No players found with these full names: \"unknown, haha\".\nNo players deleted.");
         assertParseException("delete n/" + validName + ",",
                 MESSAGE_EMPTY_NAME);
 

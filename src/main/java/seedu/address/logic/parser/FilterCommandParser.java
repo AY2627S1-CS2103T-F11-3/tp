@@ -32,8 +32,8 @@ import seedu.address.model.person.SquadName;
  * Parses input arguments and creates a {@link FilterCommand}.
  */
 public class FilterCommandParser implements Parser<FilterCommand> {
-    public static final String MESSAGE_MISSING_CRITERION = "Error! At least one filter criterion must be specified.";
-    public static final String MESSAGE_UNKNOWN_PREFIX = "Unknown filter prefix: %s";
+    public static final String MESSAGE_MISSING_CRITERION = "Error: At least one filter criterion must be specified.";
+    public static final String MESSAGE_UNKNOWN_PREFIX = "Unknown filter prefix: %s.";
 
     public static final String MESSAGE_MISSING_AVAILABILITY = "Error: Availability must be specified.";
     public static final String MESSAGE_INVALID_AVAILABILITY =

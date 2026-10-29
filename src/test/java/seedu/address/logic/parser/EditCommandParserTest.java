@@ -289,9 +289,9 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_repeatedRemark_failure() {
-        assertParseFailure(parser, "1" + REMARK_DESC + " " + PREFIX_REMARK + "Reliable defender",
+        assertDeferredFailure("1" + REMARK_DESC + " " + PREFIX_REMARK + "Reliable defender",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
-        assertParseFailure(parser, "1" + REMARK_DESC + " " + PREFIX_REMARK_FULL + "Reliable defender",
+        assertDeferredFailure("1" + REMARK_DESC + " " + PREFIX_REMARK_FULL + "Reliable defender",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK, PREFIX_REMARK_FULL));
     }
 

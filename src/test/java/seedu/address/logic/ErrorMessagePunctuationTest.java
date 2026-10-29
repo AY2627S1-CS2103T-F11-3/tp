@@ -84,7 +84,7 @@ public class ErrorMessagePunctuationTest {
     @Test
     public void invalidCommands_errorProseEndsWithFullStops() {
         for (String input : List.of("add", "add n/Amy", "add n/Amy sn/U12",
-                "add n/! sn/U12 pos/Defender", "edit", "edit 1 av/no", "delete", "delete n/",
+                "add n/! sn/U12 pos/Defender", "edit", "delete", "delete n/",
                 "delete n/Amy,", "filter", "filter available/", "filter av/maybe", "filter injury/no",
                 "filter injury/fit injury/injured", "mark", "mark 1", "find", "sort nonsense",
                 "list 1", "help 1", "exit 1", "undo 1", "redo 1", "main 1", "overview 1", "unrecognised",
@@ -112,7 +112,7 @@ public class ErrorMessagePunctuationTest {
         parser.parseCommand("add n/Amy sn/U14 pos/Defender").execute(model);
         Command command = parser.parseCommand("delete n/Amy");
         CommandException exception = assertThrows(CommandException.class, () -> command.execute(model));
-        assertEquals("Multiple players match the name \"Amy\".",
+        assertEquals("Multiple matches for: \"Amy\".",
                 exception.getMessage().lines().findFirst().orElseThrow());
         assertErrorSentence(exception.getMessage().lines().findFirst().orElseThrow());
     }
@@ -121,7 +121,7 @@ public class ErrorMessagePunctuationTest {
     public void missingDeletionName_preservesPunctuationInsideQuotedDetails() throws ParseException {
         Command command = parser.parseCommand("delete n/Missing!");
         CommandException exception = assertThrows(CommandException.class, () -> command.execute(new ModelManager()));
-        assertEquals("No player found with the full name \"Missing!\".", exception.getMessage());
+        assertEquals("No player found with the full name \"Missing!\".\nNo players deleted.", exception.getMessage());
     }
 
     @Test
@@ -165,6 +165,16 @@ public class ErrorMessagePunctuationTest {
         Command command = parser.parseCommand("add n/Amy sn/U12 pos/Defender");
         command.execute(model);
         CommandException exception = assertThrows(CommandException.class, () -> command.execute(model));
+        assertErrorSentence(exception.getMessage());
+    }
+
+    @Test
+    public void invalidEditAvailability_errorProseEndsWithFullStop() throws Exception {
+        ModelManager model = new ModelManager();
+        parser.parseCommand("add n/Amy sn/U12 pos/Defender").execute(model);
+        Command command = parser.parseCommand("edit 1 av/no");
+        CommandException exception = assertThrows(CommandException.class, () -> command.execute(model));
+        assertEquals(EditCommandParser.MESSAGE_INVALID_AVAILABILITY, exception.getMessage());
         assertErrorSentence(exception.getMessage());
     }
 
