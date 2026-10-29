@@ -14,13 +14,14 @@ public class Messages {
 
     public static final String MESSAGE_UNKNOWN_COMMAND = "Unknown command.";
     public static final String MESSAGE_INVALID_COMMAND_FORMAT = "Invalid command format!\n%1$s";
-    public static final String MESSAGE_INVALID_PERSON_DISPLAYED_INDEX = "The person index provided is invalid.";
+    public static final String MESSAGE_INVALID_PERSON_DISPLAYED_INDEX = "The player index provided is invalid.";
     public static final String MESSAGE_MISSING_INDEX = "Error! Index must be specified!";
     public static final String MESSAGE_NON_NUMERIC_INDEX =
             "Invalid index entered! Index should only contain numerical characters!";
     public static final String MESSAGE_INDEX_BELOW_ONE = "Invalid index entered! Index should be at least 1!";
     public static final String MESSAGE_INDEX_TOO_LARGE = "Invalid index entered! Index is too large!";
-    public static final String MESSAGE_PERSONS_LISTED_OVERVIEW = "%1$d person(s) listed!";
+    public static final String MESSAGE_PLAYER_LISTED_OVERVIEW = "1 player listed!";
+    public static final String MESSAGE_PLAYERS_LISTED_OVERVIEW = "%1$d players listed!";
     public static final String MESSAGE_NO_REGISTERED_PLAYERS =
             "No players registered. Add your first player, for example:\n"
             + "add n/Amy Tan sn/U12 pos/Defender";
@@ -34,8 +35,11 @@ public class Messages {
         if (totalPlayers == 0) {
             return MESSAGE_NO_REGISTERED_PLAYERS;
         }
-        return displayedPlayers == 0 ? MESSAGE_NO_MATCHING_PLAYERS
-                : String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, displayedPlayers);
+        if (displayedPlayers == 0) {
+            return MESSAGE_NO_MATCHING_PLAYERS;
+        }
+        return displayedPlayers == 1 ? MESSAGE_PLAYER_LISTED_OVERVIEW
+                : String.format(MESSAGE_PLAYERS_LISTED_OVERVIEW, displayedPlayers);
     }
 
     /**
