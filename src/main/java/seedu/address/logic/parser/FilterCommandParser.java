@@ -29,6 +29,7 @@ import seedu.address.model.person.SquadName;
  */
 public class FilterCommandParser implements Parser<FilterCommand> {
     public static final String MESSAGE_MISSING_CRITERION = "Error! At least one filter criterion must be specified!";
+    public static final String MESSAGE_UNKNOWN_PREFIX = "Unknown filter prefix: %s";
 
     public static final String MESSAGE_MISSING_AVAILABILITY = "Error! Availability must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
@@ -131,7 +132,7 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         while (matcher.find()) {
             String prefix = matcher.group("prefix");
             if (!isSupportedPrefix(prefix)) {
-                throw invalidFormat();
+                throw new ParseException(String.format(MESSAGE_UNKNOWN_PREFIX, prefix));
             }
             prefixes.add(new PrefixMatch(prefix, matcher.start(), matcher.end()));
         }

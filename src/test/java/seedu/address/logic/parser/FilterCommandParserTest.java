@@ -116,9 +116,9 @@ public class FilterCommandParserTest {
     @Test
     public void parse_unknownPrefixOrPreamble_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, FilterCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, "/position Goalkeeper", expectedMessage);
-        assertParseFailure(parser, "squad/Team A /position Goalkeeper", expectedMessage);
-        assertParseFailure(parser, "/squadTeam", expectedMessage);
+        assertParseFailure(parser, "/position Goalkeeper", "Unknown filter prefix: /position");
+        assertParseFailure(parser, "squad/Team A /position Goalkeeper", "Unknown filter prefix: /position");
+        assertParseFailure(parser, "/squadTeam", "Unknown filter prefix: /squadTeam");
         assertParseFailure(parser, "unexpected squad/Team A", expectedMessage);
         assertParseFailure(parser, "/squad Team A", expectedMessage);
         assertParseFailure(parser, "/availability true", expectedMessage);
