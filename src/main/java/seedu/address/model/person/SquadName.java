@@ -11,7 +11,7 @@ import seedu.address.commons.util.StringUtil;
 public class SquadName {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Squad names should only contain alphanumeric characters, hyphens and whitespace, and should not be blank";
+            "Squad names should only contain alphanumeric characters, hyphens and whitespace, and should not be blank.";
     public static final String VALIDATION_REGEX = Name.VALIDATION_REGEX;
 
     public final String value;

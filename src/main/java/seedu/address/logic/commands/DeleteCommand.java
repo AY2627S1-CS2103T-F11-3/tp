@@ -38,9 +38,9 @@ public class DeleteCommand extends Command {
             "No players are currently displayed. Use list to show all players before deleting by index.";
     public static final String MESSAGE_INDEX_OUT_OF_RANGE =
             "Index %1$d is outside the displayed list. Choose an index from 1 to %2$d.";
-    public static final String MESSAGE_NAME_NOT_FOUND = "No player found with the full name: %1$s";
+    public static final String MESSAGE_NAME_NOT_FOUND = "No player found with the full name \"%1$s\".";
     public static final String MESSAGE_AMBIGUOUS_NAME =
-            "Multiple players match the name: %1$s\n\n%2$s\n\n"
+            "Multiple players match the name \"%1$s\".\n\n%2$s\n\n"
             + "No players deleted. Matching players are shown in the list.\n"
             + "Delete using index: delete INDEX [INDEX]... (e.g. delete 1).";
 

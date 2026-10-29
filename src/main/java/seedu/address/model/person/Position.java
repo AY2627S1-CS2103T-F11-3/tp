@@ -11,7 +11,7 @@ import java.util.Locale;
 public class Position {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Invalid position entered! Please choose from goalkeeper, defender, midfielder or striker!";
+            "Invalid position entered. Please choose from goalkeeper, defender, midfielder or striker.";
 
     /** The supported positions, plus the placeholder used by existing saved profiles. */
     public enum Role {

@@ -257,7 +257,7 @@ The sequence diagram below shows how an `undo` operation flows through the `Logi
 3. `VersionedAddressBook#redo()` increments `currentStatePointer` once to the right (back to index `2`) and restores the address book to that state.
 4. `ModelManager` resets the view with `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest state in the list, `Model#canRedoAddressBook()` returns `false`. `RedoCommand` throws a `CommandException` with the message `There is no undo to redo!`.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest state in the list, `Model#canRedoAddressBook()` returns `false`. `RedoCommand` throws a `CommandException` with the message `There is no undo to redo.`
 </div>
 
 **Step 6.** The user executes `list` or `filter`. Commands that do not modify the stored address book data do not call `Model#commitAddressBook()`, `Model#undoAddressBook()`, or `Model#redoAddressBook()`. Thus, the `addressBookStateList` and `currentStatePointer` remain untouched.

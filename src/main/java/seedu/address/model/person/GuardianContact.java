@@ -9,7 +9,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 public class GuardianContact {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Invalid telephone number entered! Telephone number should be 8 digits long and contain only digits!";
+            "Invalid telephone number entered. Telephone number should be 8 digits long and contain only digits.";
     public static final String VALIDATION_REGEX = "[0-9]{8}";
 
     public final String value;

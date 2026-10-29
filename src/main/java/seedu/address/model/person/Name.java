@@ -12,7 +12,7 @@ import seedu.address.commons.util.StringUtil;
 public class Name {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Names should only contain alphanumeric characters, hyphens and whitespace, and should not be blank";
+            "Names should only contain alphanumeric characters, hyphens and whitespace, and should not be blank.";
 
     // Applied after whitespace normalization, so a blank input cannot match.
     public static final String VALIDATION_REGEX = "[\\p{Alnum} -]+";

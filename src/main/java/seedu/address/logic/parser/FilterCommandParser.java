@@ -28,38 +28,38 @@ import seedu.address.model.person.SquadName;
  * Parses input arguments and creates a {@link FilterCommand}.
  */
 public class FilterCommandParser implements Parser<FilterCommand> {
-    public static final String MESSAGE_MISSING_CRITERION = "Error! At least one filter criterion must be specified!";
+    public static final String MESSAGE_MISSING_CRITERION = "Error: At least one filter criterion must be specified.";
 
-    public static final String MESSAGE_MISSING_AVAILABILITY = "Error! Availability must be specified!";
+    public static final String MESSAGE_MISSING_AVAILABILITY = "Error: Availability must be specified.";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
+            "Invalid availability entered. Availability should either be true or false.";
     public static final String MESSAGE_DUPLICATE_AVAILABILITY =
-            "Error! Parameter " + PREFIX_AVAILABILITY_FULL + " cannot be specified more than once!";
+            "Error: Parameter " + PREFIX_AVAILABILITY_FULL + " cannot be specified more than once.";
 
     public static final String MESSAGE_MISSING_CONSENT =
-            "Error! Consent status must be specified!";
+            "Error: Consent status must be specified.";
     public static final String MESSAGE_INVALID_CONSENT =
-            "Invalid consent status entered! Consent status should either be received or pending!";
+            "Invalid consent status entered. Consent status should either be received or pending.";
     public static final String MESSAGE_DUPLICATE_CONSENT =
-            "Error! Parameter " + PREFIX_CONSENT_FULL + " cannot be specified more than once!";
+            "Error: Parameter " + PREFIX_CONSENT_FULL + " cannot be specified more than once.";
 
     public static final String MESSAGE_MISSING_INJURY =
-            "Error! Injury status must be specified!";
+            "Error: Injury status must be specified.";
     public static final String MESSAGE_INVALID_INJURY =
-            "Invalid injury status entered! Injury status should either be fit or injured!";
+            "Invalid injury status entered. Injury status should either be fit or injured.";
     public static final String MESSAGE_DUPLICATE_INJURY =
-            "Error! Parameter " + PREFIX_INJURY_FULL + " cannot be specified more than once!";
+            "Error: Parameter " + PREFIX_INJURY_FULL + " cannot be specified more than once.";
 
     public static final String MESSAGE_MISSING_FEE =
-            "Error! Fee status must be specified!";
+            "Error: Fee status must be specified.";
     public static final String MESSAGE_INVALID_FEE =
-            "Invalid fee status entered! Fee status should either be paid or unpaid!";
+            "Invalid fee status entered. Fee status should either be paid or unpaid.";
     public static final String MESSAGE_DUPLICATE_FEE =
-            "Error! Parameter " + PREFIX_FEE_FULL + " cannot be specified more than once!";
+            "Error: Parameter " + PREFIX_FEE_FULL + " cannot be specified more than once.";
 
-    public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
+    public static final String MESSAGE_MISSING_SQUAD = "Error: Squad name must be specified.";
     public static final String MESSAGE_DUPLICATE_SQUAD =
-            "Error! Parameter " + PREFIX_SQUADNAME_FULL + " cannot be specified more than once!";
+            "Error: Parameter " + PREFIX_SQUADNAME_FULL + " cannot be specified more than once.";
 
 
     private static final Pattern PREFIX_TOKEN_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>/\\S+|\\S+/)");

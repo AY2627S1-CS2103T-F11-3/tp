@@ -47,7 +47,7 @@ import seedu.address.model.tag.Tag;
 public class EditCommandParser implements Parser<EditCommand> {
 
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
+            "Invalid availability entered. Availability should either be true or false.";
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand

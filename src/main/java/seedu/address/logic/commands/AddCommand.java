@@ -47,7 +47,7 @@ public class AddCommand extends Command {
             + "Example: add name/John Doe squad/Soccer Stars position/Goalkeeper";
 
     public static final String MESSAGE_SUCCESS = "Player %1$s added!";
-    public static final String MESSAGE_DUPLICATE_PERSON = "%1$s is already a registered player!";
+    public static final String MESSAGE_DUPLICATE_PERSON = "%1$s is already a registered player.";
 
     private final Person toAdd;
 

@@ -18,7 +18,7 @@ public class UndoCommand extends Command {
             + "Example: " + COMMAND_WORD;
 
     public static final String MESSAGE_UNDO_SUCCESS = "Undid the last command!";
-    public static final String MESSAGE_NO_COMMAND_TO_UND0 = "The previous command cannot be undone!";
+    public static final String MESSAGE_NO_COMMAND_TO_UND0 = "The previous command cannot be undone.";
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
