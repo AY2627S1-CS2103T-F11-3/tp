@@ -3,12 +3,15 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
@@ -38,7 +41,8 @@ public class AddCommand extends Command {
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Aliases: " + PREFIX_NAME + ", " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", "
-            + PREFIX_GUARDIANNAME + ", " + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ". "
+            + PREFIX_GUARDIANNAME + ", " + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ", "
+            + PREFIX_INJURY + ", " + PREFIX_FEE + ", " + PREFIX_CONSENT + ". "
             + "Specify each field only once, except tags.\n"
             + "Example: add name/John Doe squad/Soccer Stars position/Goalkeeper";
 
@@ -64,6 +68,7 @@ public class AddCommand extends Command {
         }
 
         model.addPerson(toAdd);
+        model.commitAddressBook();
         return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd.getName()));
     }
 
