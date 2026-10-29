@@ -205,10 +205,10 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     private Availability parseAvailability(String value) throws ParseException {
         String normalized = value.replaceAll("\\s", "");
-        if ("true".equalsIgnoreCase(normalized) || "available".equalsIgnoreCase(normalized)) {
+        if ("true".equalsIgnoreCase(normalized)) {
             return new Availability(Availability.AVAILABLE);
         }
-        if ("false".equalsIgnoreCase(normalized) || "unavailable".equalsIgnoreCase(normalized)) {
+        if ("false".equalsIgnoreCase(normalized)) {
             return new Availability(Availability.UNAVAILABLE);
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

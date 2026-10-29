@@ -97,10 +97,10 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     }
 
     private String parseAvailability(String value) throws ParseException {
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
+        if (value.equalsIgnoreCase("true")) {
             return Availability.AVAILABLE;
         }
-        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
+        if (value.equalsIgnoreCase("false")) {
             return Availability.UNAVAILABLE;
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

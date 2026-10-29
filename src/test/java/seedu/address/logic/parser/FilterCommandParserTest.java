@@ -40,13 +40,13 @@ public class FilterCommandParserTest {
                 command("Soccer Stars", null, null, null, null));
         assertParseSuccess(parser, "availability/TrUe",
                 command(null, Availability.AVAILABLE, null, null, null));
-        assertParseSuccess(parser, "availability/unavailable squad/Football Fellas",
+        assertParseSuccess(parser, "availability/false squad/Football Fellas",
                 command("Football Fellas", Availability.UNAVAILABLE, null, null, null));
         assertParseSuccess(parser, "sn/Soccer Stars av/true",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "squad/Soccer Stars av/false",
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
-        assertParseSuccess(parser, "sn/Soccer Stars availability/available",
+        assertParseSuccess(parser, "sn/Soccer Stars availability/true",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "available/true",
                 command(null, Availability.AVAILABLE, null, null, null));

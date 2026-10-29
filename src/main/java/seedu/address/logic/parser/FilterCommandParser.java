@@ -192,10 +192,10 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         if (value.isEmpty()) {
             throw new ParseException(MESSAGE_MISSING_AVAILABILITY);
         }
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
+        if (value.equalsIgnoreCase("true")) {
             return Optional.of(new Availability(Availability.AVAILABLE));
         }
-        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
+        if (value.equalsIgnoreCase("false")) {
             return Optional.of(new Availability(Availability.UNAVAILABLE));
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);
