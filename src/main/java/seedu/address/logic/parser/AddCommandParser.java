@@ -17,6 +17,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -51,11 +52,12 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
             "Invalid availability entered! Availability should either be true or false!";
+    public static final String MESSAGE_MISSING_REMARK = "Error! Remark must not be blank!";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 
     private enum Field {
-        NAME, SQUAD, POSITION, GUARDIAN, CONTACT, AVAILABILITY, INJURY, FEE, CONSENT, TAG
+        NAME, SQUAD, POSITION, GUARDIAN, CONTACT, AVAILABILITY, INJURY, FEE, CONSENT, REMARK, TAG
     }
 
     @Override
@@ -74,6 +76,7 @@ public class AddCommandParser implements Parser<AddCommand> {
         InjuryStatus injuryStatus = new InjuryStatus(InjuryStatus.FIT);
         FeeStatus feeStatus = new FeeStatus(FeeStatus.UNPAID);
         ConsentStatus consentStatus = new ConsentStatus(ConsentStatus.PENDING);
+        Remark remark = new Remark("");
         Set<Tag> tags = new HashSet<>();
         Set<Field> seen = new HashSet<>();
         for (Argument argument : arguments) {
@@ -108,6 +111,12 @@ public class AddCommandParser implements Parser<AddCommand> {
                     case AVAILABILITY:
                         availability = parseAvailability(value);
                         break;
+                    case REMARK:
+                        if (value.isBlank()) {
+                            throw new ParseException(MESSAGE_MISSING_REMARK);
+                        }
+                        remark = new Remark(value);
+                        break;
                     case TAG:
                         tags.add(ParserUtil.parseTag(value));
                         break;
@@ -128,7 +137,7 @@ public class AddCommandParser implements Parser<AddCommand> {
             }
         }
         assert name != null && squad != null && position != null : "Required add fields must be resolved";
-        return new AddCommand(new Person(name, tags, new Remark(""), squad, position, guardian, contact,
+        return new AddCommand(new Person(name, tags, remark, squad, position, guardian, contact,
                 availability, injuryStatus, feeStatus, consentStatus));
     }
 
@@ -183,6 +192,7 @@ public class AddCommandParser implements Parser<AddCommand> {
             case AVAILABILITY -> new Prefix[] {PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL};
             case FEE -> new Prefix[] {PREFIX_FEE, PREFIX_FEE_FULL};
             case CONSENT -> new Prefix[] {PREFIX_CONSENT, PREFIX_CONSENT_FULL};
+            case REMARK -> new Prefix[] {PREFIX_REMARK};
             case INJURY -> new Prefix[] {PREFIX_INJURY, PREFIX_INJURY_FULL};
             case TAG -> new Prefix[] {PREFIX_TAG};
         };
