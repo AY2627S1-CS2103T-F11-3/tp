@@ -5,6 +5,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -146,7 +147,7 @@ public class DeleteCommand extends Command {
         Set<String> missingNames = new LinkedHashSet<>();
         Set<String> ambiguousNames = new LinkedHashSet<>();
         Set<Person> ambiguousMatches = new LinkedHashSet<>();
-        for (String name : targetNames) {
+        for (String name : getDistinctTargetNames()) {
             List<Person> matches = findMatches(name, model);
             if (matches.isEmpty()) {
                 missingNames.add(name);
@@ -166,11 +167,24 @@ public class DeleteCommand extends Command {
         return List.copyOf(personsToDelete);
     }
 
+    private List<String> getDistinctTargetNames() {
+        List<String> distinctNames = new ArrayList<>();
+        for (String name : targetNames) {
+            if (distinctNames.stream().noneMatch(existing -> namesMatch(existing, name))) {
+                distinctNames.add(name);
+            }
+        }
+        return distinctNames;
+    }
+
     private List<Person> findMatches(String name, Model model) {
-        String normalizedName = normalizeName(name);
         return model.getAddressBook().getPersonList().stream()
-                .filter(person -> normalizeName(person.getName().fullName).equalsIgnoreCase(normalizedName))
+                .filter(person -> namesMatch(person.getName().fullName, name))
                 .toList();
+    }
+
+    private boolean namesMatch(String first, String second) {
+        return normalizeName(first).equalsIgnoreCase(normalizeName(second));
     }
 
     private String formatNameErrors(Set<String> missingNames, Set<String> ambiguousNames,

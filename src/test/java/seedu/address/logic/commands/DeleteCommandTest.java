@@ -365,8 +365,31 @@ public class DeleteCommandTest {
     @Test
     public void execute_multipleMissingNames_reportsAllAndPreservesFilter() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
-        assertCommandFailure(DeleteCommand.forNames(List.of("Missing Person", "Unknown Player")), model,
+        assertCommandFailure(DeleteCommand.forNames(List.of("Missing Person", "Unknown Player",
+                "missing person", "Unknown  Player")), model,
                 "No players found with these full names: Missing Person, Unknown Player\nNo players deleted.");
+    }
+
+    @Test
+    public void execute_repeatedMissingName_reportsFirstSpellingOnce() {
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        DeleteCommand command = DeleteCommand.forNames(List.of("Missing Person", "missing person",
+                "  MISSING\tPerson  "));
+
+        assertCommandFailure(command, model,
+                "No player found with the full name: Missing Person\nNo players deleted.");
+    }
+
+    @Test
+    public void execute_repeatedAmbiguousName_reportsFirstSpellingOnce() {
+        Person firstMatch = new PersonBuilder().withName("Alex Tan").withSquadName("Squad A").build();
+        Person secondMatch = new PersonBuilder().withName("Alex Tan").withSquadName("Squad B").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        model.updateFilteredPersonList(person -> person.equals(firstMatch));
+        DeleteCommand command = DeleteCommand.forNames(List.of("Alex Tan", "alex tan", "  ALEX\tTan  "));
+
+        assertAmbiguousName(command, "Alex Tan", List.of(firstMatch, secondMatch));
     }
 
     @Test
