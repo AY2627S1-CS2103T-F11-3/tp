@@ -16,6 +16,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
@@ -58,7 +59,7 @@ public class EditCommandParser implements Parser<EditCommand> {
     public EditCommand parse(String args) throws ParseException {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
-                ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_AVAILABILITY,
+                ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_NAME_FULL, PREFIX_AVAILABILITY,
                         PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL,
                         PREFIX_POSITION, PREFIX_POSITION_FULL, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL,
                         PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL, PREFIX_INJURY, PREFIX_INJURY_FULL,
@@ -72,12 +73,13 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_NAME_FULL, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
                 PREFIX_AVAILABILITY_LEGACY,
                 PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL, PREFIX_POSITION, PREFIX_POSITION_FULL,
                 PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL,
                 PREFIX_INJURY, PREFIX_INJURY_FULL, PREFIX_FEE, PREFIX_FEE_FULL, PREFIX_CONSENT, PREFIX_CONSENT_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_INJURY, PREFIX_INJURY_FULL);
+        verifyAliasesUsedOnce(argMultimap, PREFIX_NAME, PREFIX_NAME_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_FEE, PREFIX_FEE_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_CONSENT, PREFIX_CONSENT_FULL);
         verifyAliasesUsedOnce(argMultimap, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY);
@@ -88,8 +90,9 @@ public class EditCommandParser implements Parser<EditCommand> {
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 
-        if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
-            editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
+        Optional<String> name = getValue(argMultimap, PREFIX_NAME, PREFIX_NAME_FULL);
+        if (name.isPresent()) {
+            editPersonDescriptor.setName(ParserUtil.parseName(name.get()));
         }
         parseSquadName(argMultimap).ifPresent(editPersonDescriptor::setSquadName);
         parsePosition(argMultimap).ifPresent(editPersonDescriptor::setPosition);

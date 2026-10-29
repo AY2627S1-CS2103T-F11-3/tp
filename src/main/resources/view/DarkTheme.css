@@ -386,6 +386,22 @@
     -fx-padding: 0;
 }
 
+.fixed-player-table {
+    -fx-border-color: transparent #3b627d transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.fixed-player-table .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-max-width: 0;
+    -fx-pref-width: 0;
+}
+
+.fixed-player-table .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+}
+
 .player-table .empty-list-hint {
     -fx-text-fill: #aab7c4;
     -fx-opacity: 1;

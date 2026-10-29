@@ -66,7 +66,7 @@ public class AddCommandParserTest {
             assertParseFailure(parser, REQUIRED + " injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",
-                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL));
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
         assertParseFailure(parser, " injury/recovering contact/abc" + REQUIRED, InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " contact/abc injury/recovering" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
     }
@@ -96,6 +96,15 @@ public class AddCommandParserTest {
                 new AddCommand(expected));
         assertParseSuccess(parser, " av/f a L s E gc/99-99 99\t99 g/Long Ox" + REQUIRED, new AddCommand(expected));
         assertParseSuccess(parser, REQUIRED + " av/ t R u E ", new AddCommand(player()));
+    }
+
+    @Test
+    public void parse_remark_successAndInvalidValues() {
+        Person expected = new PersonBuilder(player()).withRemark("Late arrival").build();
+        assertParseSuccess(parser, REQUIRED + " r/Late arrival", new AddCommand(expected));
+        assertParseFailure(parser, REQUIRED + " r/", AddCommandParser.MESSAGE_MISSING_REMARK);
+        assertParseFailure(parser, REQUIRED + " r/first r/second",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_REMARK));
     }
 
     @Test
@@ -159,14 +168,29 @@ public class AddCommandParserTest {
         String[] bases = {" squad/Stars position/striker", " name/John position/striker",
             " name/John squad/Stars", REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED};
         for (int index = 0; index < aliases.length; index++) {
-            String message = Messages.getErrorMessageForDuplicatePrefixes(aliases[index]);
             for (Prefix first : aliases[index]) {
                 for (Prefix second : aliases[index]) {
                     String input = bases[index] + " " + first + values[index] + " " + second + values[index];
-                    assertParseFailure(parser, input, message);
+                    assertParseFailure(parser, input, Messages.getErrorMessageForDuplicatePrefixes(first, second));
                 }
             }
         }
+    }
+
+    @Test
+    public void parse_duplicatePrefixBeforeOtherAlias_reportsOnlyRepeatedPrefix() {
+        assertParseFailure(parser, REQUIRED + " injury/fit injury/injured inj/fit",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
+        assertParseFailure(parser, REQUIRED + " inj/fit inj/injured injury/fit",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY));
+    }
+
+    @Test
+    public void parse_multipleDuplicateFields_reportsFirstRepeatedPrefix() {
+        assertParseFailure(parser, REQUIRED + " injury/fit injury/injured fee/paid fee/unpaid",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
+        assertParseFailure(parser, REQUIRED + " fee/paid fee/unpaid injury/fit injury/injured",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_FEE_FULL));
     }
 
     @Test
