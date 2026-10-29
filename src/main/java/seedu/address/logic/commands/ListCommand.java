@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import seedu.address.model.Model;
+import seedu.address.logic.Messages;
 
 /**
  * Lists all persons in the address book to the user.
@@ -31,6 +32,9 @@ public class ListCommand extends Command {
 
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         int playerCount = model.getFilteredPersonList().size();
+        if (playerCount == 0) {
+            return new CommandResult(Messages.MESSAGE_NO_REGISTERED_PLAYERS);
+        }
         return new CommandResult(String.format(MESSAGE_FILTERS_CLEARED, playerCount,
                 playerCount == 1 ? "player" : "players"));
     }
