@@ -162,28 +162,34 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     }
 
     private boolean isAvailabilityPrefix(String prefix) {
-        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix())
-                || prefix.equals(PREFIX_AVAILABILITY_LEGACY.getPrefix());
+        return prefix.equalsIgnoreCase(PREFIX_AVAILABILITY.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_AVAILABILITY_FULL.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_AVAILABILITY_LEGACY.getPrefix());
     }
 
     private boolean isInjuryPrefix(String prefix) {
-        return prefix.equals(PREFIX_INJURY.getPrefix()) || prefix.equals(PREFIX_INJURY_FULL.getPrefix());
+        return prefix.equalsIgnoreCase(PREFIX_INJURY.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_INJURY_FULL.getPrefix());
     }
 
     private boolean isFeePrefix(String prefix) {
-        return prefix.equals(PREFIX_FEE.getPrefix()) || prefix.equals(PREFIX_FEE_FULL.getPrefix());
+        return prefix.equalsIgnoreCase(PREFIX_FEE.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_FEE_FULL.getPrefix());
     }
 
     private boolean isConsentPrefix(String prefix) {
-        return prefix.equals(PREFIX_CONSENT.getPrefix()) || prefix.equals(PREFIX_CONSENT_FULL.getPrefix());
+        return prefix.equalsIgnoreCase(PREFIX_CONSENT.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_CONSENT_FULL.getPrefix());
     }
 
     private boolean isSquadPrefix(String prefix) {
-        return prefix.equals(PREFIX_SQUADNAME.getPrefix()) || prefix.equals(PREFIX_SQUADNAME_FULL.getPrefix());
+        return prefix.equalsIgnoreCase(PREFIX_SQUADNAME.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_SQUADNAME_FULL.getPrefix());
     }
 
     private boolean isPositionPrefix(String prefix) {
-        return prefix.equals(PREFIX_POSITION.getPrefix()) || prefix.equals(PREFIX_POSITION_FULL.getPrefix());
+        return prefix.equalsIgnoreCase(PREFIX_POSITION.getPrefix())
+                || prefix.equalsIgnoreCase(PREFIX_POSITION_FULL.getPrefix());
     }
 
     private Optional<Position> parsePosition(String value) throws ParseException {
