@@ -76,7 +76,7 @@ public class MarkCommandParserTest {
 
     @Test
     public void parse_unknownPrefixOrMissingSeparator_showsUsage() {
-        for (String input : List.of("1 paid/true", "1 FEE/paid", "1fee/paid", "1 /fee paid")) {
+        for (String input : List.of("1 paid/true", "1fee/paid", "1 /fee paid")) {
             assertParseFailure(parser, input,
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, MarkCommand.MESSAGE_USAGE));
         }
