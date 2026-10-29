@@ -99,6 +99,15 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_remark_successAndInvalidValues_failure() {
+        Person expected = new PersonBuilder(player()).withRemark("Late arrival").build();
+        assertParseSuccess(parser, REQUIRED + " r/Late arrival", new AddCommand(expected));
+        assertParseFailure(parser, REQUIRED + " r/", AddCommandParser.MESSAGE_MISSING_REMARK);
+        assertParseFailure(parser, REQUIRED + " r/first r/second",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_REMARK));
+    }
+
+    @Test
     public void parse_guardianFieldsIndependently_success() {
         assertParseSuccess(parser, REQUIRED + " g/Jane Doe",
                 new AddCommand(new PersonBuilder(player()).withGuardianName("Jane Doe").build()));
