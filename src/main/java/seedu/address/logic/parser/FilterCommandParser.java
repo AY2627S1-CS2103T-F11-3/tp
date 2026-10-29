@@ -20,6 +20,7 @@ import static seedu.address.logic.Messages.MESSAGE_MISSING_POSITION;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_SQUAD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
@@ -142,7 +143,8 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     }
 
     private boolean isAvailabilityPrefix(String prefix) {
-        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix());
+        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix())
+                || prefix.equals(PREFIX_AVAILABILITY_LEGACY.getPrefix());
     }
 
     private boolean isInjuryPrefix(String prefix) {
@@ -190,10 +192,10 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         if (value.isEmpty()) {
             throw new ParseException(MESSAGE_MISSING_AVAILABILITY);
         }
-        if (value.equalsIgnoreCase("true")) {
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
             return Optional.of(new Availability(Availability.AVAILABLE));
         }
-        if (value.equalsIgnoreCase("false")) {
+        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
             return Optional.of(new Availability(Availability.UNAVAILABLE));
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

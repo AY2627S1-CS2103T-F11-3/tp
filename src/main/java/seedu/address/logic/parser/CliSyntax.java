@@ -23,7 +23,9 @@ public class CliSyntax {
     public static final Prefix PREFIX_POSITION_FULL = new Prefix("position/");
     public static final Prefix PREFIX_GUARDIANNAME_FULL = new Prefix("guardian/");
     public static final Prefix PREFIX_GUARDIANCONTACT_FULL = new Prefix("contact/");
-    public static final Prefix PREFIX_AVAILABILITY_FULL = new Prefix("available/");
+    public static final Prefix PREFIX_AVAILABILITY_FULL = new Prefix("availability/");
+    /** Retained for backwards compatibility with commands saved using the former full prefix. */
+    public static final Prefix PREFIX_AVAILABILITY_LEGACY = new Prefix("available/");
     public static final Prefix PREFIX_FEE_FULL = new Prefix("fee/");
     public static final Prefix PREFIX_CONSENT_FULL = new Prefix("consent/");
     public static final Prefix PREFIX_INJURY_FULL = new Prefix("injury/");

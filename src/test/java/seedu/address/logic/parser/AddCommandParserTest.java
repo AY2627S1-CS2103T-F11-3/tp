@@ -161,7 +161,8 @@ public class AddCommandParserTest {
             {CliSyntax.PREFIX_POSITION, CliSyntax.PREFIX_POSITION_FULL},
             {CliSyntax.PREFIX_GUARDIANNAME, CliSyntax.PREFIX_GUARDIANNAME_FULL},
             {CliSyntax.PREFIX_GUARDIANCONTACT, CliSyntax.PREFIX_GUARDIANCONTACT_FULL},
-            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL},
+            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL,
+                CliSyntax.PREFIX_AVAILABILITY_LEGACY},
             {CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL},
             {CliSyntax.PREFIX_FEE, CliSyntax.PREFIX_FEE_FULL},
             {CliSyntax.PREFIX_CONSENT, CliSyntax.PREFIX_CONSENT_FULL}

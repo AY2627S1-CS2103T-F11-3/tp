@@ -38,16 +38,18 @@ public class FilterCommandParserTest {
     public void parse_validCriteria_returnsFilterCommand() {
         assertParseSuccess(parser, "squad/Soccer Stars",
                 command("Soccer Stars", null, null, null, null));
-        assertParseSuccess(parser, "available/TrUe",
+        assertParseSuccess(parser, "availability/TrUe",
                 command(null, Availability.AVAILABLE, null, null, null));
-        assertParseSuccess(parser, "available/false squad/Football Fellas",
+        assertParseSuccess(parser, "availability/unavailable squad/Football Fellas",
                 command("Football Fellas", Availability.UNAVAILABLE, null, null, null));
         assertParseSuccess(parser, "sn/Soccer Stars av/true",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "squad/Soccer Stars av/false",
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
-        assertParseSuccess(parser, "sn/Soccer Stars available/true",
+        assertParseSuccess(parser, "sn/Soccer Stars availability/available",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
+        assertParseSuccess(parser, "available/true",
+                command(null, Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "\t squad/ Soccer Stars \t av/ false ",
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
 
@@ -154,7 +156,6 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "unexpected squad/Team A", expectedMessage);
         assertParseFailure(parser, "/squad Team A", expectedMessage);
         assertParseFailure(parser, "/availability true", expectedMessage);
-        assertParseFailure(parser, "availability/true", expectedMessage);
     }
 
     private FilterCommand command(String squadName, String availability,

@@ -1,6 +1,7 @@
 package seedu.address.model.overview;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -20,10 +21,12 @@ public record ClubOverview(List<SquadSummary> squads) {
     }
 
     /**
-     * Summarises registered players in squad-name order without changing their list.
+     * Summarizes registered players in case-insensitive squad-name order without changing their list.
+     * Uses case-sensitive ordering to break ties and keep distinct squad names separate.
      */
     public static ClubOverview fromPlayers(Collection<Person> players) {
-        Map<String, SquadSummary> summaries = new TreeMap<>();
+        Map<String, SquadSummary> summaries = new TreeMap<>(
+                String.CASE_INSENSITIVE_ORDER.thenComparing(Comparator.naturalOrder()));
         for (Person player : players) {
             String name = player.getSquadName().value;
             SquadSummary previous = summaries.get(name);

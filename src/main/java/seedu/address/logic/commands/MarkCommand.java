@@ -24,7 +24,8 @@ public class MarkCommand extends Command {
     public static final String COMMAND_WORD = "mark";
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Sets one status for displayed players.\n"
             + "Parameters: INDEX [INDEX]... STATUS/VALUE\n"
-            + "Choose one: av/true|false (or available/), injury/fit|injured (or inj/), "
+            + "Choose one: availability/true|false|available|unavailable (or av/; available/ is also accepted), "
+            + "injury/fit|injured (or inj/), "
             + "fee/paid|unpaid (or f/), consent/received|pending (or c/)\n"
             + "Example: mark 1 3 fee/paid";
     public static final String MESSAGE_EMPTY_LIST =

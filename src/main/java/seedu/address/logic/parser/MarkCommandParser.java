@@ -9,6 +9,7 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_INJURY;
 import static seedu.address.logic.Messages.MESSAGE_ONE_STATUS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
@@ -38,6 +39,7 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     private static final Map<String, PlayerStatusField> STATUS_PREFIXES = Map.of(
             PREFIX_AVAILABILITY.getPrefix(), PlayerStatusField.AVAILABILITY,
             PREFIX_AVAILABILITY_FULL.getPrefix(), PlayerStatusField.AVAILABILITY,
+            PREFIX_AVAILABILITY_LEGACY.getPrefix(), PlayerStatusField.AVAILABILITY,
             PREFIX_INJURY.getPrefix(), PlayerStatusField.INJURY,
             PREFIX_INJURY_FULL.getPrefix(), PlayerStatusField.INJURY,
             PREFIX_FEE.getPrefix(), PlayerStatusField.FEE,
@@ -95,10 +97,10 @@ public class MarkCommandParser implements Parser<MarkCommand> {
     }
 
     private String parseAvailability(String value) throws ParseException {
-        if (value.equalsIgnoreCase("true")) {
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
             return Availability.AVAILABLE;
         }
-        if (value.equalsIgnoreCase("false")) {
+        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
             return Availability.UNAVAILABLE;
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

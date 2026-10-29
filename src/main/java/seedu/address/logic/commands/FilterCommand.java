@@ -29,7 +29,7 @@ public class FilterCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Displays players matching squad and/or status criteria.\n"
             + "Parameters: [" + PREFIX_SQUADNAME_FULL + "SQUAD_NAME] ["
-            + PREFIX_AVAILABILITY_FULL + "true|false] ["
+            + PREFIX_AVAILABILITY_FULL + "true|false|available|unavailable] ["
             + PREFIX_INJURY_FULL + "fit|injured] ["
             + PREFIX_FEE_FULL + "paid|unpaid] ["
             + PREFIX_CONSENT_FULL + "received|pending] ["
@@ -41,7 +41,7 @@ public class FilterCommand extends Command {
             + PREFIX_CONSENT + " for " + PREFIX_CONSENT_FULL + ", "
             + PREFIX_POSITION + " for " + PREFIX_POSITION_FULL + "\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_SQUADNAME_FULL + "Soccer Stars "
-            + PREFIX_AVAILABILITY_FULL + "true "
+            + PREFIX_AVAILABILITY_FULL + "available "
             + PREFIX_INJURY_FULL + "injured "
             + PREFIX_FEE_FULL + "unpaid";
 

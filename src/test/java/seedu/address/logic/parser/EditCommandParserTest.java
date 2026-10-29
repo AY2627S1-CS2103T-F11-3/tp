@@ -13,6 +13,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
@@ -201,6 +202,8 @@ public class EditCommandParserTest {
         expectedCommand = new EditCommand(targetIndex, descriptor);
         assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_AVAILABILITY_FULL + "TrUe",
                 expectedCommand);
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_AVAILABILITY + "Available",
+                expectedCommand);
     }
 
     @Test
@@ -268,7 +271,12 @@ public class EditCommandParserTest {
         assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + AVAILABILITY_DESC_UNAVAILABLE,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_AVAILABILITY));
         assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + " " + PREFIX_AVAILABILITY_FULL + "true",
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL));
+                Messages.getErrorMessageForDuplicatePrefixes(
+                        PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY));
+        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY_FULL + "available "
+                        + PREFIX_AVAILABILITY_LEGACY + "false",
+                Messages.getErrorMessageForDuplicatePrefixes(
+                        PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY));
     }
 
     @Test
