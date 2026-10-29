@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -9,6 +10,7 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.Messages;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.model.person.Remark;
 
@@ -28,6 +30,10 @@ public class RemarkCommandParserTest {
         userInput = targetIndex.getOneBased() + " " + PREFIX_REMARK;
         expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON, new Remark(""));
         assertParseSuccess(parser, userInput, expectedCommand);
+
+        userInput = targetIndex.getOneBased() + " " + PREFIX_REMARK_FULL + nonEmptyRemark;
+        expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON, new Remark(nonEmptyRemark));
+        assertParseSuccess(parser, userInput, expectedCommand);
     }
 
     @Test
@@ -39,5 +45,11 @@ public class RemarkCommandParserTest {
 
         // no index
         assertParseFailure(parser, RemarkCommand.COMMAND_WORD + " " + nonEmptyRemark, expectedMessage);
+    }
+
+    @Test
+    public void parse_bothRemarkPrefixes_failure() {
+        assertParseFailure(parser, "1 " + PREFIX_REMARK + "First " + PREFIX_REMARK_FULL + "Second",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK, PREFIX_REMARK_FULL));
     }
 }

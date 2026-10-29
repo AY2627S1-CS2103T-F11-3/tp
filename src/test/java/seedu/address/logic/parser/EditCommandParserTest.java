@@ -17,8 +17,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
@@ -43,6 +46,7 @@ public class EditCommandParserTest {
 
     private static final String TAG_EMPTY = " " + PREFIX_TAG;
     private static final String AVAILABILITY_DESC_UNAVAILABLE = " " + PREFIX_AVAILABILITY + "false";
+    private static final String REMARK_DESC = " " + PREFIX_REMARK + "Left footed";
 
     private static final String MESSAGE_INVALID_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
@@ -256,11 +260,39 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_remark_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark("Left footed").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + REMARK_DESC,
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withRemark("").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_REMARK,
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withRemark("Reliable defender").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_REMARK_FULL + "Reliable defender",
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_TAG_FULL + VALID_TAG_FRIEND,
+                new EditCommand(targetIndex, descriptor));
+    }
+
+    @Test
     public void parse_repeatedName_failure() {
         assertDeferredFailure("1" + NAME_DESC_AMY + NAME_DESC_AMY,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
         assertDeferredFailure("1" + INVALID_NAME_DESC + NAME_DESC_AMY,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
+    }
+
+    @Test
+    public void parse_repeatedRemark_failure() {
+        assertParseFailure(parser, "1" + REMARK_DESC + " " + PREFIX_REMARK + "Reliable defender",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
+        assertParseFailure(parser, "1" + REMARK_DESC + " " + PREFIX_REMARK_FULL + "Reliable defender",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK, PREFIX_REMARK_FULL));
     }
 
     @Test

@@ -18,9 +18,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -41,10 +43,11 @@ public class AddCommand extends Command {
             + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
-            + "[" + PREFIX_REMARK + "REMARK] [" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_REMARK_FULL + "REMARK] [" + PREFIX_TAG_FULL + "TAG]...\n"
             + "Aliases: " + PREFIX_NAME + ", " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", "
             + PREFIX_GUARDIANNAME + ", " + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ", "
-            + PREFIX_INJURY + ", " + PREFIX_FEE + ", " + PREFIX_CONSENT + ". "
+            + PREFIX_INJURY + ", " + PREFIX_FEE + ", " + PREFIX_CONSENT + ", " + PREFIX_REMARK + ", "
+            + PREFIX_TAG + ". "
             + "Specify each field only once, except tags.\n"
             + "Example: add name/John Doe squad/Soccer Stars position/Goalkeeper";
 

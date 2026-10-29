@@ -354,7 +354,9 @@ public class LogicManagerTest {
         String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
 
         assertCommandException("delete n/" + validName + ", Missing Player",
-                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player"));
+                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player") + "\nNo players deleted.");
+        assertCommandException("delete n/unknown, haha",
+                "No players found with these full names: unknown, haha\nNo players deleted.");
         assertParseException("delete n/" + validName + ",",
                 MESSAGE_EMPTY_NAME);
 
@@ -376,7 +378,8 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         savedStorage.saveAddressBook(model.getAddressBook());
 
-        assertThrows(CommandException.class, () -> logic.execute("delete n/" + validName + ", John Doe"));
+        assertThrows(CommandException.class, () ->
+                logic.execute("delete n/Missing Player, " + validName + ", John Doe, Unknown Player"));
 
         assertEquals(originalPersons, model.getAddressBook().getPersonList());
         assertEquals(originalPersons, savedStorage.readAddressBook().orElseThrow().getPersonList());
