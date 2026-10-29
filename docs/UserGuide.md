@@ -393,12 +393,16 @@ Formats:
 * Name matching searches all registered players, including players hidden by a filter.
 * Matching ignores capitalization and surrounding whitespace, and treats repeated whitespace as a single space.
 * Partial names do not match. If a name is missing or matches multiple players, nobody is deleted.
-* If a name matches multiple players, the message shows every matching player's details with a number.
-  The displayed list switches to those matches, including any previously hidden by a filter.
+* All names in a batch are checked before any players are deleted. The error reports every missing name and
+  every name that matches multiple players (an ambiguous name), regardless of their order in the command.
+  If names are only missing, the displayed list stays unchanged.
+* If any names are ambiguous, the message shows every matching player's details with a number.
+  The displayed list switches to the combined matches for all ambiguous names, including players previously hidden
+  by a filter. Each matching player appears once, and the numbers follow the displayed list's current sort order.
   Use `delete 1` to delete the first match, or `delete 1 2` to delete both of the first two matches.
   These numbers refer to the matching list; if you change the displayed list, use its new indices.
-* If a batch contains an ambiguous name, none of the requested players are deleted. Only matches for the first
-  ambiguous name are shown; submit any other intended deletions again after resolving that name.
+  Players whose names matched uniquely are not included in this matching list and have not been deleted;
+  submit those intended deletions again after resolving the errors.
 * Repeating a name deletes that player only once.
 * Do not mix index selectors with name selectors. After `n/`, numbers are names, not indices.
 * Empty entries, such as `John Doe,,Amy Tan` or a trailing comma, are rejected.
@@ -414,6 +418,14 @@ Examples:
 * `delete n/John Doe, Amy Tan` deletes both players if each name identifies exactly one registered player.
 * `delete name/John Doe, Amy Tan` does the same using the full prefix.
 * `delete n/17` selects a player whose full name is `17`.
+
+Batch error examples (assuming no player is named `Missing Person` and multiple players are named `Alex Tan`):
+
+* `delete n/Missing Person, Alex Tan` reports that `Missing Person` was not found and that `Alex Tan` matches
+  multiple players. All Alex Tan matches are displayed for selection by index.
+* `delete n/Alex Tan, Missing Person` reports the same two problems and displays the same matches.
+
+Neither command deletes any players. This also applies to players whose names match uniquely elsewhere in a batch.
 
 ### Clearing all entries: `clear`
 
