@@ -105,7 +105,7 @@ public class MatchesFilterCriteriaPredicateTest {
                 Optional.of(new SquadName("soccer stars")), Optional.empty(),
                 Optional.empty(), Optional.empty(), Optional.empty());
         assertTrue(normalizedPredicate.test(player));
-        assertFalse(differentCasePredicate.test(player));
+        assertTrue(differentCasePredicate.test(player));
     }
 
     @Test
