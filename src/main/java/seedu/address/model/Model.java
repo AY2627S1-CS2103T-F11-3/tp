@@ -75,4 +75,34 @@ public interface Model {
      * A {@code null} comparator restores the stored player order.
      */
     void updateSortComparator(Comparator<Person> comparator);
+
+    /**
+     * Returns true if the model has previous address book states to restore.
+     */
+    boolean canUndoAddressBook();
+
+    /**
+     * Restores the model's address book to its previous state.
+     */
+    void undoAddressBook();
+
+    /**
+     * Returns true if the model has previous address book states to restore.
+     */
+    boolean canRedoAddressBook();
+
+    /**
+     * Restores the model's address book to its previously undone state.
+     */
+    void redoAddressBook();
+
+    /**
+     * Saves the current address book state for undo/redo history.
+     */
+    void commitAddressBook();
+
+    /**
+     * Rolls back the address book data and undo history by one commit.
+     */
+    void rollbackAddressBook();
 }

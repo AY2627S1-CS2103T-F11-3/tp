@@ -83,6 +83,7 @@ public class DeleteCommand extends Command {
                 ? resolveIndices(model.getFilteredPersonList())
                 : resolveNames(model);
         personsToDelete.forEach(model::deletePerson);
+        model.commitAddressBook();
         return new CommandResult(formatSuccess(personsToDelete));
     }
 
