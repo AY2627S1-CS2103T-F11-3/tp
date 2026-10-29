@@ -99,6 +99,15 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_remark_successAndInvalidValues() {
+        Person expected = new PersonBuilder(player()).withRemark("Late arrival").build();
+        assertParseSuccess(parser, REQUIRED + " r/Late arrival", new AddCommand(expected));
+        assertParseFailure(parser, REQUIRED + " r/", AddCommandParser.MESSAGE_MISSING_REMARK);
+        assertParseFailure(parser, REQUIRED + " r/first r/second",
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_REMARK));
+    }
+
+    @Test
     public void parse_guardianFieldsIndependently_success() {
         assertParseSuccess(parser, REQUIRED + " g/Jane Doe",
                 new AddCommand(new PersonBuilder(player()).withGuardianName("Jane Doe").build()));
@@ -134,7 +143,7 @@ public class AddCommandParserTest {
         for (String contact : new String[] {"", "000", "1234567", "123456789", "1234abcd", "+81234567"}) {
             assertParseFailure(parser, REQUIRED + " contact/" + contact, GuardianContact.MESSAGE_CONSTRAINTS);
         }
-        for (String availability : new String[] {"", "yes", "available", "true-false"}) {
+        for (String availability : new String[] {"", "yes", "true-false"}) {
             assertParseFailure(parser, REQUIRED + " available/" + availability,
                     AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
         }
@@ -148,7 +157,8 @@ public class AddCommandParserTest {
             {CliSyntax.PREFIX_POSITION, CliSyntax.PREFIX_POSITION_FULL},
             {CliSyntax.PREFIX_GUARDIANNAME, CliSyntax.PREFIX_GUARDIANNAME_FULL},
             {CliSyntax.PREFIX_GUARDIANCONTACT, CliSyntax.PREFIX_GUARDIANCONTACT_FULL},
-            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL},
+            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL,
+                CliSyntax.PREFIX_AVAILABILITY_LEGACY},
             {CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL},
             {CliSyntax.PREFIX_FEE, CliSyntax.PREFIX_FEE_FULL},
             {CliSyntax.PREFIX_CONSENT, CliSyntax.PREFIX_CONSENT_FULL}

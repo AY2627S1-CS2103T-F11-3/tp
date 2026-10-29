@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
@@ -35,7 +36,7 @@ public class FilterCommandParser implements Parser<FilterCommand> {
 
     public static final String MESSAGE_MISSING_AVAILABILITY = "Error! Availability must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
+            "Invalid availability entered! Availability should be true, false, available, or unavailable!";
     public static final String MESSAGE_DUPLICATE_AVAILABILITY =
             "Error! Parameter " + PREFIX_AVAILABILITY_FULL + " cannot be specified more than once!";
 
@@ -161,7 +162,8 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     }
 
     private boolean isAvailabilityPrefix(String prefix) {
-        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix());
+        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix())
+                || prefix.equals(PREFIX_AVAILABILITY_LEGACY.getPrefix());
     }
 
     private boolean isInjuryPrefix(String prefix) {
@@ -209,10 +211,10 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         if (value.isEmpty()) {
             throw new ParseException(MESSAGE_MISSING_AVAILABILITY);
         }
-        if (value.equalsIgnoreCase("true")) {
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
             return Optional.of(new Availability(Availability.AVAILABLE));
         }
-        if (value.equalsIgnoreCase("false")) {
+        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
             return Optional.of(new Availability(Availability.UNAVAILABLE));
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

@@ -21,16 +21,18 @@ public class FilterCommandParserTest {
     public void parse_validCriteria_returnsFilterCommand() {
         assertParseSuccess(parser, "squad/Soccer Stars",
                 command("Soccer Stars", null, null, null, null));
-        assertParseSuccess(parser, "available/TrUe",
+        assertParseSuccess(parser, "availability/TrUe",
                 command(null, Availability.AVAILABLE, null, null, null));
-        assertParseSuccess(parser, "available/false squad/Football Fellas",
+        assertParseSuccess(parser, "availability/unavailable squad/Football Fellas",
                 command("Football Fellas", Availability.UNAVAILABLE, null, null, null));
         assertParseSuccess(parser, "sn/Soccer Stars av/true",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "squad/Soccer Stars av/false",
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
-        assertParseSuccess(parser, "sn/Soccer Stars available/true",
+        assertParseSuccess(parser, "sn/Soccer Stars availability/available",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
+        assertParseSuccess(parser, "available/true",
+                command(null, Availability.AVAILABLE, null, null, null));
         assertParseSuccess(parser, "\t squad/ Soccer Stars \t av/ false ",
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
 
@@ -82,7 +84,7 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "   ", FilterCommandParser.MESSAGE_MISSING_CRITERION);
         assertParseFailure(parser, "squad/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
         assertParseFailure(parser, "sn/", FilterCommandParser.MESSAGE_MISSING_SQUAD);
-        assertParseFailure(parser, "available/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
+        assertParseFailure(parser, "availability/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
         assertParseFailure(parser, "av/", FilterCommandParser.MESSAGE_MISSING_AVAILABILITY);
         assertParseFailure(parser, "injury/", FilterCommandParser.MESSAGE_MISSING_INJURY);
         assertParseFailure(parser, "fee/", FilterCommandParser.MESSAGE_MISSING_FEE);
@@ -95,7 +97,7 @@ public class FilterCommandParserTest {
 
     @Test
     public void parse_invalidAvailability_throwsParseException() {
-        assertParseFailure(parser, "available/available", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertParseFailure(parser, "availability/unknown", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
         assertParseFailure(parser, "av/yes", FilterCommandParser.MESSAGE_INVALID_AVAILABILITY);
     }
 
@@ -112,11 +114,11 @@ public class FilterCommandParserTest {
     @Test
     public void parse_duplicateCriteria_throwsParseException() {
         assertParseFailure(parser, "squad/Team A sn/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "available/true av/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "availability/true av/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
         assertParseFailure(parser, "sn/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
         assertParseFailure(parser, "squad/Team A squad/Team B", FilterCommandParser.MESSAGE_DUPLICATE_SQUAD);
-        assertParseFailure(parser, "av/true available/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
-        assertParseFailure(parser, "available/true available/false",
+        assertParseFailure(parser, "av/true availability/false", FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
+        assertParseFailure(parser, "availability/true availability/false",
                 FilterCommandParser.MESSAGE_DUPLICATE_AVAILABILITY);
         assertParseFailure(parser, "injury/fit injury/injured", FilterCommandParser.MESSAGE_DUPLICATE_INJURY);
         assertParseFailure(parser, "fee/paid fee/unpaid", FilterCommandParser.MESSAGE_DUPLICATE_FEE);
@@ -138,7 +140,6 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "unexpected squad/Team A", expectedMessage);
         assertParseFailure(parser, "/squad Team A", expectedMessage);
         assertParseFailure(parser, "/availability true", expectedMessage);
-        assertParseFailure(parser, "availability/true", expectedMessage);
     }
 
     private FilterCommand command(String squadName, String availability,
