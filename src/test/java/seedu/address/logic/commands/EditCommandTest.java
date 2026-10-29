@@ -167,6 +167,22 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_noFieldsWithInvalidIndex_reportsIndexError() {
+        Index invalidIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        assertCommandFailure(new EditCommand(invalidIndex, new EditPersonDescriptor()), model,
+                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void equals_deferredError_comparesIndexAndError() {
+        EditCommand command = EditCommand.withDeferredError(INDEX_FIRST_PERSON, "Invalid name");
+        assertEquals(command, EditCommand.withDeferredError(INDEX_FIRST_PERSON, "Invalid name"));
+        assertFalse(command.equals(EditCommand.withDeferredError(INDEX_SECOND_PERSON, "Invalid name")));
+        assertFalse(command.equals(EditCommand.withDeferredError(INDEX_FIRST_PERSON, "Invalid status")));
+        assertFalse(command.equals(new EditCommand(INDEX_FIRST_PERSON, new EditPersonDescriptor())));
+    }
+
+    @Test
     public void execute_filteredList_success() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
 
@@ -261,7 +277,7 @@ public class EditCommandTest {
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
         EditCommand editCommand = new EditCommand(index, editPersonDescriptor);
         String expected = EditCommand.class.getCanonicalName() + "{index=" + index + ", editPersonDescriptor="
-                + editPersonDescriptor + "}";
+                + editPersonDescriptor + ", deferredError=null}";
         assertEquals(expected, editCommand.toString());
     }
 
