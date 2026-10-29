@@ -173,6 +173,14 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Command validation and error feedback
+
+Command parsers validate command syntax and individual field values before creating a command.
+Invalid input results in a `ParseException`, which `LogicManager` propagates for the UI to display without changing model data.
+Commands validate runtime-dependent conditions, such as whether an index exists in the current filtered list, during execution.
+These failures result in a `CommandException`, which is likewise displayed without changing the model.
+User-facing validation messages are defined centrally in `Messages` when they are shared by multiple commands, preventing inconsistent feedback.
+
 ### Bulk player status updates
 
 `MarkCommandParser` parses displayed indexes and exactly one status prefix into a `MarkCommand`. It reuses

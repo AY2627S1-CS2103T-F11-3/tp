@@ -79,8 +79,16 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_NAME_FULL, PREFIX_AVAILABILITY,
-                PREFIX_AVAILABILITY_FULL,
+        try {
+            return new EditCommand(index, parseFields(argMultimap));
+        } catch (ParseException exception) {
+            // Check the displayed index before reporting errors in the fields that follow it.
+            return EditCommand.withDeferredError(index, exception.getMessage());
+        }
+    }
+
+    private EditPersonDescriptor parseFields(ArgumentMultimap argMultimap) throws ParseException {
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_NAME_FULL, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
                 PREFIX_AVAILABILITY_LEGACY,
                 PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL, PREFIX_POSITION, PREFIX_POSITION_FULL,
                 PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL, PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL,
@@ -124,7 +132,7 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
         }
 
-        return new EditCommand(index, editPersonDescriptor);
+        return editPersonDescriptor;
     }
 
     private void verifyAliasesUsedOnce(ArgumentMultimap argMultimap, Prefix... prefixes)

@@ -88,25 +88,36 @@ public class EditCommand extends Command {
 
     private final Index index;
     private final EditPersonDescriptor editPersonDescriptor;
+    private final String deferredError;
 
     /**
      * @param index of the person in the filtered person list to edit
      * @param editPersonDescriptor details to edit the person with
      */
     public EditCommand(Index index, EditPersonDescriptor editPersonDescriptor) {
+        this(index, editPersonDescriptor, null);
+    }
+
+    private EditCommand(Index index, EditPersonDescriptor editPersonDescriptor, String deferredError) {
         requireNonNull(index);
         requireNonNull(editPersonDescriptor);
 
         this.index = index;
         this.editPersonDescriptor = new EditPersonDescriptor(editPersonDescriptor);
+        this.deferredError = deferredError;
+    }
+
+    /**
+     * Creates a rejected edit whose field error is reported only after validating the displayed index.
+     */
+    public static EditCommand withDeferredError(Index index, String error) {
+        requireNonNull(error);
+        return new EditCommand(index, new EditPersonDescriptor(), error);
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        if (!editPersonDescriptor.isAnyFieldEdited()) {
-            throw new CommandException(MESSAGE_NOT_EDITED);
-        }
         List<Person> lastShownList = model.getFilteredPersonList();
 
         if (index.getZeroBased() >= lastShownList.size()) {
@@ -115,6 +126,13 @@ public class EditCommand extends Command {
                 logger.fine("Rejected player status edit: displayed index is out of range");
             }
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+
+        if (deferredError != null) {
+            throw new CommandException(deferredError);
+        }
+        if (!editPersonDescriptor.isAnyFieldEdited()) {
+            throw new CommandException(MESSAGE_NOT_EDITED);
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
@@ -177,7 +195,8 @@ public class EditCommand extends Command {
         }
 
         return index.equals(otherEditCommand.index)
-                && editPersonDescriptor.equals(otherEditCommand.editPersonDescriptor);
+                && editPersonDescriptor.equals(otherEditCommand.editPersonDescriptor)
+                && Objects.equals(deferredError, otherEditCommand.deferredError);
     }
 
     @Override
@@ -185,6 +204,7 @@ public class EditCommand extends Command {
         return new ToStringBuilder(this)
                 .add("index", index)
                 .add("editPersonDescriptor", editPersonDescriptor)
+                .add("deferredError", deferredError)
                 .toString();
     }
 
