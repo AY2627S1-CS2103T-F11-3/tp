@@ -85,7 +85,7 @@ public class MarkCommandParserTest {
     @Test
     public void parse_invalidOrMissingValues_usesDomainConstraints() {
         assertDeferredFailure("1 av/", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertDeferredFailure("1 av/available", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
+        assertDeferredFailure("1 av/unknown", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         assertDeferredFailure("1 av/t rue", MarkCommandParser.MESSAGE_INVALID_AVAILABILITY);
         for (String value : List.of("", "yes", "paid extra", "pa\u0131d")) {
             assertDeferredFailure("1 fee/" + value, MarkCommandParser.MESSAGE_INVALID_FEE);

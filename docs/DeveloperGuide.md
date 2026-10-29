@@ -173,11 +173,19 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Command validation and error feedback
+
+Command parsers validate command syntax and individual field values before creating a command.
+Invalid input results in a `ParseException`, which `LogicManager` propagates for the UI to display without changing model data.
+Commands validate runtime-dependent conditions, such as whether an index exists in the current filtered list, during execution.
+These failures result in a `CommandException`, which is likewise displayed without changing the model.
+User-facing validation messages are defined centrally in `Messages` when they are shared by multiple commands, preventing inconsistent feedback.
+
 ### Bulk player status updates
 
 `MarkCommandParser` parses displayed indexes and exactly one status prefix into a `MarkCommand`. It reuses
-`ParserUtil.parsePlayerIndex` and the existing status types for validation. CLI availability values (`true`/`false`)
-are mapped to domain values (`available`/`unavailable`).
+`ParserUtil.parsePlayerIndex` and the existing status types for validation. CLI availability values (`true`/`false`
+or `available`/`unavailable`) are mapped to the domain values (`available`/`unavailable`).
 
 `MarkCommand` resolves all indexes to distinct player objects before preparing replacements through
 `PlayerStatusField.withValue`. All targets and replacements are validated before model updates begin, preventing
@@ -552,12 +560,14 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 * **Player profile**: A stored record containing a player's name, squad, position and availability.
 * **Squad**: A named football team or group that a player belongs to.
 * **Position**: The playing role assigned to a player. In the MVP, the supported positions are Goalkeeper, Defender, Midfielder and Striker.
-* **Availability**: Whether a player is currently available for selection, represented as either `true` or `false`.
+* **Availability**: Whether a player is currently available for selection. It is stored and displayed as `available` or
+  `unavailable`; command inputs also accept `true` and `false`.
 * **Player index**: A temporary number assigned to a player based on their current position in the displayed player list. It is not a permanent identifier.
 * **Filter**: To display only players that match one or more specified criteria, such as squad or availability.
 * **CLI**: Command-Line Interface; an interface where users primarily interact with the application by typing commands.
 * **Command**: A text instruction entered by the user to perform an operation in SquadLink, such as `add`, `list`, `filter` or `delete`.
-* **Parameter prefix**: A keyword ending with `/` that identifies a command parameter, such as `name/`, `squad/`, `position/` or `available/`.
+* **Parameter prefix**: A keyword ending with `/` that identifies a command parameter, such as `name/`, `squad/`,
+  `position/` or `availability/`.
 
 --------------------------------------------------------------------------------------------------------------------
 

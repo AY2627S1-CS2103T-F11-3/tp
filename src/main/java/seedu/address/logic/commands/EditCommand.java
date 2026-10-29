@@ -16,9 +16,12 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.Collections;
@@ -56,8 +59,8 @@ public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
-            + "by the index number used in the displayed person list. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the player identified "
+            + "by the index number used in the displayed player list. "
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
@@ -65,35 +68,51 @@ public class EditCommand extends Command {
             + "[" + PREFIX_POSITION_FULL + "POSITION] "
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
             + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
-            + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
+            + "[" + PREFIX_AVAILABILITY_FULL + "true|false|available|unavailable] "
             + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_REMARK_FULL + "REMARK] "
+            + "[" + PREFIX_TAG_FULL + "TAG]...\n"
             + "Aliases: " + PREFIX_SQUADNAME + ", " + PREFIX_POSITION + ", " + PREFIX_GUARDIANNAME + ", "
             + PREFIX_GUARDIANCONTACT + ", " + PREFIX_AVAILABILITY + ", " + PREFIX_INJURY + ", "
-            + PREFIX_FEE + ", and " + PREFIX_CONSENT + " for their full prefixes\n"
+            + PREFIX_FEE + ", " + PREFIX_CONSENT + ", " + PREFIX_REMARK + ", and " + PREFIX_TAG
+            + " for their full prefixes\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_POSITION + "Defender " + PREFIX_AVAILABILITY + "false";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Player %1$s updated!";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This player already exists in SquadLink.";
 
     private static final Logger logger = LogsCenter.getLogger(EditCommand.class);
 
     private final Index index;
     private final EditPersonDescriptor editPersonDescriptor;
+    private final String deferredError;
 
     /**
      * @param index of the person in the filtered person list to edit
      * @param editPersonDescriptor details to edit the person with
      */
     public EditCommand(Index index, EditPersonDescriptor editPersonDescriptor) {
+        this(index, editPersonDescriptor, null);
+    }
+
+    private EditCommand(Index index, EditPersonDescriptor editPersonDescriptor, String deferredError) {
         requireNonNull(index);
         requireNonNull(editPersonDescriptor);
 
         this.index = index;
         this.editPersonDescriptor = new EditPersonDescriptor(editPersonDescriptor);
+        this.deferredError = deferredError;
+    }
+
+    /**
+     * Creates a rejected edit whose field error is reported only after validating the displayed index.
+     */
+    public static EditCommand withDeferredError(Index index, String error) {
+        requireNonNull(error);
+        return new EditCommand(index, new EditPersonDescriptor(), error);
     }
 
     @Override
@@ -107,6 +126,13 @@ public class EditCommand extends Command {
                 logger.fine("Rejected player status edit: displayed index is out of range");
             }
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+
+        if (deferredError != null) {
+            throw new CommandException(deferredError);
+        }
+        if (!editPersonDescriptor.isAnyFieldEdited()) {
+            throw new CommandException(MESSAGE_NOT_EDITED);
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
@@ -136,7 +162,7 @@ public class EditCommand extends Command {
 
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
-        Remark updatedRemark = personToEdit.getRemark(); // edit command does not allow editing remarks
+        Remark updatedRemark = editPersonDescriptor.getRemark().orElse(personToEdit.getRemark());
         SquadName updatedSquadName = editPersonDescriptor.getSquadName().orElse(personToEdit.getSquadName());
         Position updatedPosition = editPersonDescriptor.getPosition().orElse(personToEdit.getPosition());
         GuardianName updatedGuardianName = editPersonDescriptor.isGuardianNameEdited()
@@ -169,7 +195,8 @@ public class EditCommand extends Command {
         }
 
         return index.equals(otherEditCommand.index)
-                && editPersonDescriptor.equals(otherEditCommand.editPersonDescriptor);
+                && editPersonDescriptor.equals(otherEditCommand.editPersonDescriptor)
+                && Objects.equals(deferredError, otherEditCommand.deferredError);
     }
 
     @Override
@@ -177,6 +204,7 @@ public class EditCommand extends Command {
         return new ToStringBuilder(this)
                 .add("index", index)
                 .add("editPersonDescriptor", editPersonDescriptor)
+                .add("deferredError", deferredError)
                 .toString();
     }
 
@@ -195,6 +223,7 @@ public class EditCommand extends Command {
         private InjuryStatus injuryStatus;
         private FeeStatus feeStatus;
         private ConsentStatus consentStatus;
+        private Remark remark;
         private boolean guardianNameEdited;
         private boolean guardianContactEdited;
 
@@ -219,6 +248,7 @@ public class EditCommand extends Command {
             setInjuryStatus(toCopy.injuryStatus);
             setFeeStatus(toCopy.feeStatus);
             setConsentStatus(toCopy.consentStatus);
+            setRemark(toCopy.remark);
         }
 
         /**
@@ -226,7 +256,7 @@ public class EditCommand extends Command {
          */
         public boolean isAnyFieldEdited() {
             return CollectionUtil.isAnyNonNull(name, tags, squadName, position, availability,
-                    injuryStatus, feeStatus, consentStatus)
+                    injuryStatus, feeStatus, consentStatus, remark)
                     || guardianNameEdited || guardianContactEdited;
         }
 
@@ -329,6 +359,14 @@ public class EditCommand extends Command {
             return Optional.ofNullable(injuryStatus);
         }
 
+        public void setRemark(Remark remark) {
+            this.remark = remark;
+        }
+
+        public Optional<Remark> getRemark() {
+            return Optional.ofNullable(remark);
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -350,6 +388,7 @@ public class EditCommand extends Command {
                     && Objects.equals(injuryStatus, otherEditPersonDescriptor.injuryStatus)
                     && Objects.equals(feeStatus, otherEditPersonDescriptor.feeStatus)
                     && Objects.equals(consentStatus, otherEditPersonDescriptor.consentStatus)
+                    && Objects.equals(remark, otherEditPersonDescriptor.remark)
                     && guardianNameEdited == otherEditPersonDescriptor.guardianNameEdited
                     && guardianContactEdited == otherEditPersonDescriptor.guardianContactEdited;
         }
@@ -367,6 +406,7 @@ public class EditCommand extends Command {
                 .add("injuryStatus", injuryStatus)
                 .add("feeStatus", feeStatus)
                 .add("consentStatus", consentStatus)
+                .add("remark", remark)
                     .toString();
         }
     }

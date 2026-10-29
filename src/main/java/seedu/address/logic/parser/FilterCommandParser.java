@@ -3,12 +3,15 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABILITY_LEGACY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_CONSENT_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FEE_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 
@@ -22,6 +25,7 @@ import seedu.address.logic.commands.FilterCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Availability;
 import seedu.address.model.person.MatchesFilterCriteriaPredicate;
+import seedu.address.model.person.Position;
 import seedu.address.model.person.SquadName;
 
 /**
@@ -33,7 +37,7 @@ public class FilterCommandParser implements Parser<FilterCommand> {
 
     public static final String MESSAGE_MISSING_AVAILABILITY = "Error! Availability must be specified!";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability should either be true or false!";
+            "Invalid availability entered! Availability should be true, false, available, or unavailable!";
     public static final String MESSAGE_DUPLICATE_AVAILABILITY =
             "Error! Parameter " + PREFIX_AVAILABILITY_FULL + " cannot be specified more than once!";
 
@@ -61,6 +65,9 @@ public class FilterCommandParser implements Parser<FilterCommand> {
     public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
     public static final String MESSAGE_DUPLICATE_SQUAD =
             "Error! Parameter " + PREFIX_SQUADNAME_FULL + " cannot be specified more than once!";
+    public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
+    public static final String MESSAGE_DUPLICATE_POSITION =
+            "Error! Parameter " + PREFIX_POSITION_FULL + " cannot be specified more than once!";
 
 
     private static final Pattern PREFIX_TOKEN_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>/\\S+|\\S+/)");
@@ -83,6 +90,7 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         String injuryValue = null;
         String feeValue = null;
         String squadValue = null;
+        String positionValue = null;
         for (int index = 0; index < prefixes.size(); index++) {
             PrefixMatch prefix = prefixes.get(index);
             int valueEnd = index + 1 < prefixes.size() ? prefixes.get(index + 1).start() : args.length();
@@ -112,6 +120,11 @@ public class FilterCommandParser implements Parser<FilterCommand> {
                     throw new ParseException(MESSAGE_DUPLICATE_SQUAD);
                 }
                 squadValue = value;
+            } else if (isPositionPrefix(prefix.value())) {
+                if (positionValue != null) {
+                    throw new ParseException(MESSAGE_DUPLICATE_POSITION);
+                }
+                positionValue = value;
             } else {
                 throw invalidFormat();
             }
@@ -122,7 +135,8 @@ public class FilterCommandParser implements Parser<FilterCommand> {
                 parseAvailability(availabilityValue),
                 parseInjury(injuryValue),
                 parseFee(feeValue),
-                parseConsent(consentValue)
+                parseConsent(consentValue),
+                parsePosition(positionValue)
         ));
     }
 
@@ -144,11 +158,13 @@ public class FilterCommandParser implements Parser<FilterCommand> {
                 || isAvailabilityPrefix(prefix)
                 || isInjuryPrefix(prefix)
                 || isFeePrefix(prefix)
-                || isConsentPrefix(prefix);
+                || isConsentPrefix(prefix)
+                || isPositionPrefix(prefix);
     }
 
     private boolean isAvailabilityPrefix(String prefix) {
-        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix());
+        return prefix.equals(PREFIX_AVAILABILITY.getPrefix()) || prefix.equals(PREFIX_AVAILABILITY_FULL.getPrefix())
+                || prefix.equals(PREFIX_AVAILABILITY_LEGACY.getPrefix());
     }
 
     private boolean isInjuryPrefix(String prefix) {
@@ -167,6 +183,28 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         return prefix.equals(PREFIX_SQUADNAME.getPrefix()) || prefix.equals(PREFIX_SQUADNAME_FULL.getPrefix());
     }
 
+    private boolean isPositionPrefix(String prefix) {
+        return prefix.equals(PREFIX_POSITION.getPrefix()) || prefix.equals(PREFIX_POSITION_FULL.getPrefix());
+    }
+
+    private Optional<Position> parsePosition(String value) throws ParseException {
+        if (value == null) {
+            return Optional.empty();
+        }
+        if (value.isEmpty()) {
+            throw new ParseException(MESSAGE_MISSING_POSITION);
+        }
+        try {
+            Position position = new Position(value);
+            if (position.isUnassigned()) {
+                throw new ParseException(Position.MESSAGE_CONSTRAINTS);
+            }
+            return Optional.of(position);
+        } catch (IllegalArgumentException exception) {
+            throw new ParseException(Position.MESSAGE_CONSTRAINTS, exception);
+        }
+    }
+
     private Optional<Availability> parseAvailability(String value) throws ParseException {
         if (value == null) {
             return Optional.empty();
@@ -174,10 +212,10 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         if (value.isEmpty()) {
             throw new ParseException(MESSAGE_MISSING_AVAILABILITY);
         }
-        if (value.equalsIgnoreCase("true")) {
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("available")) {
             return Optional.of(new Availability(Availability.AVAILABLE));
         }
-        if (value.equalsIgnoreCase("false")) {
+        if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("unavailable")) {
             return Optional.of(new Availability(Availability.UNAVAILABLE));
         }
         throw new ParseException(MESSAGE_INVALID_AVAILABILITY);

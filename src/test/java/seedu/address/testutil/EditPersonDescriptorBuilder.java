@@ -14,6 +14,7 @@ import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Position;
+import seedu.address.model.person.Remark;
 import seedu.address.model.person.SquadName;
 import seedu.address.model.tag.Tag;
 
@@ -47,6 +48,7 @@ public class EditPersonDescriptorBuilder {
         descriptor.setInjuryStatus(person.getInjuryStatus());
         descriptor.setFeeStatus(person.getFeeStatus());
         descriptor.setConsentStatus(person.getConsentStatus());
+        descriptor.setRemark(person.getRemark());
     }
 
     /**
@@ -118,6 +120,12 @@ public class EditPersonDescriptorBuilder {
     /** Sets the injury status. */
     public EditPersonDescriptorBuilder withInjuryStatus(String injuryStatus) {
         descriptor.setInjuryStatus(new InjuryStatus(injuryStatus));
+        return this;
+    }
+
+    /** Sets the remark. An empty string clears the existing remark. */
+    public EditPersonDescriptorBuilder withRemark(String remark) {
+        descriptor.setRemark(new Remark(remark));
         return this;
     }
 }

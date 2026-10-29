@@ -108,6 +108,23 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_editRemark_updatesAndClearsRemark() {
+        Person original = new PersonBuilder().withName("Original Player").withSquadName("U12")
+                .withPosition("Defender").withRemark("Left footed").build();
+        for (String remark : new String[] {"Reliable defender", ""}) {
+            Model actualModel = new ModelManager();
+            actualModel.addPerson(original);
+            Person expected = new PersonBuilder(original).withRemark(remark).build();
+            Model expectedModel = new ModelManager();
+            expectedModel.addPerson(expected);
+            EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark(remark).build();
+
+            assertCommandSuccess(new EditCommand(INDEX_FIRST_PERSON, descriptor), actualModel,
+                    String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, original.getName()), expectedModel);
+        }
+    }
+
+    @Test
     public void execute_editPlayerProfileFields_success() {
         Person original = new PersonBuilder().withName("Original Player").withSquadName("U12 A")
                 .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567").build();
@@ -160,15 +177,26 @@ public class EditCommandTest {
     }
 
     @Test
-    public void execute_noFieldSpecifiedUnfilteredList_success() {
+    public void execute_noFieldSpecifiedUnfilteredList_failure() {
         EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, new EditPersonDescriptor());
-        Person editedPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
 
-        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, editedPerson.getName());
+        assertCommandFailure(editCommand, model, EditCommand.MESSAGE_NOT_EDITED);
+    }
 
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+    @Test
+    public void execute_noFieldsWithInvalidIndex_reportsIndexError() {
+        Index invalidIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        assertCommandFailure(new EditCommand(invalidIndex, new EditPersonDescriptor()), model,
+                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
 
-        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    @Test
+    public void equals_deferredError_comparesIndexAndError() {
+        EditCommand command = EditCommand.withDeferredError(INDEX_FIRST_PERSON, "Invalid name");
+        assertEquals(command, EditCommand.withDeferredError(INDEX_FIRST_PERSON, "Invalid name"));
+        assertFalse(command.equals(EditCommand.withDeferredError(INDEX_SECOND_PERSON, "Invalid name")));
+        assertFalse(command.equals(EditCommand.withDeferredError(INDEX_FIRST_PERSON, "Invalid status")));
+        assertFalse(command.equals(new EditCommand(INDEX_FIRST_PERSON, new EditPersonDescriptor())));
     }
 
     @Test
@@ -266,7 +294,7 @@ public class EditCommandTest {
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
         EditCommand editCommand = new EditCommand(index, editPersonDescriptor);
         String expected = EditCommand.class.getCanonicalName() + "{index=" + index + ", editPersonDescriptor="
-                + editPersonDescriptor + "}";
+                + editPersonDescriptor + ", deferredError=null}";
         assertEquals(expected, editCommand.toString());
     }
 
