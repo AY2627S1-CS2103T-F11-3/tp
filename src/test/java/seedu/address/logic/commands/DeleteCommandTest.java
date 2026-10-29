@@ -37,6 +37,41 @@ public class DeleteCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_invalidArgumentsFilteredList_reportsDisplayedRange() {
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        DeleteCommand command = DeleteCommand.forInvalidIndices(List.of("a", "testing"));
+
+        assertCommandFailure(command, model,
+                "Invalid indices: 'a', 'testing'. Only index 1 is available. No players deleted.");
+    }
+
+    @Test
+    public void execute_singleInvalidArgument_reportsDisplayedRange() {
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        DeleteCommand command = DeleteCommand.forInvalidIndices(List.of("0"));
+
+        assertCommandFailure(command, model,
+                "Invalid index: '0'. Only index 1 is available. No players deleted.");
+    }
+
+    @Test
+    public void execute_invalidArgumentsEmptyList_reportsRecovery() {
+        showNoPerson(model);
+        DeleteCommand command = DeleteCommand.forInvalidIndices(List.of("a", "b", "c"));
+
+        assertCommandFailure(command, model, "Invalid indices: 'a', 'b', 'c'. "
+                + DeleteCommand.MESSAGE_NO_DISPLAYED_PLAYERS + " No players deleted.");
+    }
+
+    @Test
+    public void equals_invalidArguments_comparesAllArguments() {
+        DeleteCommand command = DeleteCommand.forInvalidIndices(List.of("a", "b"));
+        assertEquals(command, DeleteCommand.forInvalidIndices(List.of("a", "b")));
+        assertFalse(command.equals(DeleteCommand.forInvalidIndices(List.of("a", "c"))));
+        assertFalse(command.equals(new DeleteCommand(INDEX_FIRST_PERSON)));
+    }
+
+    @Test
     public void execute_validIndexUnfilteredList_success() {
         Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
@@ -398,7 +433,7 @@ public class DeleteCommandTest {
         Index targetIndex = Index.fromOneBased(1);
         DeleteCommand deleteCommand = new DeleteCommand(targetIndex);
         String expected = DeleteCommand.class.getCanonicalName()
-                + "{targetIndices=" + List.of(targetIndex) + ", targetNames=[]}";
+                + "{targetIndices=" + List.of(targetIndex) + ", targetNames=[], invalidIndices=[]}";
         assertEquals(expected, deleteCommand.toString());
     }
 

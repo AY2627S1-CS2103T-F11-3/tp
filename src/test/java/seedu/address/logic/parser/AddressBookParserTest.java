@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
-import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -99,8 +98,9 @@ public class AddressBookParserTest {
     }
 
     @Test
-    public void parseCommand_deleteWithExtraArguments_throwsParseException() {
-        assertThrows(ParseException.class, MESSAGE_NON_NUMERIC_INDEX, () -> parser.parseCommand("delete 1 abc"));
+    public void parseCommand_deleteWithExtraArguments_defersInvalidArguments() throws Exception {
+        assertEquals(DeleteCommand.forInvalidIndices(List.of("a", "testing")),
+                parser.parseCommand("delete 1 a 3 4 testing"));
     }
 
     @Test

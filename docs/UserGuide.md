@@ -377,7 +377,11 @@ Formats:
 * All indices refer to the list before the command runs. Deleting one player does not shift the other requested targets.
 * Repeated indices delete the same player only once. For example, `delete 2 02` deletes only player 2.
 * If any argument is invalid or any index is outside the displayed list, no players are deleted.
-  The error identifies the invalid index and the available range. If no players are displayed, use `list` first.
+  Malformed arguments (including zero and numbers too large to process) are reported together, in input order,
+  with the valid range for the currently displayed list. For example, with four players displayed,
+  `delete 1 a 3 4 unknown` reports `Invalid indices: 'a', 'unknown'. Enter whole-number indices from 1 to 4.
+  No players deleted.` Once all arguments are valid positive integers, any index outside the displayed list
+  produces an error showing the available range. If no players are displayed, use `list` first.
 * Remaining players keep their relative order and are renumbered.
 * The index **must be a positive integer** 1, 2, 3, …​
 
