@@ -10,6 +10,8 @@ profiles, squad membership, and availability through a command-line interface.
   optional remarks.
 - Added player-focused `add` and `edit` commands, including full and shorthand
   prefixes for player details.
+- Added `inj/`, `f/`, and `c/` as shorthand for injury, fee payment, and consent
+  in `add`, `edit`, `filter`, and `mark`.
 - Added `filter` to display players by squad, availability, or both, while
   keeping `find` for name-based searching.
 - Reworked the main player display into an indexed table with aligned player

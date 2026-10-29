@@ -86,7 +86,7 @@ The `UI` component,
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component because it displays `Person` objects from the model.
+* depends on some classes in the `Model` component because it displays players from the model.
 
 ### Logic component
 
@@ -100,6 +100,11 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
+For `delete 1`, `LogicManager` first snapshots the address book. `DeleteCommand` then obtains the currently
+displayed player list from the `Model`, resolves the index against that list, and deletes the selected player.
+`LogicManager` saves the updated address book through `Storage`; if saving fails, it restores the snapshot and
+returns an error instead of the command result.
+
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
 
@@ -107,7 +112,7 @@ How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, the command is passed to an `AddressBookParser` object, which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
+1. The command can communicate with the `Model` when it is executed (e.g. to delete a player).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
    For commands whose `isAddressBookMutating()` returns `true`, `LogicManager` saves the data
@@ -134,14 +139,14 @@ It omits individual player fields for clarity; the detailed player data model be
 
 The `Model` component,
 
-* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list.
+* stores the roster data i.e., all player records (`Person` objects, contained in a `UniquePersonList` object).
+* stores the player records selected by the current filter, such as search results, in a separate _filtered_ list.
   A _sorted_ view is layered over it for the `sort` command. The model exposes this unmodifiable
   `ObservableList<Person>` to the UI, so the UI updates when the filter or sort order changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each player references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each player holding their own `Tag` objects.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
@@ -220,11 +225,11 @@ Given below is an example usage scenario and how the undo/redo mechanism behaves
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-**Step 2.** The user executes `delete 5` to delete the 5th player in the address book. The `delete` command modifies the model and calls `Model#commitAddressBook()`. This appends the new address book state into `addressBookStateList`, and the `currentStatePointer` shifts to the newly inserted state (index `1`).
+Step 2. The user executes `delete 5` command to delete the 5th player in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-**Step 3.** The user executes `add n/David sn/U12 pos/Defender ...` to add a new player. The `add` command also calls `Model#commitAddressBook()`, appending another modified address book state into `addressBookStateList` and shifting `currentStatePointer` to index `2`.
+Step 3. The user executes `add n/David …​` to add a new player. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
@@ -572,7 +577,7 @@ testers are expected to do more *exploratory* testing.
    1. Download the JAR file and copy it into an empty folder.
 
    1. Double-click the JAR file.<br>
-      Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
+      Expected: The GUI opens with a set of sample players. The window size may not be optimal.
 
 1. Saving window preferences
 
@@ -583,17 +588,17 @@ testers are expected to do more *exploratory* testing.
 
 1. _{ more test cases …​ }_
 
-### Deleting a person
+### Deleting a player
 
-1. Deleting a person while all persons are being shown
+1. Deleting a player while all players are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: List all players using the `list` command, with multiple players in the list.
 
    1. Test case: `delete 1`<br>
-      Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
+      Expected: The first player is deleted from the list. The status message shows the deleted player's details.
 
    1. Test case: `delete 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+      Expected: No player is deleted. The status message shows error details.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.

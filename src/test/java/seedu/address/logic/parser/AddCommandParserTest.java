@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.model.person.ConsentStatus;
+import seedu.address.model.person.FeeStatus;
 import seedu.address.model.person.GuardianContact;
 import seedu.address.model.person.GuardianName;
 import seedu.address.model.person.InjuryStatus;
@@ -22,6 +24,25 @@ import seedu.address.testutil.PersonBuilder;
 public class AddCommandParserTest {
     private static final String REQUIRED = " name/John Doe squad/Soccer Stars position/Goalkeeper";
     private final AddCommandParser parser = new AddCommandParser();
+
+    @Test
+    public void parse_statusShorthands_success() {
+        Person expected = new PersonBuilder(player()).withInjuryStatus("injured")
+                .withFeeStatus("paid").withConsentStatus("received").build();
+        assertParseSuccess(parser, REQUIRED + " inj/INJURED f/paid c/received", new AddCommand(expected));
+    }
+
+    @Test
+    public void parse_statusShorthandsWithInvalidValues_failure() {
+        String[] prefixes = {"inj/", "f/", "c/"};
+        String[] messages = {InjuryStatus.MESSAGE_CONSTRAINTS, FeeStatus.MESSAGE_CONSTRAINTS,
+            ConsentStatus.MESSAGE_CONSTRAINTS};
+        for (int i = 0; i < prefixes.length; i++) {
+            for (String value : new String[] {"", "unknown"}) {
+                assertParseFailure(parser, REQUIRED + " " + prefixes[i] + value, messages[i]);
+            }
+        }
+    }
 
     @Test
     public void parse_injuryStatus_acceptsSupportedValuesAndDefaultsToFit() {
@@ -45,7 +66,7 @@ public class AddCommandParserTest {
             assertParseFailure(parser, REQUIRED + " injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
         assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",
-                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
+                Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL));
         assertParseFailure(parser, " injury/recovering contact/abc" + REQUIRED, InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " contact/abc injury/recovering" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
     }
@@ -127,11 +148,15 @@ public class AddCommandParserTest {
             {CliSyntax.PREFIX_POSITION, CliSyntax.PREFIX_POSITION_FULL},
             {CliSyntax.PREFIX_GUARDIANNAME, CliSyntax.PREFIX_GUARDIANNAME_FULL},
             {CliSyntax.PREFIX_GUARDIANCONTACT, CliSyntax.PREFIX_GUARDIANCONTACT_FULL},
-            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL}
+            {CliSyntax.PREFIX_AVAILABILITY, CliSyntax.PREFIX_AVAILABILITY_FULL},
+            {CliSyntax.PREFIX_INJURY, CliSyntax.PREFIX_INJURY_FULL},
+            {CliSyntax.PREFIX_FEE, CliSyntax.PREFIX_FEE_FULL},
+            {CliSyntax.PREFIX_CONSENT, CliSyntax.PREFIX_CONSENT_FULL}
         };
-        String[] values = {"John Doe", "Soccer Stars", "Goalkeeper", "Jane Doe", "81234567", "true"};
+        String[] values = {"John Doe", "Soccer Stars", "Goalkeeper", "Jane Doe", "81234567", "true",
+            "injured", "paid", "received"};
         String[] bases = {" squad/Stars position/striker", " name/John position/striker",
-            " name/John squad/Stars", REQUIRED, REQUIRED, REQUIRED};
+            " name/John squad/Stars", REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED, REQUIRED};
         for (int index = 0; index < aliases.length; index++) {
             String message = Messages.getErrorMessageForDuplicatePrefixes(aliases[index]);
             for (Prefix first : aliases[index]) {
