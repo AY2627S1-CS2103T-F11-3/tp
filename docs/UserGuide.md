@@ -56,8 +56,9 @@ check squad availability, and navigate views by typing commands.
 
 **:information_source: Notes about the command format:**<br>
 
-* Command words and prefixes are lowercase and case-sensitive. Use `name/`, `squad/` and other
-  prefixes ending in `/`; the supported prefixes and aliases are listed under each command.
+* Command words are case-insensitive, so `find`, `Find`, and `FIND` are equivalent. Prefixes are lowercase and
+  case-sensitive; use `name/`, `squad/` and other prefixes ending in `/`. The supported prefixes and aliases are
+  listed under each command.
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
   For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.

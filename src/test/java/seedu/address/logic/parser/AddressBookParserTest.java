@@ -57,6 +57,14 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_caseInsensitiveCommandWords_returnsExpectedCommands() throws Exception {
+        assertTrue(parser.parseCommand("CLEAR") instanceof ClearCommand);
+        assertTrue(parser.parseCommand("List") instanceof ListCommand);
+        assertEquals(new FindCommand(new NameContainsKeywordsPredicate(List.of("Alex"))),
+                parser.parseCommand("FIND Alex"));
+    }
+
+    @Test
     public void parseCommand_clearWithArguments_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ClearCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expected, () ->
