@@ -22,8 +22,10 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,14 +77,16 @@ public class AddCommandParser implements Parser<AddCommand> {
         FeeStatus feeStatus = new FeeStatus(FeeStatus.UNPAID);
         ConsentStatus consentStatus = new ConsentStatus(ConsentStatus.PENDING);
         Set<Tag> tags = new HashSet<>();
-        Set<Field> seen = new HashSet<>();
+        Map<Field, Prefix> seen = new EnumMap<>(Field.class);
         for (Argument argument : arguments) {
             Field field = fieldFor(argument.prefix());
             if (field == null) {
                 throw invalidFormat();
             }
-            if (field != Field.TAG && !seen.add(field)) {
-                throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(aliasesFor(field)));
+            Prefix prefix = new Prefix(argument.prefix());
+            Prefix firstPrefix = field == Field.TAG ? null : seen.putIfAbsent(field, prefix);
+            if (firstPrefix != null) {
+                throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(firstPrefix, prefix));
             }
             String value = argument.value();
             try {
