@@ -165,7 +165,7 @@ public class LogicManagerTest {
 
         expectedModel.updateFilteredPersonList(person ->
                 person.getAvailability().equals(new Availability("unavailable")));
-        assertCommandSuccess("filter av/false", String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, 1),
+        assertCommandSuccess("filter av/false", Messages.MESSAGE_PLAYER_LISTED_OVERVIEW,
                 expectedModel);
     }
 
@@ -441,7 +441,8 @@ public class LogicManagerTest {
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
         assertCommandSuccess("filter available/TRUE",
-                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, expectedModel.getFilteredPersonList().size()),
+                Messages.getPlayerListSummary(model.getAddressBook().getPersonList().size(),
+                        expectedModel.getFilteredPersonList().size()),
                 expectedModel);
     }
 

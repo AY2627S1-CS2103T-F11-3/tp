@@ -15,7 +15,7 @@ public class ClearCommand extends Command {
             + ": Clears all player profiles.\n"
             + "Parameters: none\n"
             + "Example: " + COMMAND_WORD;
-    public static final String MESSAGE_SUCCESS = "Address book has been cleared!";
+    public static final String MESSAGE_SUCCESS = "All player profiles have been cleared!";
 
 
     @Override
