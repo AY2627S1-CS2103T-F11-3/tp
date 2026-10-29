@@ -2,7 +2,6 @@ package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static seedu.address.logic.Messages.MESSAGE_NON_NUMERIC_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
@@ -166,7 +165,7 @@ public class LogicManagerTest {
 
         expectedModel.updateFilteredPersonList(person ->
                 person.getAvailability().equals(new Availability("unavailable")));
-        assertCommandSuccess("filter av/false", String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, 1),
+        assertCommandSuccess("filter av/false", Messages.MESSAGE_PLAYER_LISTED_OVERVIEW,
                 expectedModel);
     }
 
@@ -366,7 +365,12 @@ public class LogicManagerTest {
 
         assertCommandException("delete 1 999", String.format(DeleteCommand.MESSAGE_INDEX_OUT_OF_RANGE,
                 999, model.getFilteredPersonList().size()));
-        assertParseException("delete 1 abc", MESSAGE_NON_NUMERIC_INDEX);
+        assertCommandException("delete 1 a 3 4 testing",
+                "Invalid indices: 'a', 'testing'. Enter whole-number indices from 1 to "
+                        + model.getFilteredPersonList().size() + ". No players deleted.");
+        assertCommandException("delete a b c",
+                "Invalid indices: 'a', 'b', 'c'. Enter whole-number indices from 1 to "
+                        + model.getFilteredPersonList().size() + ". No players deleted.");
 
         assertEquals(expectedModel, model);
         assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
@@ -437,7 +441,8 @@ public class LogicManagerTest {
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
         assertCommandSuccess("filter available/TRUE",
-                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, expectedModel.getFilteredPersonList().size()),
+                Messages.getPlayerListSummary(model.getAddressBook().getPersonList().size(),
+                        expectedModel.getFilteredPersonList().size()),
                 expectedModel);
     }
 

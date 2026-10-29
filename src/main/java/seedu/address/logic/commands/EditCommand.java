@@ -57,8 +57,8 @@ public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
-            + "by the index number used in the displayed person list. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the player identified "
+            + "by the index number used in the displayed player list. "
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
@@ -66,7 +66,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_POSITION_FULL + "POSITION] "
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
             + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
-            + "[" + PREFIX_AVAILABILITY_FULL + "true|false] "
+            + "[" + PREFIX_AVAILABILITY_FULL + "true|false|available|unavailable] "
             + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
             + "[" + PREFIX_CONSENT_FULL + "received|pending] "
@@ -79,7 +79,7 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Player %1$s updated!";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This player already exists in SquadLink.";
 
     private static final Logger logger = LogsCenter.getLogger(EditCommand.class);
 
@@ -101,6 +101,9 @@ public class EditCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+        if (!editPersonDescriptor.isAnyFieldEdited()) {
+            throw new CommandException(MESSAGE_NOT_EDITED);
+        }
         List<Person> lastShownList = model.getFilteredPersonList();
 
         if (index.getZeroBased() >= lastShownList.size()) {

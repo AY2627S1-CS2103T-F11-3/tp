@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_MISSING_INDEX;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 
@@ -43,7 +44,7 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
             }
             return DeleteCommand.forNames(parseNames(nameValue.get()));
         }
-        return new DeleteCommand(parseIndices(trimmedArgs));
+        return parseIndexCommand(trimmedArgs);
     }
 
     private List<String> parseNames(String args) throws ParseException {
@@ -61,12 +62,21 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
         return names;
     }
 
-    private List<Index> parseIndices(String args) throws ParseException {
-        List<Index> indices = new ArrayList<>();
-        for (String argument : args.split("\\s+")) {
-            indices.add(ParserUtil.parsePlayerIndex(argument));
+    private DeleteCommand parseIndexCommand(String args) throws ParseException {
+        if (args.isEmpty()) {
+            throw new ParseException(MESSAGE_MISSING_INDEX);
         }
-        return indices;
+        List<Index> indices = new ArrayList<>();
+        List<String> invalidArguments = new ArrayList<>();
+        for (String argument : args.split("\\s+")) {
+            try {
+                indices.add(ParserUtil.parsePlayerIndex(argument));
+            } catch (ParseException exception) {
+                invalidArguments.add(argument);
+            }
+        }
+        return invalidArguments.isEmpty() ? new DeleteCommand(indices)
+                : DeleteCommand.forInvalidIndices(invalidArguments);
     }
 
 }

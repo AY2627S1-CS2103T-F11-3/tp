@@ -3,7 +3,7 @@ package seedu.address.logic.commands;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static seedu.address.logic.Messages.MESSAGE_PERSONS_LISTED_OVERVIEW;
+import static seedu.address.logic.Messages.MESSAGE_PLAYER_LISTED_OVERVIEW;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 
 import java.util.List;
@@ -77,7 +77,7 @@ public class FilterCommandTest {
         FilterCommand command = new FilterCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
 
-        assertCommandSuccess(command, model, String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1), expectedModel);
+        assertCommandSuccess(command, model, MESSAGE_PLAYER_LISTED_OVERVIEW, expectedModel);
         assertEquals(List.of(availableSoccerPlayer), model.getFilteredPersonList());
         assertEquals(4, model.getAddressBook().getPersonList().size());
     }
@@ -94,7 +94,7 @@ public class FilterCommandTest {
         FilterCommand command = new FilterCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
 
-        assertCommandSuccess(command, model, String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1), expectedModel);
+        assertCommandSuccess(command, model, MESSAGE_PLAYER_LISTED_OVERVIEW, expectedModel);
         assertEquals(List.of(injuredPlayer), model.getFilteredPersonList());
     }
 
