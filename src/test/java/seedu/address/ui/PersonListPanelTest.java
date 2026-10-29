@@ -104,7 +104,8 @@ public class PersonListPanelTest {
                     && cell.getTableColumn() == consentColumn && "received".equals(cell.getText())));
             displayed.setPredicate(player -> player.getName().equals(recorded.getName()));
             root.layout();
-            assertEquals("1", table.getColumns().getFirst().getCellData(0));
+            TableView<?> fixedTable = (TableView<?>) root.lookup("#fixedPersonTableView");
+            assertEquals("1", fixedTable.getColumns().getFirst().getCellData(0));
             assertEquals("paid", feeColumn.getCellData(0));
             source.set(1, new PersonBuilder(recorded).withFeeStatus("unpaid").withConsentStatus("pending").build());
             root.layout();
@@ -148,13 +149,14 @@ public class PersonListPanelTest {
 
             displayed.setPredicate(player -> player.equals(injured));
             root.layout();
-            assertEquals("1", table.getColumns().getFirst().getCellData(0));
+            TableView<?> fixedTable = (TableView<?>) root.lookup("#fixedPersonTableView");
+            assertEquals("1", fixedTable.getColumns().getFirst().getCellData(0));
             assertEquals("injured", injuryColumn.getCellData(0));
             source.set(2, new PersonBuilder(injured).withInjuryStatus("fit").build());
             displayed.setPredicate(player -> true);
             root.layout();
             assertEquals("fit", injuryColumn.getCellData(2));
-            assertEquals("3", table.getColumns().getFirst().getCellData(2));
+            assertEquals("3", fixedTable.getColumns().getFirst().getCellData(2));
 
             root.resize(450, 300);
             table.scrollToColumnIndex(table.getColumns().indexOf(injuryColumn));

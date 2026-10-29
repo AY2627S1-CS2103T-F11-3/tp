@@ -3,9 +3,11 @@ package seedu.address.ui;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,6 +22,8 @@ public class PersonListPanel extends UiPart<Region> {
 
     @FXML
     private TableView<Person> personTableView;
+    @FXML
+    private TableView<Person> fixedPersonTableView;
     @FXML
     private TableColumn<Person, String> indexColumn;
     @FXML
@@ -52,9 +56,14 @@ public class PersonListPanel extends UiPart<Region> {
         super(FXML);
         configureColumns();
         personTableView.setItems(personList);
+        fixedPersonTableView.setItems(personList);
+        synchronizeTables();
     }
 
     private void configureColumns() {
+        fixedPersonTableView.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+        fixedPersonTableView.prefWidthProperty().bind(indexColumn.widthProperty().add(nameColumn.widthProperty()));
+        fixedPersonTableView.minWidthProperty().bind(indexColumn.widthProperty().add(nameColumn.widthProperty()));
         indexColumn.setCellValueFactory(cell -> stringValue(personTableView.getItems().indexOf(cell.getValue()) + 1));
         nameColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getName().fullName));
         squadColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getSquadName().value));
@@ -71,6 +80,35 @@ public class PersonListPanel extends UiPart<Region> {
                 .map(tag -> tag.tagName)
                 .collect(Collectors.joining(", "))));
         remarkColumn.setCellValueFactory(cell -> stringValue(cell.getValue().getRemark().value));
+    }
+
+    /** Keeps the frozen table aligned with the horizontally scrollable detail table. */
+    private void synchronizeTables() {
+        synchronizeSelection(fixedPersonTableView, personTableView);
+        synchronizeSelection(personTableView, fixedPersonTableView);
+        Platform.runLater(() -> {
+            ScrollBar fixedScrollBar = findVerticalScrollBar(fixedPersonTableView);
+            ScrollBar detailScrollBar = findVerticalScrollBar(personTableView);
+            if (fixedScrollBar != null && detailScrollBar != null) {
+                fixedScrollBar.valueProperty().bindBidirectional(detailScrollBar.valueProperty());
+            }
+        });
+    }
+
+    private static void synchronizeSelection(TableView<Person> source, TableView<Person> destination) {
+        var sourceSelection = source.getSelectionModel();
+        sourceSelection.selectedIndexProperty().addListener((observable, oldIndex, newIndex) -> {
+            destination.getSelectionModel().select(newIndex.intValue());
+        });
+    }
+
+    private static ScrollBar findVerticalScrollBar(TableView<?> tableView) {
+        return tableView.lookupAll(".scroll-bar").stream()
+                .filter(node -> node instanceof ScrollBar)
+                .map(node -> (ScrollBar) node)
+                .filter(scrollBar -> scrollBar.getOrientation() == javafx.geometry.Orientation.VERTICAL)
+                .findFirst()
+                .orElse(null);
     }
 
     private static ReadOnlyStringWrapper stringValue(Object value) {

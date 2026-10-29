@@ -3,17 +3,23 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <TableView fx:id="fixedPersonTableView" prefWidth="205.0" styleClass="player-table,fixed-player-table">
+    <columns>
+      <TableColumn fx:id="indexColumn" prefWidth="55.0" sortable="false" text="Index" />
+      <TableColumn fx:id="nameColumn" prefWidth="150.0" sortable="false" text="Name" />
+    </columns>
+  </TableView>
+  <VBox HBox.hgrow="ALWAYS">
   <TableView fx:id="personTableView" styleClass="player-table" VBox.vgrow="ALWAYS">
     <placeholder>
       <Label styleClass="empty-list-hint" wrapText="true" maxWidth="420.0" textAlignment="CENTER"
              text="No players to display.&#10;&#10;Use list to clear your search or filter.&#10;&#10;If no players are registered, add one, for example:&#10;add n/Amy Tan sn/U12 pos/Defender" />
     </placeholder>
     <columns>
-      <TableColumn fx:id="indexColumn" prefWidth="55.0" sortable="false" text="Index" />
-      <TableColumn fx:id="nameColumn" prefWidth="150.0" sortable="false" text="Name" />
       <TableColumn fx:id="squadColumn" prefWidth="120.0" sortable="false" text="Squad" />
       <TableColumn fx:id="positionColumn" prefWidth="120.0" sortable="false" text="Position" />
       <TableColumn fx:id="guardianNameColumn" prefWidth="150.0" sortable="false" text="Guardian" />
@@ -26,4 +32,5 @@
       <TableColumn fx:id="remarkColumn" prefWidth="180.0" sortable="false" text="Remark" />
     </columns>
   </TableView>
-</VBox>
+  </VBox>
+</HBox>
