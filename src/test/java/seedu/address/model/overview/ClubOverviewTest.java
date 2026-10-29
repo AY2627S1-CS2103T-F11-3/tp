@@ -28,6 +28,33 @@ public class ClubOverviewTest {
     }
 
     @Test
+    public void fromPlayers_mixedCaseSquadNames_sortsAlphabetically() {
+        Person alpha = new PersonBuilder().withName("Alex").withSquadName("alpha").build();
+        Person beta = new PersonBuilder().withName("Bo").withSquadName("Beta").build();
+        Person zebras = new PersonBuilder().withName("Cal").withSquadName("Zebras").build();
+        List<Person> players = new ArrayList<>(List.of(zebras, beta, alpha));
+
+        ClubOverview overview = ClubOverview.fromPlayers(players);
+
+        assertEquals(List.of(new SquadSummary("alpha", 1, 1), new SquadSummary("Beta", 1, 1),
+                new SquadSummary("Zebras", 1, 1)), overview.squads());
+        assertEquals(List.of(zebras, beta, alpha), players);
+    }
+
+    @Test
+    public void fromPlayers_squadNamesDifferOnlyInCase_keepsSeparateCounts() {
+        Person lowercase = new PersonBuilder().withName("Alex").withSquadName("alpha")
+                .withAvailability("unavailable").build();
+        Person uppercase = new PersonBuilder().withName("Bo").withSquadName("Alpha").build();
+        Person teammate = new PersonBuilder().withName("Cal").withSquadName("alpha").build();
+        List<SquadSummary> expected = List.of(new SquadSummary("Alpha", 1, 1),
+                new SquadSummary("alpha", 2, 1));
+
+        assertEquals(expected, ClubOverview.fromPlayers(List.of(lowercase, uppercase, teammate)).squads());
+        assertEquals(expected, ClubOverview.fromPlayers(List.of(teammate, uppercase, lowercase)).squads());
+    }
+
+    @Test
     public void constructor_mutableList_takesImmutableSnapshot() {
         List<SquadSummary> squads = new ArrayList<>(List.of(new SquadSummary("Alpha", 2, 1)));
         ClubOverview overview = new ClubOverview(squads);
