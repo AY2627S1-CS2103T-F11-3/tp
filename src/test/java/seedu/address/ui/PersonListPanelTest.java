@@ -2,9 +2,11 @@ package seedu.address.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -14,9 +16,13 @@ import org.junit.jupiter.api.Test;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TableCell;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Region;
 import seedu.address.model.person.Person;
@@ -170,5 +176,72 @@ public class PersonListPanelTest {
         });
         Platform.runLater(task);
         task.get(20, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void render_frozenColumns_scrollsInStepWithPlayerDetails() throws Exception {
+        CompletableFuture<Void> completion = new CompletableFuture<>();
+        Platform.runLater(() -> {
+            var source = FXCollections.<Person>observableArrayList();
+            for (int index = 0; index < 30; index++) {
+                source.add(new PersonBuilder().withName("Player " + index).build());
+            }
+            Region root = new PersonListPanel(source).getRoot();
+            new Scene(root, 450, 300);
+            root.resize(450, 300);
+            root.applyCss();
+            root.layout();
+
+            Platform.runLater(() -> {
+                try {
+                    TableView<?> detailTable = (TableView<?>) root.lookup("#personTableView");
+                    TableView<?> fixedTable = (TableView<?>) root.lookup("#fixedPersonTableView");
+                    ScrollBar detailScrollBar = findVerticalScrollBar(detailTable);
+                    ScrollBar fixedScrollBar = findVerticalScrollBar(fixedTable);
+                    assertNotNull(detailScrollBar);
+                    assertNotNull(fixedScrollBar);
+                    assertEquals(virtualFlowHeight(detailTable), virtualFlowHeight(fixedTable), 0.1);
+
+                    detailScrollBar.setValue(detailScrollBar.getMax());
+                    root.layout();
+                    assertEquals(detailScrollBar.getValue(), fixedScrollBar.getValue());
+                    assertEquals(firstVisibleRowIndex(detailTable), firstVisibleRowIndex(fixedTable));
+
+                    fixedScrollBar.setValue(fixedScrollBar.getMin());
+                    root.layout();
+                    assertEquals(fixedScrollBar.getValue(), detailScrollBar.getValue());
+                    assertEquals(firstVisibleRowIndex(fixedTable), firstVisibleRowIndex(detailTable));
+                    completion.complete(null);
+                } catch (Throwable throwable) {
+                    completion.completeExceptionally(throwable);
+                }
+            });
+        });
+        completion.get(20, TimeUnit.SECONDS);
+    }
+
+    private static ScrollBar findVerticalScrollBar(TableView<?> table) {
+        return table.lookupAll(".scroll-bar").stream()
+                .filter(node -> node instanceof ScrollBar)
+                .map(node -> (ScrollBar) node)
+                .filter(scrollBar -> scrollBar.getOrientation() == Orientation.VERTICAL)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static int firstVisibleRowIndex(TableView<?> table) {
+        return table.lookupAll(".table-row-cell").stream()
+                .filter(node -> node instanceof TableRow<?>)
+                .map(node -> (TableRow<?>) node)
+                .filter(row -> !row.isEmpty())
+                .mapToInt(TableRow::getIndex)
+                .min()
+                .orElseThrow();
+    }
+
+    private static double virtualFlowHeight(TableView<?> table) {
+        Node virtualFlow = table.lookup(".virtual-flow");
+        assertNotNull(virtualFlow);
+        return virtualFlow.getBoundsInParent().getHeight();
     }
 }

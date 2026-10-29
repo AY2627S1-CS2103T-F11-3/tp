@@ -4,15 +4,19 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <TableView fx:id="fixedPersonTableView" prefWidth="205.0" styleClass="player-table,fixed-player-table">
-    <columns>
-      <TableColumn fx:id="indexColumn" prefWidth="55.0" sortable="false" text="Index" />
-      <TableColumn fx:id="nameColumn" prefWidth="150.0" sortable="false" text="Name" />
-    </columns>
-  </TableView>
+  <VBox>
+    <TableView fx:id="fixedPersonTableView" prefWidth="205.0" styleClass="player-table,fixed-player-table" VBox.vgrow="ALWAYS">
+      <columns>
+        <TableColumn fx:id="indexColumn" prefWidth="55.0" sortable="false" text="Index" />
+        <TableColumn fx:id="nameColumn" prefWidth="150.0" sortable="false" text="Name" />
+      </columns>
+    </TableView>
+    <Region fx:id="fixedTableScrollBarSpacer" />
+  </VBox>
   <VBox HBox.hgrow="ALWAYS">
   <TableView fx:id="personTableView" styleClass="player-table" VBox.vgrow="ALWAYS">
     <placeholder>
