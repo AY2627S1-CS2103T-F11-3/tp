@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.DeleteCommandParser.MESSAGE_EMPTY_NAME;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -33,6 +35,7 @@ import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Availability;
 import seedu.address.model.person.InjuryStatus;
 import seedu.address.model.person.MatchesFilterCriteriaPredicate;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -59,6 +62,47 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_editInvalidIndex_reportsIndexBeforeFieldsWithoutSaving() throws Exception {
+        model.setAddressBook(getTypicalAddressBook());
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        storage.saveAddressBook(model.getAddressBook());
+        String savedData = Files.readString(storage.getAddressBookFilePath());
+
+        for (String fields : List.of("", " n/123@", " n/Alex n/Bo", " injury/unknown",
+                " n/Valid Name injury/unknown")) {
+            assertCommandException("edit 99" + fields, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+        assertCommandException("edit 1", EditCommand.MESSAGE_NOT_EDITED);
+        assertCommandException("edit 1 n/123@", Name.MESSAGE_CONSTRAINTS);
+        assertCommandException("edit 1 n/Alex n/Bo",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
+        assertCommandException("edit 1 n/Valid Name injury/unknown", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertEquals(savedData, Files.readString(storage.getAddressBookFilePath()));
+    }
+
+    @Test
+    public void execute_editInvalidFilteredIndex_reportsIndexBeforeFields() {
+        model.setAddressBook(getTypicalAddressBook());
+        Person visiblePlayer = model.getAddressBook().getPersonList().getFirst();
+        model.updateFilteredPersonList(person -> person.equals(visiblePlayer));
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.updateFilteredPersonList(person -> person.equals(visiblePlayer));
+
+        assertCommandFailure("edit 2", CommandException.class,
+                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX, expectedModel);
+        assertCommandFailure("edit 2 n/123@", CommandException.class,
+                Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX, expectedModel);
+        assertCommandFailure("edit 1 n/123@", CommandException.class, Name.MESSAGE_CONSTRAINTS, expectedModel);
+        assertEquals(List.of(visiblePlayer), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_editEmptyList_reportsIndexBeforeFields() {
+        assertCommandException("edit 1", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandException("edit 1 n/123@", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
     public void execute_asciiInjuryInput_savesAndRejectsUnicodeWithoutWriting() throws Exception {
         JsonAddressBookStorage storage = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         logic.execute("add n/John Doe sn/U12 pos/Defender injury/FiT");
@@ -70,7 +114,7 @@ public class LogicManagerTest {
         String before = Files.readString(file);
         for (String value : new String[] {"F\u0130T", "f\u0131t", "\u0130NJURED", "\u0131njured",
             "f\u0456t", "\uff46\uff49\uff54"}) {
-            assertParseException("edit 1 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertCommandException("edit 1 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
             assertParseException("add n/Other Player sn/U12 pos/Defender injury/" + value,
                     InjuryStatus.MESSAGE_CONSTRAINTS);
             assertEquals(List.of(injured), model.getAddressBook().getPersonList());
@@ -95,12 +139,12 @@ public class LogicManagerTest {
 
         Path file = temporaryFolder.resolve("addressBook.json");
         String before = Files.readString(file);
-        assertParseException("edit 1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertParseException("edit 1 injury/recovering", InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertParseException("edit 1 injury/unknown", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertCommandException("edit 1 injury/", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertCommandException("edit 1 injury/recovering", InjuryStatus.MESSAGE_CONSTRAINTS);
+        assertCommandException("edit 1 injury/unknown", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertParseException("add n/Other Player sn/U12 pos/Defender injury/unknown",
                 InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertParseException("edit 1 injury/fit injury/injured",
+        assertCommandException("edit 1 injury/fit injury/injured",
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_INJURY_FULL));
         assertParseException("add n/Other Player sn/U12 pos/Defender injury/invalid", InjuryStatus.MESSAGE_CONSTRAINTS);
         assertCommandException("edit 2 injury/injured", Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
@@ -165,7 +209,7 @@ public class LogicManagerTest {
 
         expectedModel.updateFilteredPersonList(person ->
                 person.getAvailability().equals(new Availability("unavailable")));
-        assertCommandSuccess("filter av/false", String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, 1),
+        assertCommandSuccess("filter av/false", Messages.MESSAGE_PLAYER_LISTED_OVERVIEW,
                 expectedModel);
     }
 
@@ -252,19 +296,11 @@ public class LogicManagerTest {
         model.setAddressBook(getTypicalAddressBook());
         String listCommand = ListCommand.COMMAND_WORD;
 
-        // Build the expected output based on the players in model
-        StringBuilder expectedMessage = new StringBuilder();
-        List<Person> list = model.getFilteredPersonList();
-        for (int i = 0; i < list.size(); i++) {
-            expectedMessage.append(i + 1)
-                    .append(". ")
-                    .append(list.get(i).toListString());
-            if (i < list.size() - 1) {
-                expectedMessage.append("\n");
-            }
-        }
+        int count = model.getFilteredPersonList().size();
+        String expectedMessage = String.format(ListCommand.MESSAGE_FILTERS_CLEARED, count,
+                count == 1 ? "player" : "players");
 
-        assertCommandSuccess(listCommand, expectedMessage.toString(), model);
+        assertCommandSuccess(listCommand, expectedMessage, model);
     }
 
     @Test
@@ -403,19 +439,11 @@ public class LogicManagerTest {
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
-        // TODO: Repeated... maybe create a helper method?
-        StringBuilder expectedMessage = new StringBuilder();
-        List<Person> list = expectedModel.getFilteredPersonList();
-        for (int i = 0; i < list.size(); i++) {
-            expectedMessage.append(i + 1)
-                    .append(". ")
-                    .append(list.get(i).toListString());
-            if (i < list.size() - 1) {
-                expectedMessage.append("\n");
-            }
-        }
-
-        assertCommandSuccess(ListCommand.COMMAND_WORD, expectedMessage.toString(), expectedModel);
+        expectedModel.updateFilteredPersonList(Model.PREDICATE_SHOW_ALL_PERSONS);
+        int count = expectedModel.getFilteredPersonList().size();
+        String expectedMessage = String.format(ListCommand.MESSAGE_FILTERS_CLEARED, count,
+                count == 1 ? "player" : "players");
+        assertCommandSuccess(ListCommand.COMMAND_WORD, expectedMessage, expectedModel);
     }
 
     @Test
@@ -441,7 +469,8 @@ public class LogicManagerTest {
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
         assertCommandSuccess("filter available/TRUE",
-                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, expectedModel.getFilteredPersonList().size()),
+                Messages.getPlayerListSummary(model.getAddressBook().getPersonList().size(),
+                        expectedModel.getFilteredPersonList().size()),
                 expectedModel);
     }
 

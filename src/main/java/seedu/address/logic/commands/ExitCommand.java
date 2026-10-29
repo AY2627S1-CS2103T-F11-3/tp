@@ -14,7 +14,7 @@ public class ExitCommand extends Command {
             + "Parameters: none\n"
             + "Example: " + COMMAND_WORD;
 
-    public static final String MESSAGE_EXIT_ACKNOWLEDGEMENT = "Exiting Address Book as requested ...";
+    public static final String MESSAGE_EXIT_ACKNOWLEDGEMENT = "Exiting SquadLink ...";
 
     @Override
     public boolean isAddressBookMutating() {

@@ -12,7 +12,8 @@ public class Availability {
 
     public static final String AVAILABLE = "available";
     public static final String UNAVAILABLE = "unavailable";
-    public static final String MESSAGE_CONSTRAINTS = "Availability must be either 'available' or 'unavailable'.";
+    public static final String MESSAGE_CONSTRAINTS =
+            "Availability must be either 'available' or 'unavailable'.";
 
     public final String value;
 
