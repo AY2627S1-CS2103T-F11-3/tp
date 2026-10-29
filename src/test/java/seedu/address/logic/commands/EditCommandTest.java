@@ -108,6 +108,23 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_editRemark_updatesAndClearsRemark() {
+        Person original = new PersonBuilder().withName("Original Player").withSquadName("U12")
+                .withPosition("Defender").withRemark("Left footed").build();
+        for (String remark : new String[] {"Reliable defender", ""}) {
+            Model actualModel = new ModelManager();
+            actualModel.addPerson(original);
+            Person expected = new PersonBuilder(original).withRemark(remark).build();
+            Model expectedModel = new ModelManager();
+            expectedModel.addPerson(expected);
+            EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark(remark).build();
+
+            assertCommandSuccess(new EditCommand(INDEX_FIRST_PERSON, descriptor), actualModel,
+                    String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, original.getName()), expectedModel);
+        }
+    }
+
+    @Test
     public void execute_editPlayerProfileFields_success() {
         Person original = new PersonBuilder().withName("Original Player").withSquadName("U12 A")
                 .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567").build();

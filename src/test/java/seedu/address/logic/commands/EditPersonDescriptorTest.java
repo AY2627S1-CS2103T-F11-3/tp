@@ -94,6 +94,10 @@ public class EditPersonDescriptorTest {
         // different availability -> returns false
         editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withAvailability("unavailable").build();
         assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different remark -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withRemark("Reliable defender").build();
+        assertFalse(DESC_AMY.equals(editedAmy));
     }
 
     @Test
@@ -109,7 +113,8 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getAvailability().orElse(null) + ", injuryStatus="
                 + editPersonDescriptor.getInjuryStatus().orElse(null) + ", feeStatus="
                 + editPersonDescriptor.getFeeStatus().orElse(null) + ", consentStatus="
-                + editPersonDescriptor.getConsentStatus().orElse(null) + "}";
+                + editPersonDescriptor.getConsentStatus().orElse(null) + ", remark="
+                + editPersonDescriptor.getRemark().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }
