@@ -253,19 +253,11 @@ public class LogicManagerTest {
         model.setAddressBook(getTypicalAddressBook());
         String listCommand = ListCommand.COMMAND_WORD;
 
-        // Build the expected output based on the players in model
-        StringBuilder expectedMessage = new StringBuilder();
-        List<Person> list = model.getFilteredPersonList();
-        for (int i = 0; i < list.size(); i++) {
-            expectedMessage.append(i + 1)
-                    .append(". ")
-                    .append(list.get(i).toListString());
-            if (i < list.size() - 1) {
-                expectedMessage.append("\n");
-            }
-        }
+        int count = model.getFilteredPersonList().size();
+        String expectedMessage = String.format(ListCommand.MESSAGE_FILTERS_CLEARED, count,
+                count == 1 ? "player" : "players");
 
-        assertCommandSuccess(listCommand, expectedMessage.toString(), model);
+        assertCommandSuccess(listCommand, expectedMessage, model);
     }
 
     @Test
@@ -399,6 +391,7 @@ public class LogicManagerTest {
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
 
+        expectedModel.updateFilteredPersonList(Model.PREDICATE_SHOW_ALL_PERSONS);
         int count = expectedModel.getFilteredPersonList().size();
         String expectedMessage = String.format(ListCommand.MESSAGE_FILTERS_CLEARED, count,
                 count == 1 ? "player" : "players");

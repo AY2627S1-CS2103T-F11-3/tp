@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.AddressBook;
+import seedu.address.logic.Messages;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
@@ -31,7 +32,7 @@ public class ListCommandTest {
     public void execute_emptyList_confirmsClearedFilters() {
         Model emptyModel = new ModelManager(new AddressBook(), new UserPrefs());
         Model expectedEmptyModel = new ModelManager(new AddressBook(), new UserPrefs());
-        assertCommandSuccess(new ListCommand(), emptyModel, getExpectedDisplayList(expectedEmptyModel), expectedEmptyModel);
+        assertCommandSuccess(new ListCommand(), emptyModel, Messages.MESSAGE_NO_REGISTERED_PLAYERS, expectedEmptyModel);
     }
 
     @Test
