@@ -134,12 +134,12 @@ public class FilterCommandParserTest {
     @Test
     public void parse_unknownPrefixOrPreamble_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, FilterCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, "/position Goalkeeper", "Unknown filter prefix: /position");
-        assertParseFailure(parser, "squad/Team A /position Goalkeeper", "Unknown filter prefix: /position");
-        assertParseFailure(parser, "/squadTeam", "Unknown filter prefix: /squadTeam");
+        assertParseFailure(parser, "/position Goalkeeper", "Unknown filter prefix: /position.");
+        assertParseFailure(parser, "squad/Team A /position Goalkeeper", "Unknown filter prefix: /position.");
+        assertParseFailure(parser, "/squadTeam", "Unknown filter prefix: /squadTeam.");
         assertParseFailure(parser, "unexpected squad/Team A", expectedMessage);
-        assertParseFailure(parser, "/squad Team A", "Unknown filter prefix: /squad");
-        assertParseFailure(parser, "/availability true", "Unknown filter prefix: /availability");
+        assertParseFailure(parser, "/squad Team A", "Unknown filter prefix: /squad.");
+        assertParseFailure(parser, "/availability true", "Unknown filter prefix: /availability.");
     }
 
     private FilterCommand command(String squadName, String availability,
