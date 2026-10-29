@@ -3,11 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
-import java.util.List;
-
-import seedu.address.logic.Messages;
 import seedu.address.model.Model;
-import seedu.address.model.person.Person;
 
 /**
  * Lists all persons in the address book to the user.
@@ -21,7 +17,7 @@ public class ListCommand extends Command {
             + "Parameters: none\n"
             + "Example: " + COMMAND_WORD;
 
-    public static final String MESSAGE_EMPTY_LIST = Messages.MESSAGE_NO_REGISTERED_PLAYERS;
+    public static final String MESSAGE_FILTERS_CLEARED = "Showing all %d %s. Search and filters cleared.";
 
     @Override
     public boolean isAddressBookMutating() {
@@ -34,28 +30,9 @@ public class ListCommand extends Command {
         requireNonNull(model);
 
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        List<Person> lastShownList = model.getFilteredPersonList();
-        assert lastShownList != null : "Filtered person list should never be null after update";
-
-        if (lastShownList.isEmpty()) {
-            return new CommandResult(MESSAGE_EMPTY_LIST);
-        }
-
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < lastShownList.size(); i++) {
-            Person person = lastShownList.get(i);
-            assert person != null : "Person in filtered list must not be null at index " + i;
-
-            builder.append(i + 1)
-                    .append(". ")
-                    .append(person.toListString());
-
-            if (i < lastShownList.size() - 1) {
-                builder.append("\n");
-            }
-        }
-
-        return new CommandResult(builder.toString());
+        int playerCount = model.getFilteredPersonList().size();
+        return new CommandResult(String.format(MESSAGE_FILTERS_CLEARED, playerCount,
+                playerCount == 1 ? "player" : "players"));
     }
 
     @Override

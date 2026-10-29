@@ -5,8 +5,6 @@ import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +12,6 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.person.Person;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for ListCommand.
@@ -31,10 +28,10 @@ public class ListCommandTest {
     }
 
     @Test
-    public void execute_emptyList_showsNoPlayersMessage() {
+    public void execute_emptyList_confirmsClearedFilters() {
         Model emptyModel = new ModelManager(new AddressBook(), new UserPrefs());
         Model expectedEmptyModel = new ModelManager(new AddressBook(), new UserPrefs());
-        assertCommandSuccess(new ListCommand(), emptyModel, ListCommand.MESSAGE_EMPTY_LIST, expectedEmptyModel);
+        assertCommandSuccess(new ListCommand(), emptyModel, getExpectedDisplayList(expectedEmptyModel), expectedEmptyModel);
     }
 
     @Test
@@ -50,26 +47,13 @@ public class ListCommandTest {
     }
 
     /**
-     * Generates the expected feedback message for executing a {@code ListCommand}
-     * on the given {@code model}.
+     * Generates the expected concise feedback message for executing a {@code ListCommand}.
      *
      * @param model the expected model state to generate the formatted list from.
      * @return the formatted expected display string.
      */
     private String getExpectedDisplayList(Model model) {
-        List<Person> list = model.getFilteredPersonList();
-        if (list.isEmpty()) {
-            return ListCommand.MESSAGE_EMPTY_LIST;
-        }
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            builder.append(i + 1)
-                    .append(". ")
-                    .append(list.get(i).toListString());
-            if (i < list.size() - 1) {
-                builder.append("\n");
-            }
-        }
-        return builder.toString();
+        int count = model.getFilteredPersonList().size();
+        return String.format(ListCommand.MESSAGE_FILTERS_CLEARED, count, count == 1 ? "player" : "players");
     }
 }
