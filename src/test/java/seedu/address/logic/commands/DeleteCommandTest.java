@@ -264,14 +264,15 @@ public class DeleteCommandTest {
     public void execute_validThenMissingName_deletesNobody() {
         String validName = model.getAddressBook().getPersonList().getFirst().getName().fullName;
         DeleteCommand command = DeleteCommand.forNames(List.of(validName, "Missing Player"));
-        assertCommandFailure(command, model, String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player"));
+        assertCommandFailure(command, model,
+                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "Missing Player") + "\nNo players deleted.");
     }
 
     @Test
     public void execute_partialName_deletesNobody() {
         model.addPerson(new PersonBuilder().withName("John Doe").build());
         assertCommandFailure(DeleteCommand.forNames(List.of("John")), model,
-                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "John"));
+                String.format(DeleteCommand.MESSAGE_NAME_NOT_FOUND, "John") + "\nNo players deleted.");
     }
 
     @Test
@@ -346,16 +347,73 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_multipleAmbiguousNames_showsOnlyFirstGroup() {
+    public void execute_multipleAmbiguousNames_showsAllGroupsInDisplayOrder() {
         Person firstMatch = new PersonBuilder().withName("John Doe").build();
         Person secondMatch = new PersonBuilder().withName("john doe").build();
         model.addPerson(firstMatch);
         model.addPerson(secondMatch);
-        model.addPerson(new PersonBuilder().withName("Amy Tan").build());
-        model.addPerson(new PersonBuilder().withName("amy tan").build());
+        Person thirdMatch = new PersonBuilder().withName("Amy Tan").build();
+        Person fourthMatch = new PersonBuilder().withName("amy tan").build();
+        model.addPerson(thirdMatch);
+        model.addPerson(fourthMatch);
+        model.updateFilteredPersonList(person -> person.equals(firstMatch));
 
-        assertAmbiguousName(DeleteCommand.forNames(List.of("John Doe", "Amy Tan")), "John Doe",
-                List.of(firstMatch, secondMatch));
+        assertAmbiguousName(DeleteCommand.forNames(List.of("Amy Tan", "John Doe", "Amy Tan")), "Amy Tan, John Doe",
+                List.of(firstMatch, secondMatch, thirdMatch, fourthMatch));
+    }
+
+    @Test
+    public void execute_multipleMissingNames_reportsAllAndPreservesFilter() {
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        assertCommandFailure(DeleteCommand.forNames(List.of("Missing Person", "Unknown Player",
+                "missing person", "Unknown  Player")), model,
+                "No players found with these full names: Missing Person, Unknown Player\nNo players deleted.");
+    }
+
+    @Test
+    public void execute_repeatedMissingName_reportsFirstSpellingOnce() {
+        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        DeleteCommand command = DeleteCommand.forNames(List.of("Missing Person", "missing person",
+                "  MISSING\tPerson  "));
+
+        assertCommandFailure(command, model,
+                "No player found with the full name: Missing Person\nNo players deleted.");
+    }
+
+    @Test
+    public void execute_repeatedAmbiguousName_reportsFirstSpellingOnce() {
+        Person firstMatch = new PersonBuilder().withName("Alex Tan").withSquadName("Squad A").build();
+        Person secondMatch = new PersonBuilder().withName("Alex Tan").withSquadName("Squad B").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        model.updateFilteredPersonList(person -> person.equals(firstMatch));
+        DeleteCommand command = DeleteCommand.forNames(List.of("Alex Tan", "alex tan", "  ALEX\tTan  "));
+
+        assertAmbiguousName(command, "Alex Tan", List.of(firstMatch, secondMatch));
+    }
+
+    @Test
+    public void execute_missingAndAmbiguousNames_reportsBothRegardlessOfOrder() {
+        Person firstMatch = new PersonBuilder().withName("Alex Tan").withSquadName("Squad A").build();
+        Person secondMatch = new PersonBuilder().withName("Alex Tan").withSquadName("Squad B").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+        List<Person> originalPersons = List.copyOf(model.getAddressBook().getPersonList());
+        String validName = originalPersons.getFirst().getName().fullName;
+        String details = "1. " + Messages.formatPlayerDetails(firstMatch)
+                + "\n2. " + Messages.formatPlayerDetails(secondMatch);
+        String expected = "No player found with the full name: Missing Person\n"
+                + String.format(DeleteCommand.MESSAGE_AMBIGUOUS_NAME, "Alex Tan", details);
+
+        for (List<String> names : List.of(List.of(validName, "Missing Person", "Alex Tan"),
+                List.of("Alex Tan", "Missing Person", validName))) {
+            model.updateFilteredPersonList(person -> false);
+            CommandException exception = assertThrows(CommandException.class, () ->
+                    DeleteCommand.forNames(names).execute(model));
+            assertEquals(expected, exception.getMessage());
+            assertEquals(originalPersons, model.getAddressBook().getPersonList());
+            assertEquals(List.of(firstMatch, secondMatch), model.getFilteredPersonList());
+        }
     }
 
     @Test

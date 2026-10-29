@@ -5,6 +5,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,8 +40,9 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_INDEX_OUT_OF_RANGE =
             "Index %1$d is outside the displayed list. Choose an index from 1 to %2$d.";
     public static final String MESSAGE_NAME_NOT_FOUND = "No player found with the full name: %1$s";
+    public static final String MESSAGE_NAMES_NOT_FOUND = "No players found with these full names: %1$s";
     public static final String MESSAGE_AMBIGUOUS_NAME =
-            "Multiple players match the name: %1$s\n\n%2$s\n\n"
+            "Multiple matches for: %1$s\n\n%2$s\n\n"
             + "No players deleted. Matching players are shown in the list.\n"
             + "Delete using index: delete INDEX [INDEX]... (e.g. delete 1).";
 
@@ -142,25 +144,60 @@ public class DeleteCommand extends Command {
 
     private List<Person> resolveNames(Model model) throws CommandException {
         Set<Person> personsToDelete = new LinkedHashSet<>();
-        for (String name : targetNames) {
-            personsToDelete.add(findUniquePlayer(name, model));
+        Set<String> missingNames = new LinkedHashSet<>();
+        Set<String> ambiguousNames = new LinkedHashSet<>();
+        Set<Person> ambiguousMatches = new LinkedHashSet<>();
+        for (String name : getDistinctTargetNames()) {
+            List<Person> matches = findMatches(name, model);
+            if (matches.isEmpty()) {
+                missingNames.add(name);
+            } else if (matches.size() > 1) {
+                ambiguousNames.add(name);
+                ambiguousMatches.addAll(matches);
+            } else {
+                personsToDelete.add(matches.getFirst());
+            }
+        }
+        if (!missingNames.isEmpty() || !ambiguousNames.isEmpty()) {
+            if (!ambiguousMatches.isEmpty()) {
+                model.updateFilteredPersonList(ambiguousMatches::contains);
+            }
+            throw new CommandException(formatNameErrors(missingNames, ambiguousNames, model.getFilteredPersonList()));
         }
         return List.copyOf(personsToDelete);
     }
 
-    private Person findUniquePlayer(String name, Model model) throws CommandException {
-        String normalizedName = normalizeName(name);
-        List<Person> matches = model.getAddressBook().getPersonList().stream()
-                .filter(person -> normalizeName(person.getName().fullName).equalsIgnoreCase(normalizedName))
+    private List<String> getDistinctTargetNames() {
+        List<String> distinctNames = new ArrayList<>();
+        for (String name : targetNames) {
+            if (distinctNames.stream().noneMatch(existing -> namesMatch(existing, name))) {
+                distinctNames.add(name);
+            }
+        }
+        return distinctNames;
+    }
+
+    private List<Person> findMatches(String name, Model model) {
+        return model.getAddressBook().getPersonList().stream()
+                .filter(person -> namesMatch(person.getName().fullName, name))
                 .toList();
-        if (matches.isEmpty()) {
-            throw new CommandException(String.format(MESSAGE_NAME_NOT_FOUND, name));
+    }
+
+    private boolean namesMatch(String first, String second) {
+        return normalizeName(first).equalsIgnoreCase(normalizeName(second));
+    }
+
+    private String formatNameErrors(Set<String> missingNames, Set<String> ambiguousNames,
+            List<Person> displayedMatches) {
+        String missingErrors = "";
+        if (!missingNames.isEmpty()) {
+            String message = missingNames.size() == 1 ? MESSAGE_NAME_NOT_FOUND : MESSAGE_NAMES_NOT_FOUND;
+            missingErrors = String.format(message, String.join(", ", missingNames)) + "\n";
         }
-        if (matches.size() > 1) {
-            model.updateFilteredPersonList(matches::contains);
-            throw new CommandException(formatAmbiguousName(name, model.getFilteredPersonList()));
+        if (ambiguousNames.isEmpty()) {
+            return missingErrors + "No players deleted.";
         }
-        return matches.getFirst();
+        return missingErrors + formatAmbiguousName(String.join(", ", ambiguousNames), displayedMatches);
     }
 
     /**
