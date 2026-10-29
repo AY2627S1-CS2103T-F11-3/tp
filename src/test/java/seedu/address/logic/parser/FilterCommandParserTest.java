@@ -120,7 +120,7 @@ public class FilterCommandParserTest {
         assertParseFailure(parser, "squad/Team A /position Goalkeeper", "Unknown filter prefix: /position");
         assertParseFailure(parser, "/squadTeam", "Unknown filter prefix: /squadTeam");
         assertParseFailure(parser, "unexpected squad/Team A", expectedMessage);
-        assertParseFailure(parser, "/squad Team A", expectedMessage);
+        assertParseFailure(parser, "/squad Team A", "Unknown filter prefix: /squad");
         assertParseFailure(parser, "/availability true", "Unknown filter prefix: /availability");
         assertParseSuccess(parser, "availability/true", command(null, Availability.AVAILABLE, null, null, null));
         assertParseFailure(parser, "position/Goalkeeper", "Unknown filter prefix: position/");
