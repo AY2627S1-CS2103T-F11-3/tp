@@ -12,7 +12,7 @@ public class GuardianName {
 
     public static final String MESSAGE_CONSTRAINTS =
             "Guardian names should only contain alphanumeric characters, hyphens and whitespace, "
-                    + "and should not be blank";
+                    + "and should not be blank.";
     public static final String VALIDATION_REGEX = Name.VALIDATION_REGEX;
 
     public final String value;

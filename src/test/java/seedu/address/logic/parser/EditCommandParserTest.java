@@ -17,8 +17,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANCONTACT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GUARDIANNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
@@ -43,6 +46,7 @@ public class EditCommandParserTest {
 
     private static final String TAG_EMPTY = " " + PREFIX_TAG;
     private static final String AVAILABILITY_DESC_UNAVAILABLE = " " + PREFIX_AVAILABILITY + "false";
+    private static final String REMARK_DESC = " " + PREFIX_REMARK + "Left footed";
 
     private static final String MESSAGE_INVALID_FORMAT =
             String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
@@ -65,7 +69,7 @@ public class EditCommandParserTest {
             ConsentStatus.MESSAGE_CONSTRAINTS};
         for (int i = 0; i < prefixes.length; i++) {
             for (String value : new String[] {"", "unknown"}) {
-                assertParseFailure(parser, "2 " + prefixes[i] + value, messages[i]);
+                assertDeferredFailure("2 " + prefixes[i] + value, messages[i]);
             }
         }
     }
@@ -82,11 +86,11 @@ public class EditCommandParserTest {
             Prefix shortPrefix = aliases[i][0];
             Prefix fullPrefix = aliases[i][1];
             String value = values[i];
-            assertParseFailure(parser, "2 " + shortPrefix + value + " " + shortPrefix + value,
+            assertDeferredFailure("2 " + shortPrefix + value + " " + shortPrefix + value,
                     Messages.getErrorMessageForDuplicatePrefixes(shortPrefix));
-            assertParseFailure(parser, "2 " + shortPrefix + value + " " + fullPrefix + value,
+            assertDeferredFailure("2 " + shortPrefix + value + " " + fullPrefix + value,
                     Messages.getErrorMessageForDuplicatePrefixes(shortPrefix, fullPrefix));
-            assertParseFailure(parser, "2 " + fullPrefix + value + " " + shortPrefix + value,
+            assertDeferredFailure("2 " + fullPrefix + value + " " + shortPrefix + value,
                     Messages.getErrorMessageForDuplicatePrefixes(shortPrefix, fullPrefix));
         }
     }
@@ -109,9 +113,9 @@ public class EditCommandParserTest {
     public void parse_invalidOrRepeatedInjuryStatus_failure() {
         for (String value : new String[] {"", " \t", "unknown", "un\u212Anown",
             "F\u0130T", "f\u0131t", "\u0130NJURED", "recovering", "true", "in jured"}) {
-            assertParseFailure(parser, "2 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("2 injury/" + value, InjuryStatus.MESSAGE_CONSTRAINTS);
         }
-        assertParseFailure(parser, "2 injury/fit injury/injured",
+        assertDeferredFailure("2 injury/fit injury/injured",
                 Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
         assertParseFailure(parser, "0 injury/injured", MESSAGE_INVALID_FORMAT);
         assertParseFailure(parser, "2147483648 injury/injured", MESSAGE_INVALID_FORMAT);
@@ -123,7 +127,7 @@ public class EditCommandParserTest {
         assertParseFailure(parser, VALID_NAME_AMY, MESSAGE_INVALID_FORMAT);
 
         // no field specified
-        assertParseFailure(parser, "1", EditCommand.MESSAGE_NOT_EDITED);
+        assertDeferredFailure("1", EditCommand.MESSAGE_NOT_EDITED);
 
         // no index and no field specified
         assertParseFailure(parser, "", MESSAGE_INVALID_FORMAT);
@@ -146,17 +150,17 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_invalidValue_failure() {
-        assertParseFailure(parser, "1" + INVALID_NAME_DESC, Name.MESSAGE_CONSTRAINTS); // invalid name
-        assertParseFailure(parser, "1" + INVALID_TAG_DESC, Tag.MESSAGE_CONSTRAINTS); // invalid tag
+        assertDeferredFailure("1" + INVALID_NAME_DESC, Name.MESSAGE_CONSTRAINTS); // invalid name
+        assertDeferredFailure("1" + INVALID_TAG_DESC, Tag.MESSAGE_CONSTRAINTS); // invalid tag
 
         // while parsing {@code PREFIX_TAG} alone will reset the tags of the {@code Person} being edited,
         // parsing it together with a valid tag results in error
-        assertParseFailure(parser, "1" + TAG_DESC_FRIEND + TAG_DESC_HUSBAND + TAG_EMPTY, Tag.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "1" + TAG_DESC_FRIEND + TAG_EMPTY + TAG_DESC_HUSBAND, Tag.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "1" + TAG_EMPTY + TAG_DESC_FRIEND + TAG_DESC_HUSBAND, Tag.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1" + TAG_DESC_FRIEND + TAG_DESC_HUSBAND + TAG_EMPTY, Tag.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1" + TAG_DESC_FRIEND + TAG_EMPTY + TAG_DESC_HUSBAND, Tag.MESSAGE_CONSTRAINTS);
+        assertDeferredFailure("1" + TAG_EMPTY + TAG_DESC_FRIEND + TAG_DESC_HUSBAND, Tag.MESSAGE_CONSTRAINTS);
 
         // multiple invalid values, but only the first invalid value is captured
-        assertParseFailure(parser, "1" + INVALID_NAME_DESC + INVALID_TAG_DESC,
+        assertDeferredFailure("1" + INVALID_NAME_DESC + INVALID_TAG_DESC,
                 Name.MESSAGE_CONSTRAINTS);
     }
 
@@ -256,25 +260,53 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_remark_success() {
+        Index targetIndex = INDEX_THIRD_PERSON;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark("Left footed").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + REMARK_DESC,
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withRemark("").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_REMARK,
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withRemark("Reliable defender").build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_REMARK_FULL + "Reliable defender",
+                new EditCommand(targetIndex, descriptor));
+
+        descriptor = new EditPersonDescriptorBuilder().withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_TAG_FULL + VALID_TAG_FRIEND,
+                new EditCommand(targetIndex, descriptor));
+    }
+
+    @Test
     public void parse_repeatedName_failure() {
-        assertParseFailure(parser, "1" + NAME_DESC_AMY + NAME_DESC_AMY,
+        assertDeferredFailure("1" + NAME_DESC_AMY + NAME_DESC_AMY,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
-        assertParseFailure(parser, "1" + INVALID_NAME_DESC + NAME_DESC_AMY,
+        assertDeferredFailure("1" + INVALID_NAME_DESC + NAME_DESC_AMY,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
     }
 
     @Test
+    public void parse_repeatedRemark_failure() {
+        assertDeferredFailure("1" + REMARK_DESC + " " + PREFIX_REMARK + "Reliable defender",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
+        assertDeferredFailure("1" + REMARK_DESC + " " + PREFIX_REMARK_FULL + "Reliable defender",
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK, PREFIX_REMARK_FULL));
+    }
+
+    @Test
     public void parse_invalidOrRepeatedAvailability_failure() {
-        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY + "yes",
+        assertDeferredFailure("1 " + PREFIX_AVAILABILITY + "yes",
                 EditCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY,
+        assertDeferredFailure("1 " + PREFIX_AVAILABILITY,
                 EditCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + AVAILABILITY_DESC_UNAVAILABLE,
+        assertDeferredFailure("1" + AVAILABILITY_DESC_UNAVAILABLE + AVAILABILITY_DESC_UNAVAILABLE,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_AVAILABILITY));
-        assertParseFailure(parser, "1" + AVAILABILITY_DESC_UNAVAILABLE + " " + PREFIX_AVAILABILITY_FULL + "true",
+        assertDeferredFailure("1" + AVAILABILITY_DESC_UNAVAILABLE + " " + PREFIX_AVAILABILITY_FULL + "true",
                 Messages.getErrorMessageForDuplicatePrefixes(
                         PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY));
-        assertParseFailure(parser, "1 " + PREFIX_AVAILABILITY_FULL + "available "
+        assertDeferredFailure("1 " + PREFIX_AVAILABILITY_FULL + "available "
                         + PREFIX_AVAILABILITY_LEGACY + "false",
                 Messages.getErrorMessageForDuplicatePrefixes(
                         PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL, PREFIX_AVAILABILITY_LEGACY));
@@ -284,7 +316,12 @@ public class EditCommandParserTest {
     public void parse_legacyContactFields_failure() {
         for (String field : new String[] {" p/98765432", " e/john@example.com", " a/John Street"}) {
             assertParseFailure(parser, "1" + field, MESSAGE_INVALID_FORMAT);
-            assertParseFailure(parser, "1" + NAME_DESC_AMY + field, Name.MESSAGE_CONSTRAINTS);
+            assertDeferredFailure("1" + NAME_DESC_AMY + field, Name.MESSAGE_CONSTRAINTS);
         }
+    }
+
+    private void assertDeferredFailure(String input, String expectedMessage) {
+        Index index = Index.fromOneBased(Integer.parseInt(input.strip().split("\\s+")[0]));
+        assertParseSuccess(parser, input, EditCommand.withDeferredError(index, expectedMessage));
     }
 }

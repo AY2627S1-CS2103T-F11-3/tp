@@ -19,9 +19,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG_FULL;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -50,12 +52,12 @@ import seedu.address.model.tag.Tag;
 
 /** Parses the add-player arguments, validating supplied fields from left to right. */
 public class AddCommandParser implements Parser<AddCommand> {
-    public static final String MESSAGE_MISSING_NAME = "Error! Name must be specified!";
-    public static final String MESSAGE_MISSING_SQUAD = "Error! Squad name must be specified!";
-    public static final String MESSAGE_MISSING_POSITION = "Error! Position must be specified!";
+    public static final String MESSAGE_MISSING_NAME = "Error: Name must be specified.";
+    public static final String MESSAGE_MISSING_SQUAD = "Error: Squad name must be specified.";
+    public static final String MESSAGE_MISSING_POSITION = "Error: Position must be specified.";
     public static final String MESSAGE_INVALID_AVAILABILITY =
-            "Invalid availability entered! Availability must be true, false, available, or unavailable.";
-    public static final String MESSAGE_MISSING_REMARK = "Error! Remark must not be blank!";
+            "Invalid availability entered. Availability must be true, false, available, or unavailable.";
+    public static final String MESSAGE_MISSING_REMARK = "Error: Remark must not be blank.";
 
     private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
 
@@ -198,9 +200,9 @@ public class AddCommandParser implements Parser<AddCommand> {
                 PREFIX_AVAILABILITY_LEGACY};
             case FEE -> new Prefix[] {PREFIX_FEE, PREFIX_FEE_FULL};
             case CONSENT -> new Prefix[] {PREFIX_CONSENT, PREFIX_CONSENT_FULL};
-            case REMARK -> new Prefix[] {PREFIX_REMARK};
+            case REMARK -> new Prefix[] {PREFIX_REMARK, PREFIX_REMARK_FULL};
             case INJURY -> new Prefix[] {PREFIX_INJURY, PREFIX_INJURY_FULL};
-            case TAG -> new Prefix[] {PREFIX_TAG};
+            case TAG -> new Prefix[] {PREFIX_TAG, PREFIX_TAG_FULL};
         };
     }
 

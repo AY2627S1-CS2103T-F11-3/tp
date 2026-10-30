@@ -18,7 +18,7 @@ public class RedoCommand extends Command {
             + "Example: " + COMMAND_WORD;
 
     public static final String MESSAGE_REDO_SUCCESS = "Redid the last undo!";
-    public static final String MESSAGE_NO_COMMAND_TO_REDO = "There is no undo to redo!";
+    public static final String MESSAGE_NO_COMMAND_TO_REDO = "There is no undo to redo.";
 
     @Override
     public CommandResult execute(Model model) throws CommandException {

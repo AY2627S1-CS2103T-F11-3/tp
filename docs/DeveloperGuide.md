@@ -173,6 +173,14 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Command validation and error feedback
+
+Command parsers validate command syntax and individual field values before creating a command.
+Invalid input results in a `ParseException`, which `LogicManager` propagates for the UI to display without changing model data.
+Commands validate runtime-dependent conditions, such as whether an index exists in the current filtered list, during execution.
+These failures result in a `CommandException`, which is likewise displayed without changing the model.
+User-facing validation messages are defined centrally in `Messages` when they are shared by multiple commands, preventing inconsistent feedback.
+
 ### Bulk player status updates
 
 `MarkCommandParser` parses displayed indexes and exactly one status prefix into a `MarkCommand`. It reuses
@@ -257,7 +265,7 @@ The sequence diagram below shows how an `undo` operation flows through the `Logi
 3. `VersionedAddressBook#redo()` increments `currentStatePointer` once to the right (back to index `2`) and restores the address book to that state.
 4. `ModelManager` resets the view with `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest state in the list, `Model#canRedoAddressBook()` returns `false`. `RedoCommand` throws a `CommandException` with the message `There is no undo to redo!`.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest state in the list, `Model#canRedoAddressBook()` returns `false`. `RedoCommand` throws a `CommandException` with the message `There is no undo to redo.`
 </div>
 
 **Step 6.** The user executes `list` or `filter`. Commands that do not modify the stored address book data do not call `Model#commitAddressBook()`, `Model#undoAddressBook()`, or `Model#redoAddressBook()`. Thus, the `addressBookStateList` and `currentStatePointer` remain untouched.

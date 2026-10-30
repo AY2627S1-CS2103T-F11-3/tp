@@ -59,7 +59,7 @@ public class AddCommandIntegrationTest {
         Person duplicate = new PersonBuilder(original).withName(" John  Doe ").withSquadName(" Stars ")
                 .withPosition("goal-keeper").withGuardianName("Jane Doe").withGuardianContact("81234567")
                 .withAvailability("unavailable").withTags("captain").build();
-        assertCommandFailure(new AddCommand(duplicate), model, "John Doe is already a registered player!");
+        assertCommandFailure(new AddCommand(duplicate), model, "John Doe is already a registered player.");
     }
 
     @Test

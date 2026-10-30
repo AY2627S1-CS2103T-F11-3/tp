@@ -29,6 +29,8 @@ public class CliSyntax {
     public static final Prefix PREFIX_FEE_FULL = new Prefix("fee/");
     public static final Prefix PREFIX_CONSENT_FULL = new Prefix("consent/");
     public static final Prefix PREFIX_INJURY_FULL = new Prefix("injury/");
+    public static final Prefix PREFIX_TAG_FULL = new Prefix("tag/");
+    public static final Prefix PREFIX_REMARK_FULL = new Prefix("remark/");
 
     public static final Prefix PREFIX_TAG = new Prefix("t/");
     public static final Prefix PREFIX_REMARK = new Prefix("r/");
