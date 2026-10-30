@@ -29,13 +29,13 @@ public class MarkCommandParserTest {
     @Test
     public void parse_eachStatusAndValue_returnsNormalizedCommand() {
         assertStatus("av/true", PlayerStatusField.AVAILABILITY, "available");
-        assertStatus("available/FALSE", PlayerStatusField.AVAILABILITY, "unavailable");
+        assertStatus("Available/FALSE", PlayerStatusField.AVAILABILITY, "unavailable");
         assertStatus("injury/FIT", PlayerStatusField.INJURY, "fit");
         assertStatus("injury/injured", PlayerStatusField.INJURY, "injured");
         assertStatus("fee/PAID", PlayerStatusField.FEE, "paid");
         assertStatus("fee/unpaid", PlayerStatusField.FEE, "unpaid");
         assertStatus("consent/RECEIVED", PlayerStatusField.CONSENT, "received");
-        assertStatus("consent/pending", PlayerStatusField.CONSENT, "pending");
+        assertStatus("CONSENT/pending", PlayerStatusField.CONSENT, "pending");
         assertStatus("inj/INJURED", PlayerStatusField.INJURY, "injured");
         assertStatus("f/paid", PlayerStatusField.FEE, "paid");
         assertStatus("c/received", PlayerStatusField.CONSENT, "received");

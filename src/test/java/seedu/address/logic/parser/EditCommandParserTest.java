@@ -60,6 +60,8 @@ public class EditCommandParserTest {
         assertParseSuccess(parser, "2 inj/INJURED f/paid c/received", new EditCommand(INDEX_SECOND_PERSON, descriptor));
         assertParseSuccess(parser, "2 injury/injured f/paid consent/received",
                 new EditCommand(INDEX_SECOND_PERSON, descriptor));
+        assertParseSuccess(parser, "2 INJ/injured F/paid Consent/received",
+                new EditCommand(INDEX_SECOND_PERSON, descriptor));
     }
 
     @Test
