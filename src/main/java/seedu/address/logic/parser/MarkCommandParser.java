@@ -59,7 +59,7 @@ public class MarkCommandParser implements Parser<MarkCommand> {
             throw new ParseException(MESSAGE_ONE_STATUS);
         }
         String prefix = matcher.group();
-        PlayerStatusField field = STATUS_PREFIXES.get(prefix);
+        PlayerStatusField field = STATUS_PREFIXES.get(prefix.toLowerCase());
         if (field == null) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MarkCommand.MESSAGE_USAGE));
         }

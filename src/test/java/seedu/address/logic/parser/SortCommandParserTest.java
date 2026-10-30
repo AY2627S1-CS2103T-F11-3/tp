@@ -18,7 +18,7 @@ public class SortCommandParserTest {
         assertParseSuccess(parser, "name", new SortCommand(SortField.NAME));
         assertParseSuccess(parser, "  SQUAD  ", new SortCommand(SortField.SQUAD));
         assertParseSuccess(parser, "position", new SortCommand(SortField.POSITION));
-        assertParseSuccess(parser, "availability", new SortCommand(SortField.AVAILABILITY));
+        assertParseSuccess(parser, "Availability", new SortCommand(SortField.AVAILABILITY));
         assertParseSuccess(parser, "reset", new SortCommand(SortField.RESET));
     }
 
