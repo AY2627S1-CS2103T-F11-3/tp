@@ -37,6 +37,7 @@ public class MarkCommand extends Command {
     private final PlayerStatusField field;
     private final String value;
     private final String deferredError;
+    private boolean addressBookMutating = true;
 
     /**
      * Creates a bulk status command using a domain value such as available, injured, paid or received.
@@ -84,9 +85,18 @@ public class MarkCommand extends Command {
             }
         }
 
-        model.commitAddressBook();
+        addressBookMutating = !changed.isEmpty();
+        if (addressBookMutating) {
+            model.commitAddressBook();
+        }
 
         return new CommandResult(formatFeedback(changed, unchanged, field.getValue(replacements.getFirst())));
+    }
+
+    /** Returns whether the last successful execution changed any player's status. */
+    @Override
+    public boolean isAddressBookMutating() {
+        return addressBookMutating;
     }
 
     /** Resolves all indexes before changes can shrink or reorder the displayed list. */
@@ -115,15 +125,16 @@ public class MarkCommand extends Command {
 
     private String formatFeedback(List<Person> changed, List<Person> unchanged, String recordedValue) {
         String status = field.getDisplayName() + ": " + recordedValue;
+        String unchangedSummary = String.format("%d %s already %s %s.\n%s", unchanged.size(),
+                unchanged.size() == 1 ? "player" : "players", unchanged.size() == 1 ? "has" : "have",
+                status, formatNames(unchanged));
         if (changed.isEmpty()) {
-            return String.format("No changes needed. Already recorded %s (%d %s):\n%s", status,
-                    unchanged.size(), unchanged.size() == 1 ? "player" : "players", formatNames(unchanged));
+            return "No changes made. " + unchangedSummary;
         }
-        String message = String.format("Updated %s for %d %s:\n%s", status,
+        String message = String.format("Updated %s to %s for %d %s:\n%s", field.getDisplayName(), recordedValue,
                 changed.size(), changed.size() == 1 ? "player" : "players", formatNames(changed));
         if (!unchanged.isEmpty()) {
-            message += String.format("\n\nAlready recorded %s (unchanged, %d %s):\n%s", status,
-                    unchanged.size(), unchanged.size() == 1 ? "player" : "players", formatNames(unchanged));
+            message += "\n\nUnchanged: " + unchangedSummary;
         }
         return message;
     }
