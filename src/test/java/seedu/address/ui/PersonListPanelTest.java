@@ -186,7 +186,8 @@ public class PersonListPanelTest {
             for (int index = 0; index < 30; index++) {
                 source.add(new PersonBuilder().withName("Player " + index).build());
             }
-            Region root = new PersonListPanel(source).getRoot();
+            FilteredList<Person> displayed = new FilteredList<>(source);
+            Region root = new PersonListPanel(displayed).getRoot();
             new Scene(root, 450, 300);
             root.resize(450, 300);
             root.applyCss();
@@ -211,6 +212,29 @@ public class PersonListPanelTest {
                     root.layout();
                     assertEquals(fixedScrollBar.getValue(), detailScrollBar.getValue());
                     assertEquals(firstVisibleRowIndex(fixedTable), firstVisibleRowIndex(detailTable));
+
+                    source.clear();
+                    root.layout();
+                    assertEquals(detailTable.getHeight(), fixedTable.getHeight(), 0.1);
+
+                    source.add(new PersonBuilder().build());
+                    root.layout();
+                    Region spacer = (Region) root.lookup("#fixedTableScrollBarSpacer");
+                    assertTrue(spacer.getHeight() > 0);
+                    assertEquals(detailTable.getHeight(), fixedTable.getHeight() + spacer.getHeight(), 0.1);
+
+                    displayed.setPredicate(player -> false);
+                    root.layout();
+                    assertEquals(detailTable.getHeight(), fixedTable.getHeight(), 0.1);
+                    displayed.setPredicate(player -> true);
+                    root.layout();
+                    assertTrue(spacer.getHeight() > 0);
+                    assertEquals(detailTable.getHeight(), fixedTable.getHeight() + spacer.getHeight(), 0.1);
+
+                    root.resize(1900, 300);
+                    root.layout();
+                    root.layout();
+                    assertEquals(detailTable.getHeight(), fixedTable.getHeight(), 0.1);
                     completion.complete(null);
                 } catch (Throwable throwable) {
                     completion.completeExceptionally(throwable);

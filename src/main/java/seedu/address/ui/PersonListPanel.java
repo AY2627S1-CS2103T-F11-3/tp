@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -137,9 +138,13 @@ public class PersonListPanel extends UiPart<Region> {
             fixedTableScrollBarSpacer.setMaxHeight(0);
             return;
         }
-        fixedTableScrollBarSpacer.minHeightProperty().bind(detailHorizontalScrollBar.heightProperty());
-        fixedTableScrollBarSpacer.prefHeightProperty().bind(detailHorizontalScrollBar.heightProperty());
-        fixedTableScrollBarSpacer.maxHeightProperty().bind(detailHorizontalScrollBar.heightProperty());
+        // Empty tables hide the entire virtual flow, but its scrollbar can retain its height and visibility.
+        var spacerHeight = Bindings.when(Bindings.isNotEmpty(personTableView.getItems())
+                .and(detailHorizontalScrollBar.visibleProperty()))
+                .then(detailHorizontalScrollBar.heightProperty()).otherwise(0);
+        fixedTableScrollBarSpacer.minHeightProperty().bind(spacerHeight);
+        fixedTableScrollBarSpacer.prefHeightProperty().bind(spacerHeight);
+        fixedTableScrollBarSpacer.maxHeightProperty().bind(spacerHeight);
     }
 
     private static void synchronizeSelection(TableView<Person> source, TableView<Person> destination) {
