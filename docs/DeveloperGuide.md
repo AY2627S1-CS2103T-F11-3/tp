@@ -338,7 +338,6 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
 | `***`    | coach | add a player with their name, squad and position | keep track of the players I manage |
 | `***`    | coach | record a player's availability | quickly see whether a player is available for selection |
 | `***`    | coach | view a list of all registered players | get an overview of the players I manage |
-| `***`    | coach | view the full details of a specific player | access more information about that player when needed |
 | `***`    | coach | delete a player | remove players who are no longer relevant or were added by mistake |
 | `**`     | coach | filter players by squad | quickly find players belonging to a particular squad |
 | `**`     | coach | filter players by availability | quickly find players who are available or unavailable |
@@ -438,28 +437,6 @@ Priorities: High (must have) - `***`, Medium (nice to have) - `**`, Low (unlikel
   * 4a2. SquadLink rolls back the deletion, and the player remains registered.
 
     Use case ends.
-
-**Use case: View a player**
-
-**MSS**
-
-1. Coach requests to list players.
-2. SquadLink shows the list of registered players.
-3. Coach requests to view a specific player in the list.
-4. SquadLink shows the player's details.
-
-   Use case ends.
-
-**Extensions**
-
-* 2a. The list is empty.
-
-  Use case ends.
-
-* 3a. The given index is invalid.
-    * 3a1. SquadLink shows an error message.
-
-      Use case resumes at step 2.
 
 **Use case: Filter players**
 
