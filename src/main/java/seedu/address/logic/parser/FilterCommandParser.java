@@ -17,6 +17,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_SQUADNAME_FULL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -234,7 +235,7 @@ public class FilterCommandParser implements Parser<FilterCommand> {
         if (value.isEmpty()) {
             throw new ParseException(MESSAGE_MISSING_CONSENT);
         }
-        String normalized = value.toLowerCase();
+        String normalized = value.toLowerCase(Locale.ROOT);
         if (!normalized.equals("received") && !normalized.equals("pending")) {
             throw new ParseException(MESSAGE_INVALID_CONSENT);
         }

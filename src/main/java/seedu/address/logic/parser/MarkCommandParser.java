@@ -14,6 +14,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_INJURY_FULL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +60,7 @@ public class MarkCommandParser implements Parser<MarkCommand> {
             throw new ParseException(MESSAGE_ONE_STATUS);
         }
         String prefix = matcher.group();
-        PlayerStatusField field = STATUS_PREFIXES.get(prefix.toLowerCase());
+        PlayerStatusField field = STATUS_PREFIXES.get(prefix.toLowerCase(Locale.ROOT));
         if (field == null) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MarkCommand.MESSAGE_USAGE));
         }

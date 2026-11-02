@@ -58,7 +58,7 @@ check squad availability, and navigate views by typing commands.
 
 * Command words are case-insensitive, so `find`, `Find`, and `FIND` are equivalent.
 
-* Prefixes are also case-insensitive, so `name/`, `Name/`, `NAME` are equivalent.
+* Prefixes are also case-insensitive, so `name/`, `Name/`, `NAME/` are equivalent.
   The supported prefixes and aliases are listed under each command.
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>

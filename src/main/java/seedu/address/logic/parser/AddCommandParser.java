@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -89,7 +90,7 @@ public class AddCommandParser implements Parser<AddCommand> {
             if (field == null) {
                 throw invalidFormat();
             }
-            Prefix prefix = new Prefix(argument.prefix().toLowerCase());
+            Prefix prefix = new Prefix(argument.prefix().toLowerCase(Locale.ROOT));
             Prefix firstPrefix = field == Field.TAG ? null : seen.putIfAbsent(field, prefix);
             if (firstPrefix != null) {
                 throw new ParseException(Messages.getErrorMessageForDuplicatePrefixes(firstPrefix, prefix));
