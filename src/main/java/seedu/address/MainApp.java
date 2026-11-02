@@ -1,6 +1,8 @@
 package seedu.address;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -35,13 +37,31 @@ public class MainApp extends Application {
     public static final String VERSION = "V0.5.1";
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
-    private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
-    private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "addressbook.json");
+    private static final Path APPLICATION_DIRECTORY = getApplicationDirectory();
+    private static final Path USER_PREFS_FILE_PATH = APPLICATION_DIRECTORY.resolve("preferences.json");
+    private static final Path ADDRESS_BOOK_FILE_PATH = APPLICATION_DIRECTORY.resolve("data").resolve("addressbook.json");
 
     protected Ui ui;
     protected Logic logic;
     protected Storage storage;
     protected Model model;
+
+    private static Path getApplicationDirectory() {
+        try {
+            Path codeSourcePath = Paths.get(MainApp.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            return getApplicationDirectory(codeSourcePath);
+        } catch (URISyntaxException exception) {
+            return Paths.get("").toAbsolutePath();
+        }
+    }
+
+    static Path getApplicationDirectory(Path codeSourcePath) {
+        Path absoluteCodeSourcePath = codeSourcePath.toAbsolutePath();
+        if (Files.isRegularFile(absoluteCodeSourcePath)) {
+            return absoluteCodeSourcePath.getParent();
+        }
+        return absoluteCodeSourcePath;
+    }
 
     @Override
     public void init() throws Exception {
