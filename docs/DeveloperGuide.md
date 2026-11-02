@@ -55,8 +55,9 @@ The bulk of the app's work is done by the following four components:
 
 The *Sequence Diagram* below shows how the components interact for a valid `delete 1` command,
 including recovery if saving fails. Interactions within `Logic` are collapsed into one lifeline.
-Before executing a mutating command, `LogicManager` copies the player data. If storage throws
-an `IOException`, it restores that data and reports a save error instead of deletion success.
+`DeleteCommand` updates the roster and commits a history entry before `LogicManager` saves it.
+If storage throws an `IOException`, `LogicManager` calls `rollbackAddressBook()` to restore the player data
+from the previous history entry and reports a save error instead of deletion success.
 
 <img src="images/ArchitectureSequenceDiagram.png" alt="Deletion and save-failure recovery across components" width="850" />
 
@@ -102,10 +103,10 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
-For `delete 1`, `LogicManager` first snapshots the address book. `DeleteCommand` then obtains the currently
-displayed player list from the `Model`, resolves the index against that list, and deletes the selected player.
-`LogicManager` saves the updated address book through `Storage`; if saving fails, it restores the snapshot and
-returns an error instead of the command result.
+For `delete 1`, `DeleteCommand` obtains the currently displayed player list from the `Model`, resolves the index
+against that list, deletes the selected player, and calls `commitAddressBook()`.
+`LogicManager` saves the updated address book through `Storage`; if saving fails, it calls
+`rollbackAddressBook()` and throws a `CommandException` instead of returning the command result.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
