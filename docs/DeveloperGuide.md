@@ -9,7 +9,9 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+Notable uses of AI:
+
+- Team members used OpenAI Codex and Google Gemini extensively for code generation, debugging, testing, reviews, and documentation.
 
 --------------------------------------------------------------------------------------------------------------------
 
