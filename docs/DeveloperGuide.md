@@ -192,7 +192,9 @@ or `available`/`unavailable`) are mapped to the domain values (`available`/`unav
 `MarkCommand` resolves all indexes to distinct player objects before preparing replacements through
 `PlayerStatusField.withValue`. All targets and replacements are validated before model updates begin, preventing
 partial changes from invalid input and index shifts when a filter shrinks. Only changed records are replaced;
-feedback separates changed and unchanged players. The active filter remains in place.
+feedback separates changed and unchanged players. The active filter remains in place after successful execution.
+If at least one player changes, the command commits one history entry. Otherwise, it reports `No changes made`,
+preserves undo/redo history, and returns `false` from `isAddressBookMutating()` so `LogicManager` skips saving.
 
 The sequence diagram below focuses on command execution after parsing. Resolving targets and preparing all
 replacements before the first `setPerson` call keeps later selections stable even if an update removes a player

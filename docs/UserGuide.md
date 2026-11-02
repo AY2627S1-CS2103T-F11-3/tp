@@ -299,7 +299,8 @@ Format: `mark INDEX [INDEX]... STATUS/VALUE`
 * The current search or filter remains active. Players who no longer match disappear, and remaining players are
   renumbered. Check the displayed indexes before the next command; use `list` to show everyone.
 * Feedback lists updated players separately from players already at the requested status. If every selected player
-  already has that status, it reports `No changes needed`.
+  already has that status, it reports `No changes made` and lists those players. No data is saved and undo/redo
+  history is preserved in this case.
 * The command saves through the normal automatic-save process. If saving fails, player data is restored and an
   error is shown.
 
