@@ -4,13 +4,12 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
- * Represents a player's guardian's contact number.
+ * Represents a player's guardian contact detail.
  */
 public class GuardianContact {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Invalid telephone number entered. Telephone number should be 8 digits long and contain only digits.";
-    public static final String VALIDATION_REGEX = "[0-9]{8}";
+            "Guardian contact details must not be blank.";
 
     public final String value;
 
@@ -20,17 +19,13 @@ public class GuardianContact {
     public GuardianContact(String guardianContact) {
         requireNonNull(guardianContact);
         checkArgument(isValidGuardianContact(guardianContact), MESSAGE_CONSTRAINTS);
-        value = normalize(guardianContact);
+        value = guardianContact.strip();
     }
 
-    /** Returns whether the contact normalizes to exactly eight digits. */
+    /** Returns whether the contact contains non-whitespace text. */
     public static boolean isValidGuardianContact(String test) {
         requireNonNull(test);
-        return normalize(test).matches(VALIDATION_REGEX);
-    }
-
-    private static String normalize(String contact) {
-        return contact.replaceAll("[\\s-]", "");
+        return !test.isBlank();
     }
 
     @Override

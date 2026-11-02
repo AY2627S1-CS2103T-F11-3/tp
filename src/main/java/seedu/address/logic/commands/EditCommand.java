@@ -67,7 +67,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_SQUADNAME_FULL + "SQUAD_NAME] "
             + "[" + PREFIX_POSITION_FULL + "POSITION] "
             + "[" + PREFIX_GUARDIANNAME_FULL + "GUARDIAN_NAME] "
-            + "[" + PREFIX_GUARDIANCONTACT_FULL + "TELEPHONE_NUMBER] "
+            + "[" + PREFIX_GUARDIANCONTACT_FULL + "CONTACT_DETAILS] "
             + "[" + PREFIX_AVAILABILITY_FULL + "true|false|available|unavailable] "
             + "[" + PREFIX_INJURY_FULL + "fit|injured] "
             + "[" + PREFIX_FEE_FULL + "paid|unpaid] "
