@@ -73,6 +73,28 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_guardianContactDetail_preservesTextAndRoundTrips() throws Exception {
+        JsonAdaptedPerson adapted = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Soccer Stars", "Defender", "Jane Doe", "+65 (8123) 4567 (Mother)", "available");
+
+        Person person = adapted.toModelType();
+
+        assertEquals("+65 (8123) 4567 (Mother)", person.getGuardianContact().value);
+        assertEquals(person, new JsonAdaptedPerson(person).toModelType());
+    }
+
+    @Test
+    public void toModelType_currentGuardianContactZero_preservesContact() throws Exception {
+        JsonAdaptedPerson adapted = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
+                "Soccer Stars", "Defender", null, "000", "available");
+
+        Person person = adapted.toModelType();
+
+        assertEquals("000", person.getGuardianContact().value);
+        assertEquals(person, new JsonAdaptedPerson(person).toModelType());
+    }
+
+    @Test
     public void toModelType_invalidSquadOrGuardianName_throwsIllegalValueException() {
         JsonAdaptedPerson invalidSquad = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
                 "Team@A", "Defender", "Jane Doe", "81234567", "available");
@@ -94,7 +116,7 @@ public class JsonAdaptedPersonTest {
     @Test
     public void toModelType_legacyPlaceholders_migratesWithoutLosingIdentity() throws Exception {
         Person person = new JsonAdaptedPerson(VALID_NAME, VALID_TAGS, VALID_REMARK,
-                "Unassigned", "Unassigned", "Not provided", "000", "available").toModelType();
+                "Unassigned", "Unassigned", "Not provided", null, "available", "000").toModelType();
         assertEquals("Unassigned", person.getPosition().value);
         assertNull(person.getGuardianName());
         assertNull(person.getGuardianContact());

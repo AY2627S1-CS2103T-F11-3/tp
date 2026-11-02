@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
@@ -37,6 +38,8 @@ class JsonAdaptedPerson {
     private final String position;
     private final String guardianName;
     private final String guardianContact;
+    @JsonIgnore
+    private final boolean usesLegacyGuardianNumber;
     private final String availability;
     private final String injuryStatus;
     private final String feeStatus;
@@ -62,6 +65,7 @@ class JsonAdaptedPerson {
         this.position = position;
         this.guardianName = guardianName;
         this.guardianContact = guardianContact == null ? legacyGuardianContact : guardianContact;
+        this.usesLegacyGuardianNumber = guardianContact == null && legacyGuardianContact != null;
         this.availability = availability;
         this.injuryStatus = injuryStatus;
         this.feeStatus = feeStatus;
@@ -110,6 +114,7 @@ class JsonAdaptedPerson {
         position = source.getPosition().value;
         guardianName = source.getGuardianName() == null ? null : source.getGuardianName().value;
         guardianContact = source.getGuardianContact() == null ? null : source.getGuardianContact().value;
+        usesLegacyGuardianNumber = false;
         availability = source.getAvailability().value;
         injuryStatus = source.getInjuryStatus().value;
         feeStatus = source.getFeeStatus().value;
@@ -177,7 +182,8 @@ class JsonAdaptedPerson {
     }
 
     private GuardianName createGuardianName() throws IllegalValueException {
-        if (guardianName == null || ("Not provided".equals(guardianName) && "000".equals(guardianContact))) {
+        if (guardianName == null || (usesLegacyGuardianNumber && "Not provided".equals(guardianName)
+                && "000".equals(guardianContact))) {
             return null;
         }
         String value = guardianName;
@@ -188,7 +194,7 @@ class JsonAdaptedPerson {
     }
 
     private GuardianContact createGuardianContact() throws IllegalValueException {
-        if (guardianContact == null || "000".equals(guardianContact)) {
+        if (guardianContact == null || (usesLegacyGuardianNumber && "000".equals(guardianContact))) {
             return null;
         }
         String value = guardianContact;
