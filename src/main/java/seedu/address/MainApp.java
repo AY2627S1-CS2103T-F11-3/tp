@@ -39,7 +39,8 @@ public class MainApp extends Application {
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path APPLICATION_DIRECTORY = getApplicationDirectory();
     private static final Path USER_PREFS_FILE_PATH = APPLICATION_DIRECTORY.resolve("preferences.json");
-    private static final Path ADDRESS_BOOK_FILE_PATH = APPLICATION_DIRECTORY.resolve("data").resolve("addressbook.json");
+    private static final Path ADDRESS_BOOK_FILE_PATH = APPLICATION_DIRECTORY.resolve("data")
+            .resolve("addressbook.json");
 
     protected Ui ui;
     protected Logic logic;
