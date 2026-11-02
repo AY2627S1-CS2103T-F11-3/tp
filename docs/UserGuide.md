@@ -253,6 +253,28 @@ Examples:
 *  `edit 2 inj/fit f/paid c/received` Updates injury, fee payment and consent using shorthand prefixes.
 *  `edit 2 sn/Soccer Stars pos/Defender g/Jane Doe gc/8123-4567` updates the player's profile details.
 
+### Updating a player's remark: `remark`
+
+Replaces or clears the remark of an existing player. You can also update remarks using `edit INDEX r/REMARK`.
+
+Format: `remark INDEX [remark/REMARK]`
+
+* `INDEX` must be a positive integer referring to a player in the currently displayed list, including after
+  `find`, `filter`, or `sort`. From the overview, use `main` to check the retained player indexes first.
+* Use `remark/` or its shorthand `r/`. Specify the prefix only once; using both aliases is rejected.
+* The supplied text replaces the entire existing remark. Other player details are preserved.
+* To clear the remark, enter `remark INDEX remark/` or `remark INDEX r/` with no text after the prefix.
+  **Entering only `remark INDEX` also clears the existing remark.** It does not display the remark.
+* After a successful command, all players are shown: the current search or filter is cleared, while the sort
+  order is retained. Check the displayed indexes before issuing another index-based command.
+* Changes are saved automatically and can be reversed with `undo`.
+
+Examples:
+
+* `remark 1 remark/Call guardian after school` replaces the first displayed player's remark.
+* `remark 1 r/Available on Saturday/Sunday` sets the remark using the shorthand prefix.
+* `remark 1 r/` clears the first displayed player's remark.
+
 ### Updating player statuses in bulk: `mark`
 
 Sets one status for one or more displayed players.
@@ -277,7 +299,8 @@ Format: `mark INDEX [INDEX]... STATUS/VALUE`
 * The current search or filter remains active. Players who no longer match disappear, and remaining players are
   renumbered. Check the displayed indexes before the next command; use `list` to show everyone.
 * Feedback lists updated players separately from players already at the requested status. If every selected player
-  already has that status, it reports `No changes needed`.
+  already has that status, it reports `No changes made` and lists those players. No data is saved and undo/redo
+  history is preserved in this case.
 * The command saves through the normal automatic-save process. If saving fails, player data is restored and an
   error is shown.
 
@@ -538,6 +561,7 @@ Action | Format, Examples
 **Mark status** | `mark INDEX [INDEX]... STATUS/VALUE`<br> Choose one: `av/true\|false\|available\|unavailable`, `injury/fit\|injured`, `fee/paid\|unpaid`, `consent/received\|pending`<br> Aliases: `availability/`, `inj/`, `f/`, `c/`<br> e.g., `mark 1 3 f/paid`
 **Delete** | `delete INDEX [INDEX]...` or `delete n/NAME[, NAME]...`<br> e.g., `delete 1 3` or `delete n/John Doe, Amy Tan`
 **Edit** | `edit INDEX [n/NAME] [squad/SQUAD_NAME] [position/POSITION] [guardian/GUARDIAN_NAME] [contact/TELEPHONE_NUMBER] [availability/true\|false\|available\|unavailable] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending] [remark/REMARK] [tag/TAG]…​`<br> Aliases: `sn/`, `pos/`, `g/`, `gc/`, `av/`, `inj/`, `f/`, `c/`, `r/`, `t/`<br> e.g., `edit 2 r/Reliable defender`
+**Remark** | `remark INDEX [remark/REMARK]`<br> Alias: `r/`<br> e.g., `remark 1 r/Call after school`<br> Clear with `remark 1 r/`; `remark 1` also clears the remark.
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **Filter** | `filter [squad/SQUAD_NAME] [availability/true\|false\|available\|unavailable] [injury/fit\|injured] [fee/paid\|unpaid] [consent/received\|pending]` (at least one criterion required)<br> Aliases: `sn/`, `av/`, `inj/`, `f/`, `c/` <br> e.g., `filter sn/Soccer Stars av/true injury/fit fee/paid`
 **Sort** | `sort name\|squad\|position\|availability\|reset`<br> e.g., `sort squad`

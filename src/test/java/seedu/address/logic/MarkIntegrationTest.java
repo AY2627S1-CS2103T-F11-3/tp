@@ -1,7 +1,9 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -138,6 +140,49 @@ public class MarkIntegrationTest {
         assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
         assertEquals(List.of(amy, ben, cal), model.getFilteredPersonList());
         assertEquals(List.of(amy, ben, cal), storage.readAddressBook().orElseThrow().getPersonList());
+    }
+
+    @Test
+    public void execute_unchangedMark_preservesRedoHistory() throws Exception {
+        logic.execute("delete 3");
+        logic.execute("undo");
+
+        assertTrue(logic.execute("mark 1 2 fee/unpaid").getFeedbackToUser().startsWith("No changes made."));
+
+        logic.execute("redo");
+        assertEquals(List.of(amy, ben), model.getAddressBook().getPersonList());
+        assertEquals(List.of(amy, ben), storage.readAddressBook().orElseThrow().getPersonList());
+    }
+
+    @Test
+    public void execute_unchangedMark_skipsSaveAndPreservesUndoHistory() throws Exception {
+        logic.execute("delete 3");
+        JsonAddressBookStorage unexpectedSaveStorage = new JsonAddressBookStorage(storage.getAddressBookFilePath()) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
+                throw new AssertionError("An unchanged mark must not save data");
+            }
+        };
+        Logic noSaveLogic = createLogic(unexpectedSaveStorage);
+
+        noSaveLogic.execute("mark 1 2 fee/unpaid");
+
+        logic.execute("undo");
+        assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
+        assertFalse(model.canUndoAddressBook());
+    }
+
+    @Test
+    public void execute_mixedChangedAndUnchangedPlayers_savesAndCreatesOneUndoStep() throws Exception {
+        logic.execute("mark 1 fee/paid");
+        Person paidAmy = new PersonBuilder(amy).withFeeStatus("paid").build();
+        Person paidBen = new PersonBuilder(ben).withFeeStatus("paid").build();
+
+        logic.execute("mark 1 2 fee/paid");
+
+        assertEquals(List.of(paidAmy, paidBen, cal), storage.readAddressBook().orElseThrow().getPersonList());
+        logic.execute("undo");
+        assertEquals(List.of(paidAmy, ben, cal), model.getAddressBook().getPersonList());
     }
 
     private Person markedPlayer(Person original) {
