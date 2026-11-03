@@ -76,6 +76,7 @@ public class AddCommandParserTest {
         AddCommand expected = new AddCommand(player());
         assertParseSuccess(parser, REQUIRED, expected);
         assertParseSuccess(parser, " n/John Doe sn/Soccer Stars pos/Goalkeeper", expected);
+        assertParseSuccess(parser, " N/John Doe SN/Soccer Stars POS/Goalkeeper", expected);
         assertParseSuccess(parser, " pos/goal-keeper n/John Doe squad/Soccer Stars", expected);
         assertParseSuccess(parser, " position/ G O A L - K E E P E R sn/Soccer Stars name/John Doe", expected);
     }
@@ -99,9 +100,11 @@ public class AddCommandParserTest {
         assertParseSuccess(parser, " av/f a L s E gc/99-99 99\t99 g/Long Ox" + REQUIRED,
                 new AddCommand(formattedContact));
         assertParseSuccess(parser, REQUIRED + " av/ t R u E ", new AddCommand(player()));
-
         Person contactDetail = new PersonBuilder(player()).withGuardianContact("+65 (8123) 4567 (Mother)").build();
         assertParseSuccess(parser, REQUIRED + " gc/+65 (8123) 4567 (Mother)", new AddCommand(contactDetail));
+
+        Person slashText = new PersonBuilder(player()).withRemark("Available Saturday/Sunday").build();
+        assertParseSuccess(parser, REQUIRED + " r/Available Saturday/Sunday", new AddCommand(slashText));
     }
 
     @Test
@@ -220,7 +223,7 @@ public class AddCommandParserTest {
         assertParseFailure(parser, "John Doe squad/Stars position/striker", message);
         for (String prefix : new String[] {"p/81234567", "e/john@example.com", "a/Street", "unknown/value",
             "/squad Stars"}) {
-            assertParseFailure(parser, REQUIRED + " " + prefix, message);
+            assertParseFailure(parser, " " + prefix + REQUIRED, message);
         }
     }
 
