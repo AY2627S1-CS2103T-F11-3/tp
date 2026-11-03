@@ -212,9 +212,13 @@ public class DeleteCommandParserTest {
     public void parse_unsupportedNamePrefixes_defersInvalidArguments() {
         assertParseSuccess(parser, "/name John Doe",
                 DeleteCommand.forInvalidIndices(List.of("/name", "John", "Doe")));
+    }
+
+    @Test
+    public void parse_caseInsensitiveNamePrefix_returnsDeleteCommand() {
         assertParseSuccess(parser, "N/John Doe",
-                DeleteCommand.forInvalidIndices(List.of("N/John", "Doe")));
+                DeleteCommand.forNames(List.of("John Doe")));
         assertParseSuccess(parser, "NAME/John Doe",
-                DeleteCommand.forInvalidIndices(List.of("NAME/John", "Doe")));
+                DeleteCommand.forNames(List.of("John Doe")));
     }
 }

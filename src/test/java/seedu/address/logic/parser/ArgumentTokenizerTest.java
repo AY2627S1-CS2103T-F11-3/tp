@@ -77,6 +77,12 @@ public class ArgumentTokenizerTest {
         assertPreambleEmpty(argMultimap);
         assertArgumentPresent(argMultimap, pSlash, "Argument value");
 
+        // Case-insensitive prefix in arguments string
+        argsString = "  Some preamble string P/ Argument value ";
+        argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash);
+        assertPreamblePresent(argMultimap, "Some preamble string");
+        assertArgumentPresent(argMultimap, pSlash, "Argument value");
+        assertArgumentPresent(argMultimap, new Prefix("P/"), "Argument value");
     }
 
     @Test
@@ -91,6 +97,14 @@ public class ArgumentTokenizerTest {
 
         // All three arguments are present
         argsString = "Different Preamble String ^Q111 -t dashT-Value p/pSlash value";
+        argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash, dashT, hatQ);
+        assertPreamblePresent(argMultimap, "Different Preamble String");
+        assertArgumentPresent(argMultimap, pSlash, "pSlash value");
+        assertArgumentPresent(argMultimap, dashT, "dashT-Value");
+        assertArgumentPresent(argMultimap, hatQ, "111");
+
+        // Case-insensitive matching across multiple prefixes
+        argsString = "Different Preamble String ^q111 -T dashT-Value P/pSlash value";
         argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash, dashT, hatQ);
         assertPreamblePresent(argMultimap, "Different Preamble String");
         assertArgumentPresent(argMultimap, pSlash, "pSlash value");
@@ -124,6 +138,14 @@ public class ArgumentTokenizerTest {
         assertArgumentPresent(argMultimap, pSlash, "pSlash value");
         assertArgumentPresent(argMultimap, dashT, "dashT-Value", "another dashT value", "");
         assertArgumentPresent(argMultimap, hatQ, "", "");
+
+        // Repeated prefixes with different casing
+        argsString = "SomePreambleString -t dashT-Value ^Q ^q -T another dashT value P/ pSlash value -t";
+        argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash, dashT, hatQ);
+        assertPreamblePresent(argMultimap, "SomePreambleString");
+        assertArgumentPresent(argMultimap, pSlash, "pSlash value");
+        assertArgumentPresent(argMultimap, dashT, "dashT-Value", "another dashT value", "");
+        assertArgumentPresent(argMultimap, hatQ, "", "");
     }
 
     @Test
@@ -142,6 +164,9 @@ public class ArgumentTokenizerTest {
 
         assertEquals(aaa, aaa);
         assertEquals(aaa, new Prefix("aaa"));
+        assertEquals(aaa, new Prefix("AAA"));
+        assertEquals(aaa, new Prefix("aAa"));
+        assertEquals(aaa.hashCode(), new Prefix("AAA").hashCode());
 
         assertNotEquals(aaa, "aaa");
         assertNotEquals(aaa, new Prefix("aab"));

@@ -23,7 +23,7 @@ public class FilterCommandParserTest {
                 command("Soccer Stars", null, null, null, null));
         assertParseSuccess(parser, "availability/TrUe",
                 command(null, Availability.AVAILABLE, null, null, null));
-        assertParseSuccess(parser, "availability/unavailable squad/Football Fellas",
+        assertParseSuccess(parser, "availability/unavailable sqUad/Football Fellas",
                 command("Football Fellas", Availability.UNAVAILABLE, null, null, null));
         assertParseSuccess(parser, "sn/Soccer Stars av/true",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
@@ -31,9 +31,9 @@ public class FilterCommandParserTest {
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
         assertParseSuccess(parser, "sn/Soccer Stars availability/available",
                 command("Soccer Stars", Availability.AVAILABLE, null, null, null));
-        assertParseSuccess(parser, "available/true",
+        assertParseSuccess(parser, "Available/true",
                 command(null, Availability.AVAILABLE, null, null, null));
-        assertParseSuccess(parser, "\t squad/ Soccer Stars \t av/ false ",
+        assertParseSuccess(parser, "\t SQUAD/ Soccer Stars \t av/ false ",
                 command("Soccer Stars", Availability.UNAVAILABLE, null, null, null));
 
         // Status field combinations
