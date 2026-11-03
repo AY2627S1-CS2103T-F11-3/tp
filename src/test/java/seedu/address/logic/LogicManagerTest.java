@@ -166,7 +166,7 @@ public class LogicManagerTest {
     @Test
     public void execute_addPlayer_savesOptionalDetailsAndRejectsDuplicate() throws Exception {
         Person player = new PersonBuilder().withName("John Doe").withSquadName("Soccer Stars")
-                .withPosition("Goalkeeper").withGuardianName("Jane Doe").withGuardianContact("81234567")
+                .withPosition("Goalkeeper").withGuardianName("Jane Doe").withGuardianContact("8123-4567")
                 .withAvailability("unavailable").build();
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addPerson(player);
@@ -179,7 +179,7 @@ public class LogicManagerTest {
         assertCommandException("add n/John Doe sn/Soccer Stars pos/Goalkeeper",
                 "John Doe is already a registered player.");
         assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
-        assertParseException("add n/Invalid Contact sn/Stars pos/Defender gc/1234567",
+        assertParseException("add n/Invalid Contact sn/Stars pos/Defender gc/",
                 seedu.address.model.person.GuardianContact.MESSAGE_CONSTRAINTS);
         assertEquals(new AddressBook(expectedModel.getAddressBook()), savedStorage.readAddressBook().orElseThrow());
 
@@ -219,7 +219,7 @@ public class LogicManagerTest {
                 .withPosition("Goalkeeper").withGuardianName("Jane Doe").withGuardianContact("81234567").build();
         model.addPerson(player);
         Person updatedPlayer = new PersonBuilder(player).withSquadName("Football Fellas").withPosition("Defender")
-                .withGuardianName("Mary Doe").withGuardianContact("87654321").build();
+                .withGuardianName("Mary Doe").withGuardianContact("8765-4321").build();
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.setPerson(player, updatedPlayer);
         expectedModel.commitAddressBook();

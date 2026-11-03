@@ -61,8 +61,8 @@ public class MarkCommandTest {
 
         CommandResult result = command(PlayerStatusField.FEE, " PAID ", 2, 1, 2).execute(model);
 
-        assertEquals("Updated fee status: paid for 1 player:\nBen Lee\n\n"
-                + "Already recorded fee status: paid (unchanged, 1 player):\nAmy Tan", result.getFeedbackToUser());
+        assertEquals("Updated fee status to paid for 1 player:\nBen Lee\n\n"
+                + "Unchanged: 1 player already has fee status: paid.\nAmy Tan", result.getFeedbackToUser());
         assertEquals("paid", model.getAddressBook().getPersonList().get(1).getFeeStatus().value);
     }
 
@@ -72,7 +72,7 @@ public class MarkCommandTest {
 
         CommandResult result = command(PlayerStatusField.FEE, "paid", 2, 1).execute(model);
 
-        assertEquals("Updated fee status: paid for 2 players:\nBen Lee\nAmy Tan", result.getFeedbackToUser());
+        assertEquals("Updated fee status to paid for 2 players:\nBen Lee\nAmy Tan", result.getFeedbackToUser());
         assertEquals(List.of(new PersonBuilder(amy).withFeeStatus("paid").build(),
                 new PersonBuilder(ben).withFeeStatus("paid").build(), cal),
                 model.getAddressBook().getPersonList());
@@ -88,8 +88,8 @@ public class MarkCommandTest {
 
         CommandResult result = command(PlayerStatusField.FEE, "paid", 1, 2, 3).execute(model);
 
-        assertEquals("Updated fee status: paid for 1 player:\nCal Lim\n\n"
-                + "Already recorded fee status: paid (unchanged, 2 players):\nAmy Tan\nBen Lee",
+        assertEquals("Updated fee status to paid for 1 player:\nCal Lim\n\n"
+                + "Unchanged: 2 players already have fee status: paid.\nAmy Tan\nBen Lee",
                 result.getFeedbackToUser());
         assertEquals(List.of(paidAmy, paidBen, new PersonBuilder(cal).withFeeStatus("paid").build()),
                 model.getAddressBook().getPersonList());
@@ -103,7 +103,7 @@ public class MarkCommandTest {
 
         CommandResult result = command(PlayerStatusField.FEE, "unpaid", 1, 1).execute(model);
 
-        assertEquals("No changes needed. Already recorded fee status: unpaid (1 player):\nAmy Tan",
+        assertEquals("No changes made. 1 player already has fee status: unpaid.\nAmy Tan",
                 result.getFeedbackToUser());
         assertEquals(List.of(amy, ben, cal), model.getAddressBook().getPersonList());
         assertSame(amy, model.getAddressBook().getPersonList().getFirst());
@@ -116,7 +116,7 @@ public class MarkCommandTest {
 
         CommandResult result = command(PlayerStatusField.CONSENT, "pending", 1, 2, 1).execute(model);
 
-        assertEquals("No changes needed. Already recorded consent status: pending (2 players):\nAmy Tan\nBen Lee",
+        assertEquals("No changes made. 2 players already have consent status: pending.\nAmy Tan\nBen Lee",
                 result.getFeedbackToUser());
         assertEquals(List.of(amy, ben), model.getFilteredPersonList());
         assertSame(amy, model.getFilteredPersonList().getFirst());
@@ -219,7 +219,7 @@ public class MarkCommandTest {
         CommandResult result = command(field, value, 1).execute(freshModel);
         assertEquals(List.of(expected, ben), freshModel.getAddressBook().getPersonList());
         assertEquals(amy.getRemark(), freshModel.getAddressBook().getPersonList().getFirst().getRemark());
-        assertEquals("Updated " + field.getDisplayName() + ": " + value + " for 1 player:\nAmy Tan",
+        assertEquals("Updated " + field.getDisplayName() + " to " + value + " for 1 player:\nAmy Tan",
                 result.getFeedbackToUser());
     }
 

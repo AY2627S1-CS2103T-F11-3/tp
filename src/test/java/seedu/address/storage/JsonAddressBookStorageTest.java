@@ -166,6 +166,14 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void read_nullRootValue_exceptionThrown() throws IOException {
+        Path filePath = testFolder.resolve("nullRoot.json");
+        Files.writeString(filePath, "null");
+
+        assertThrows(DataLoadingException.class, () -> new JsonAddressBookStorage(filePath).readAddressBook());
+    }
+
+    @Test
     public void readAddressBook_invalidPersonAddressBook_throwDataLoadingException() {
         assertThrows(DataLoadingException.class, () -> readAddressBook("invalidPersonAddressBook.json"));
     }

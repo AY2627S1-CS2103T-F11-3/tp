@@ -60,6 +60,18 @@ loop each target and its prepared replacement
     end
 end
 
+alt at least one player changed
+    MarkCommand -> Model : commitAddressBook()
+    activate Model
+    Model --> MarkCommand
+    deactivate Model
+else no players changed
+    note right of MarkCommand
+      Preserve history; isAddressBookMutating() returns false.
+      LogicManager skips saving.
+    end note
+end
+
 MarkCommand --> LogicManager : CommandResult (changed / unchanged feedback)
 deactivate MarkCommand
 @enduml

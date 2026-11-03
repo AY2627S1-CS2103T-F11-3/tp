@@ -68,7 +68,7 @@ public class AddCommandParserTest {
         assertParseFailure(parser, REQUIRED + " injury/fit injury/injured",
                 Messages.getErrorMessageForDuplicatePrefixes(CliSyntax.PREFIX_INJURY_FULL));
         assertParseFailure(parser, " injury/recovering contact/abc" + REQUIRED, InjuryStatus.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, " contact/abc injury/recovering" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " contact/abc injury/recovering" + REQUIRED, InjuryStatus.MESSAGE_CONSTRAINTS);
     }
 
     @Test
@@ -94,8 +94,14 @@ public class AddCommandParserTest {
                 .withAvailability("unavailable").build();
         assertParseSuccess(parser, REQUIRED + " guardian/Long Ox contact/99999999 available/FALSE",
                 new AddCommand(expected));
-        assertParseSuccess(parser, " av/f a L s E gc/99-99 99\t99 g/Long Ox" + REQUIRED, new AddCommand(expected));
+        Person formattedContact = new PersonBuilder(player()).withGuardianName("Long Ox")
+                .withGuardianContact("99-99 99\t99").withAvailability("unavailable").build();
+        assertParseSuccess(parser, " av/f a L s E gc/99-99 99\t99 g/Long Ox" + REQUIRED,
+                new AddCommand(formattedContact));
         assertParseSuccess(parser, REQUIRED + " av/ t R u E ", new AddCommand(player()));
+
+        Person contactDetail = new PersonBuilder(player()).withGuardianContact("+65 (8123) 4567 (Mother)").build();
+        assertParseSuccess(parser, REQUIRED + " gc/+65 (8123) 4567 (Mother)", new AddCommand(contactDetail));
     }
 
     @Test
@@ -116,6 +122,8 @@ public class AddCommandParserTest {
                 new AddCommand(new PersonBuilder(player()).withGuardianName("Jane Doe").build()));
         assertParseSuccess(parser, REQUIRED + " gc/81234567",
                 new AddCommand(new PersonBuilder(player()).withGuardianContact("81234567").build()));
+        assertParseSuccess(parser, REQUIRED + " gc/000",
+                new AddCommand(new PersonBuilder(player()).withGuardianContact("000").build()));
     }
 
     @Test
@@ -144,7 +152,7 @@ public class AddCommandParserTest {
         }
         assertParseFailure(parser, REQUIRED + " g/", GuardianName.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, REQUIRED + " guardian/Jane@Doe", GuardianName.MESSAGE_CONSTRAINTS);
-        for (String contact : new String[] {"", "000", "1234567", "123456789", "1234abcd", "+81234567"}) {
+        for (String contact : new String[] {"", " \t"}) {
             assertParseFailure(parser, REQUIRED + " contact/" + contact, GuardianContact.MESSAGE_CONSTRAINTS);
         }
         for (String availability : new String[] {"", "yes", "true-false"}) {
@@ -201,7 +209,7 @@ public class AddCommandParserTest {
     public void parse_invalidValues_reportsFirstSuppliedField() {
         assertParseFailure(parser, " available/no contact/abc" + REQUIRED,
                 AddCommandParser.MESSAGE_INVALID_AVAILABILITY);
-        assertParseFailure(parser, " contact/abc available/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, " contact/ available/no" + REQUIRED, GuardianContact.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " pos/invalid sn/Stars! n/John@Doe", Position.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, " sn/Stars! pos/invalid n/John@Doe", SquadName.MESSAGE_CONSTRAINTS);
     }

@@ -232,12 +232,23 @@ public class EditCommandParserTest {
     public void parse_playerProfileFields_success() {
         Index targetIndex = INDEX_THIRD_PERSON;
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withSquadName("Soccer Stars")
-                .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("81234567").build();
+                .withPosition("Defender").withGuardianName("Jane Doe").withGuardianContact("8123-4567").build();
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
         String userInput = targetIndex.getOneBased() + " " + PREFIX_GUARDIANNAME_FULL + "Jane Doe "
                 + PREFIX_POSITION + "Defender " + PREFIX_SQUADNAME_FULL + "Soccer Stars "
                 + PREFIX_GUARDIANCONTACT + "8123-4567";
         assertParseSuccess(parser, userInput, expectedCommand);
+
+        descriptor = new EditPersonDescriptorBuilder().withGuardianContact("+65 (8123) 4567 (Mother)").build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_GUARDIANCONTACT
+                        + "+65 (8123) 4567 (Mother)",
+                expectedCommand);
+
+        descriptor = new EditPersonDescriptorBuilder().withGuardianContact("000").build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, targetIndex.getOneBased() + " " + PREFIX_GUARDIANCONTACT + "000",
+                expectedCommand);
     }
 
     @Test
