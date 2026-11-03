@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddCommand;
@@ -60,11 +61,17 @@ public class AddCommandParser implements Parser<AddCommand> {
             "Invalid availability entered. Availability must be true, false, available, or unavailable.";
     public static final String MESSAGE_MISSING_REMARK = "Error: Remark must not be blank.";
 
-    private static final Pattern PREFIX_PATTERN = Pattern.compile("(?<!\\S)(?<prefix>[^\\s/]+/|/\\S+)");
-
     private enum Field {
         NAME, SQUAD, POSITION, GUARDIAN, CONTACT, AVAILABILITY, INJURY, FEE, CONSENT, REMARK, TAG
     }
+
+    private static final List<Prefix> SUPPORTED_PREFIXES = List.of(
+            PREFIX_NAME, PREFIX_NAME_FULL, PREFIX_SQUADNAME, PREFIX_SQUADNAME_FULL,
+            PREFIX_POSITION, PREFIX_POSITION_FULL, PREFIX_GUARDIANNAME, PREFIX_GUARDIANNAME_FULL,
+            PREFIX_GUARDIANCONTACT, PREFIX_GUARDIANCONTACT_FULL, PREFIX_AVAILABILITY, PREFIX_AVAILABILITY_FULL,
+            PREFIX_AVAILABILITY_LEGACY, PREFIX_INJURY, PREFIX_INJURY_FULL, PREFIX_FEE, PREFIX_FEE_FULL,
+            PREFIX_CONSENT, PREFIX_CONSENT_FULL, PREFIX_REMARK, PREFIX_REMARK_FULL, PREFIX_TAG, PREFIX_TAG_FULL);
+    private static final Pattern PREFIX_PATTERN = createPrefixPattern();
 
     @Override
     public AddCommand parse(String args) throws ParseException {
@@ -171,6 +178,14 @@ public class AddCommandParser implements Parser<AddCommand> {
             throw invalidFormat();
         }
         return arguments;
+    }
+
+    private static Pattern createPrefixPattern() {
+        String alternatives = SUPPORTED_PREFIXES.stream()
+                .map(Prefix::getPrefix)
+                .map(Pattern::quote)
+                .collect(Collectors.joining("|"));
+        return Pattern.compile("(?<!\\S)(?<prefix>" + alternatives + ")", Pattern.CASE_INSENSITIVE);
     }
 
     private void requireField(List<Argument> arguments, Field field, String message) throws ParseException {

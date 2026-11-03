@@ -148,6 +148,7 @@ Examples:
 * `add n/Alex Tan sn/U12 pos/Defender injury/injured av/false`
 * `add n/Sam Lee sn/U12 pos/Midfielder fee/unpaid consent/pending`
 * `add n/Lee Tan sn/U12 pos/Defender inj/fit f/paid c/received`
+* `add n/Noah Lim sn/U12 pos/Defender r/Available Saturday/Sunday`
 
 ### Listing all players: `list`
 
