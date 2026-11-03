@@ -38,7 +38,7 @@ The following provides a quick overview of the main components and their interac
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes [`Main`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shut down, it shuts down the other components and invokes cleanup methods where necessary.
 
@@ -74,7 +74,7 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [`Ui.java`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/ui/Ui.java)
 
 <img src="images/UiClassDiagram.png" alt="Partial class diagram of the UI component" width="1000" />
 
@@ -82,7 +82,7 @@ The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDi
 
 `PersonListPanel` displays players in a table. For an `overview` result, `MainWindow` creates an `OverviewPanel` using the `ClubOverview` snapshot and replaces the table view with it. `OverviewPanel` extends JavaFX `ScrollPane` and builds its display from `ClubOverview` and `SquadSummary` data. The `main` command restores the existing player table with its current filter and sort order.
 
-The `UI` component uses the JavaFX UI framework. The layouts of the `UiPart` subclasses are defined in matching `.fxml` files in `src/main/resources/view`; `OverviewPanel` builds its layout in Java. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
+The `UI` component uses the JavaFX UI framework. The layouts of the `UiPart` subclasses are defined in matching `.fxml` files in `src/main/resources/view`; `OverviewPanel` builds its layout in Java. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
 
 The `UI` component,
 
@@ -93,7 +93,7 @@ The `UI` component,
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [`Logic.java`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/logic/Logic.java)
 
 Here's a (partial) class diagram of the `Logic` component:
 
@@ -131,7 +131,7 @@ How the parsing works:
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
 <img src="images/ModelClassDiagram.png" width="760" />
 
@@ -157,7 +157,7 @@ The `Model` component,
 
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-F11-3/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
 <img src="images/StorageClassDiagram.png" width="550" />
 
@@ -228,7 +228,7 @@ These operations are exposed through the `Model` interface as:
 * `Model#canUndoAddressBook()`
 * `Model#canRedoAddressBook()`
 
-`ModelManager` implements these methods by delegating directly to its internal `VersionedAddressBook` instance and refreshing the filtered person list via `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)` after every undo or redo operation.
+`ModelManager` delegates these methods directly to its internal `VersionedAddressBook` instance. After an undo, `UndoCommand` refreshes the filtered person list via `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)`; after a redo, `ModelManager` performs that refresh.
 
 Command arguments are validated in `AddressBookParser` using `ParserUtil.requireNoArguments(arguments, UndoCommand.MESSAGE_USAGE)` and `ParserUtil.requireNoArguments(arguments, RedoCommand.MESSAGE_USAGE)` to reject extraneous parameters before execution.
 
@@ -253,7 +253,7 @@ Step 3. The user executes `add n/David …​` to add a new player. The `add` co
 1. `UndoCommand#execute(Model)` queries `Model#canUndoAddressBook()`.
 2. Because `currentStatePointer > 0`, it calls `Model#undoAddressBook()`.
 3. `VersionedAddressBook#undo()` decrements `currentStatePointer` once to the left (to index `1`) and calls `resetData(...)` to restore the address book to that state.
-4. `ModelManager` calls `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)` to show the updated roster.
+4. `UndoCommand` calls `updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS)` to show the updated roster.
 
 ![UndoRedoState3](images/UndoRedoState3.png)
 
@@ -601,8 +601,6 @@ testers are expected to do more *exploratory* testing.
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases …​ }_
-
 ### Deleting a player
 
 1. Deleting a player while all players are being shown
@@ -618,12 +616,19 @@ testers are expected to do more *exploratory* testing.
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
 
-1. _{ more test cases …​ }_
-
 ### Saving data
 
-1. Dealing with missing/corrupted data files
+1. Dealing with a missing data file
 
-   1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
+   1. Prerequisites: Close SquadLink and locate `data/addressbook.json` in the application folder.
 
-1. _{ more test cases …​ }_
+   1. Rename `addressbook.json` to `addressbook.json.bak`, then start SquadLink.<br>
+      Expected: SquadLink starts with the sample player list. The renamed file is unchanged.
+
+1. Dealing with a corrupted data file
+
+   1. Prerequisites: Close SquadLink and back up `data/addressbook.json`.
+
+   1. Replace the file contents with `not valid JSON`, then start SquadLink.<br>
+      Expected: SquadLink starts with an empty player list. The invalid file remains unchanged until a successful
+      data-modifying command saves a replacement file.
