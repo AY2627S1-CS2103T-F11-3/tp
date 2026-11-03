@@ -574,7 +574,9 @@ profile and retained across restarts. Other invalid stored status values are rej
 
 ### Editing the data file
 
-SquadLink data is saved automatically as a JSON file `data/addressbook.json`, relative to the working directory from which you launch the application. Follow the quick-start instructions and launch from the folder containing the JAR so that your files stay together. Advanced users can close SquadLink, back up the data file, edit it, and restart the application to load their changes.
+SquadLink data is saved automatically as a JSON file `data/addressbook.json` in the folder containing the SquadLink JAR.
+This location is used even when you launch the JAR from another working directory. Advanced users are welcome to update
+that data file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, SquadLink starts with an empty player list at the next run. The invalid file remains on disk until a command changes player data and saves successfully. Still, we recommend backing up the file before editing it.<br>
