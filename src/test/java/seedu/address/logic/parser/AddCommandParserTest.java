@@ -77,6 +77,7 @@ public class AddCommandParserTest {
         assertParseSuccess(parser, REQUIRED, expected);
         assertParseSuccess(parser, " n/John Doe sn/Soccer Stars pos/Goalkeeper", expected);
         assertParseSuccess(parser, " N/John Doe SN/Soccer Stars POS/Goalkeeper", expected);
+        assertParseSuccess(parser, " NAME/John Doe SQUAD/Soccer Stars POSITION/Goalkeeper", expected);
         assertParseSuccess(parser, " pos/goal-keeper n/John Doe squad/Soccer Stars", expected);
         assertParseSuccess(parser, " position/ G O A L - K E E P E R sn/Soccer Stars name/John Doe", expected);
     }
@@ -225,6 +226,18 @@ public class AddCommandParserTest {
             "/squad Stars"}) {
             assertParseFailure(parser, " " + prefix + REQUIRED, message);
         }
+    }
+
+    @Test
+    public void parse_unknownTokenAfterLastField_isAbsorbedIntoValue() {
+        // Only known prefixes are recognized, consistent with ArgumentTokenizer in edit/remark:
+        // an unknown token after the last field becomes part of that field's value.
+        Person remarkWithSlashText = new PersonBuilder(player())
+                .withRemark("Available but unknown/value").build();
+        assertParseSuccess(parser, REQUIRED + " r/Available but unknown/value", new AddCommand(remarkWithSlashText));
+
+        // The absorbed token surfaces as a field validation error once the value becomes invalid.
+        assertParseFailure(parser, REQUIRED + " p/81234567", Position.MESSAGE_CONSTRAINTS);
     }
 
     private Person player() {
